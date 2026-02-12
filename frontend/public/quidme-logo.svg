@@ -1,0 +1,31 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="coinA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(44 48) rotate(48) scale(61)">
+      <stop stop-color="#FFE9A3"/>
+      <stop offset="0.58" stop-color="#FFC733"/>
+      <stop offset="1" stop-color="#F39A12"/>
+    </radialGradient>
+    <radialGradient id="coinB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(84 56) rotate(154) scale(58)">
+      <stop stop-color="#FFF2BF"/>
+      <stop offset="0.5" stop-color="#FFCC42"/>
+      <stop offset="1" stop-color="#E98A0B"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="8" y1="20" x2="98" y2="108" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD86A"/>
+      <stop offset="1" stop-color="#D57808"/>
+    </linearGradient>
+  </defs>
+
+  <g opacity="0.7">
+    <circle cx="82" cy="66" r="38" fill="url(#coinB)"/>
+    <circle cx="82" cy="66" r="35" stroke="url(#rim)" stroke-width="4"/>
+  </g>
+
+  <circle cx="50" cy="62" r="40" fill="url(#coinA)"/>
+  <circle cx="50" cy="62" r="37" stroke="url(#rim)" stroke-width="4"/>
+  <circle cx="50" cy="62" r="25" fill="#FFD84D" opacity="0.65"/>
+
+  <path d="M50 46L53.5 54L62 57.5L53.5 61L50 69L46.5 61L38 57.5L46.5 54L50 46Z" fill="#FFF8D0"/>
+  <path d="M36 43L37.6 46.7L41.4 48.3L37.6 49.9L36 53.6L34.4 49.9L30.6 48.3L34.4 46.7L36 43Z" fill="#FFF8D0" opacity="0.95"/>
+  <path d="M66 39L67.2 41.8L70 43L67.2 44.2L66 47L64.8 44.2L62 43L64.8 41.8L66 39Z" fill="#FFF8D0" opacity="0.95"/>
+</svg>

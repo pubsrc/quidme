@@ -1,0 +1,29 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.coverage
+.pytest_cache/
+
+# Env and build
+.env
+build/
+*.zip
+
+# Terraform
+.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfstate.backup
+terraform/environments/dev/.tmp/
+terraform/environments/prod/.tmp/
+**/dist/
+
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*.tfvars

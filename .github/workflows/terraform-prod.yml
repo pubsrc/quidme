@@ -1,0 +1,52 @@
+name: Terraform - Prod
+
+on:
+  push:
+    tags: ["v*"]
+    paths:
+      - 'terraform/**'
+      - 'src/**'
+      - 'pyproject.toml'
+      - '.github/workflows/terraform-prod.yml'
+  workflow_dispatch:
+
+env:
+  TF_ROOT: terraform/environments/prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Build Lambda package
+        run: |
+          mkdir -p build/lambda
+          uv pip install --target build/lambda .
+          mkdir -p terraform/environments/prod/.tmp
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_ROOT }}
+        run: terraform init
+
+      - name: Terraform Apply
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        working-directory: ${{ env.TF_ROOT }}
+        run: terraform apply -auto-approve
