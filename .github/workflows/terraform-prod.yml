@@ -65,13 +65,23 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.6.0
+          terraform_wrapper: false
 
       - name: Terraform Init
         working-directory: ${{ env.TF_ROOT }}
         run: terraform init
 
+      - name: Validate required secrets
+        env:
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLAIRE_API_TOKEN }}
+        run: |
+          if [ -z "$TF_VAR_cloudflare_api_token" ]; then
+            echo "CLOUDFLAIRE_API_TOKEN is not set for the prod environment."
+            exit 1
+          fi
+
       - name: Terraform Apply
         env:
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLAIRE_API_TOKEN }}
         working-directory: ${{ env.TF_ROOT }}
-        run: terraform apply -auto-approve
+        run: terraform apply -input=false -auto-approve

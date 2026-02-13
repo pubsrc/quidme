@@ -44,9 +44,9 @@ output "stripe_webhook_secret_name" {
 }
 
 output "cloudflare_frontend_record_id" {
-  value = cloudflare_record.frontend_root.id
+  value = cloudflare_dns_record.frontend_root.id
 }
 
 output "cloudflare_api_record_id" {
-  value = cloudflare_record.api_domain.id
+  value = cloudflare_dns_record.api_domain.id
 }

@@ -253,7 +253,9 @@ module "frontend_hosting" {
 }
 
 data "cloudflare_zone" "frontend" {
-  name = var.cloudflare_zone_name
+  filter = {
+    name = var.cloudflare_zone_name
+  }
 }
 
 resource "aws_acm_certificate" "api" {
@@ -266,7 +268,7 @@ resource "aws_acm_certificate" "api" {
   }
 }
 
-resource "cloudflare_record" "api_cert_validation" {
+resource "cloudflare_dns_record" "api_cert_validation" {
   for_each = local.api_manage_certificate ? {
     for option in aws_acm_certificate.api[0].domain_validation_options :
     option.domain_name => {
@@ -290,7 +292,7 @@ resource "aws_acm_certificate_validation" "api" {
   certificate_arn = aws_acm_certificate.api[0].arn
 
   validation_record_fqdns = [
-    for record in cloudflare_record.api_cert_validation : record.hostname
+    for record in cloudflare_dns_record.api_cert_validation : trimsuffix(record.name, ".")
   ]
 }
 
@@ -310,7 +312,7 @@ resource "aws_apigatewayv2_api_mapping" "api" {
   stage       = "$default"
 }
 
-resource "cloudflare_record" "api_domain" {
+resource "cloudflare_dns_record" "api_domain" {
   zone_id = data.cloudflare_zone.frontend.id
   name    = var.api_domain_name
   type    = "CNAME"
@@ -331,7 +333,7 @@ resource "aws_acm_certificate" "frontend" {
   }
 }
 
-resource "cloudflare_record" "frontend_cert_validation" {
+resource "cloudflare_dns_record" "frontend_cert_validation" {
   for_each = local.frontend_manage_certificate ? {
     for option in aws_acm_certificate.frontend[0].domain_validation_options :
     option.domain_name => {
@@ -356,11 +358,11 @@ resource "aws_acm_certificate_validation" "frontend" {
   certificate_arn = aws_acm_certificate.frontend[0].arn
 
   validation_record_fqdns = [
-    for record in cloudflare_record.frontend_cert_validation : record.hostname
+    for record in cloudflare_dns_record.frontend_cert_validation : trimsuffix(record.name, ".")
   ]
 }
 
-resource "cloudflare_record" "frontend_dev" {
+resource "cloudflare_dns_record" "frontend_dev" {
   zone_id = data.cloudflare_zone.frontend.id
   name    = var.cloudflare_record_name
   type    = "CNAME"

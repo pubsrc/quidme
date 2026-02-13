@@ -272,6 +272,34 @@ EOF
       "Resource": "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/${lock_table}"
     },
     {
+      "Sid": "DynamoDBProjectTables",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:CreateTable",
+        "dynamodb:DeleteTable",
+        "dynamodb:DescribeContinuousBackups",
+        "dynamodb:DescribeTable",
+        "dynamodb:DescribeTimeToLive",
+        "dynamodb:GetItem",
+        "dynamodb:ListTagsOfResource",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:TagResource",
+        "dynamodb:UntagResource",
+        "dynamodb:UpdateContinuousBackups",
+        "dynamodb:UpdateItem",
+        "dynamodb:UpdateTable",
+        "dynamodb:UpdateTimeToLive"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/${PROJECT_NAME}-*",
+        "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/${PROJECT_NAME}-*/index/*"
+      ]
+    },
+    {
       "Sid": "S3BucketManagement",
       "Effect": "Allow",
       "Action": "s3:*",
