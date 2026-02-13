@@ -28,3 +28,17 @@ resource "aws_secretsmanager_secret_version" "google_oauth" {
     ignore_changes = [secret_string]
   }
 }
+
+resource "aws_secretsmanager_secret" "cloudflaire_api_token" {
+  name = var.cloudflaire_api_token_secret_name
+  tags = var.tags
+}
+
+resource "aws_secretsmanager_secret_version" "cloudflaire_api_token" {
+  secret_id     = aws_secretsmanager_secret.cloudflaire_api_token.id
+  secret_string = var.cloudflaire_api_token_placeholder
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}

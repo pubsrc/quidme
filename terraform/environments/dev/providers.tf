@@ -9,3 +9,20 @@ provider "aws" {
     }
   }
 }
+
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+
+  default_tags {
+    tags = {
+      Environment = "dev"
+      ManagedBy   = "terraform"
+      Project     = var.project_name
+    }
+  }
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
+}
