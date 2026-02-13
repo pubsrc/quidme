@@ -71,13 +71,13 @@ readonly TOOLS_IAM_ROLE_NAME="${TOOLS_IAM_ROLE_NAME:-github-actions-terraform-${
 readonly DEV_IAM_ROLE_NAME="${DEV_IAM_ROLE_NAME:-github-actions-terraform-${PROJECT_NAME}-dev}"
 readonly PROD_IAM_ROLE_NAME="${PROD_IAM_ROLE_NAME:-github-actions-terraform-${PROJECT_NAME}-prod}"
 
-readonly TOOLS_STATE_BUCKET="${TOOLS_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-tools-${TOOLS_ACCOUNT_ID}}"
-readonly DEV_STATE_BUCKET="${DEV_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-dev-${DEV_ACCOUNT_ID}}"
-readonly PROD_STATE_BUCKET="${PROD_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-prod-${PROD_ACCOUNT_ID}}"
+readonly TOOLS_STATE_BUCKET="${TOOLS_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-tools}"
+readonly DEV_STATE_BUCKET="${DEV_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-dev}"
+readonly PROD_STATE_BUCKET="${PROD_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-prod}"
 
-readonly TOOLS_LOCK_TABLE="${TOOLS_LOCK_TABLE:-${PROJECT_NAME}-terraform-state-lock-tools}"
-readonly DEV_LOCK_TABLE="${DEV_LOCK_TABLE:-${PROJECT_NAME}-terraform-state-lock-dev}"
-readonly PROD_LOCK_TABLE="${PROD_LOCK_TABLE:-${PROJECT_NAME}-terraform-state-lock-prod}"
+readonly TOOLS_LOCK_TABLE="${TOOLS_LOCK_TABLE:-${PROJECT_NAME}-terraform-lock-tools}"
+readonly DEV_LOCK_TABLE="${DEV_LOCK_TABLE:-${PROJECT_NAME}-terraform-lock-dev}"
+readonly PROD_LOCK_TABLE="${PROD_LOCK_TABLE:-${PROJECT_NAME}-terraform-lock-prod}"
 
 ################################################################################
 # HELPER FUNCTIONS
@@ -180,6 +180,27 @@ create_iam_role() {
     local account_type=$1
     local account_id=$2
     local role_name=$3
+    local state_bucket
+    local lock_table
+
+    case "$account_type" in
+        tools)
+            state_bucket="$TOOLS_STATE_BUCKET"
+            lock_table="$TOOLS_LOCK_TABLE"
+            ;;
+        dev)
+            state_bucket="$DEV_STATE_BUCKET"
+            lock_table="$DEV_LOCK_TABLE"
+            ;;
+        prod)
+            state_bucket="$PROD_STATE_BUCKET"
+            lock_table="$PROD_LOCK_TABLE"
+            ;;
+        *)
+            echo "Unknown account type: $account_type"
+            exit 1
+            ;;
+    esac
     
     echo ""
     echo "========================================="
@@ -227,7 +248,7 @@ EOF
         "s3:GetBucketAcl",
         "s3:GetBucketLocation"
       ],
-      "Resource": "arn:aws:s3:::terraform-state-*"
+      "Resource": "arn:aws:s3:::${state_bucket}"
     },
     {
       "Sid": "TerraformStateObjectAccess",
@@ -237,7 +258,7 @@ EOF
         "s3:PutObject",
         "s3:DeleteObject"
       ],
-      "Resource": "arn:aws:s3:::terraform-state-*/*"
+      "Resource": "arn:aws:s3:::${state_bucket}/*"
     },
     {
       "Sid": "TerraformStateLock",
@@ -248,7 +269,7 @@ EOF
         "dynamodb:PutItem",
         "dynamodb:DeleteItem"
       ],
-      "Resource": "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/terraform-state-lock-*"
+      "Resource": "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/${lock_table}"
     },
     {
       "Sid": "S3BucketManagement",
