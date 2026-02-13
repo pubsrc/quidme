@@ -17,6 +17,7 @@ on:
 env:
   TF_ROOT: terraform/environments/dev
   AWS_REGION: eu-west-2
+  PARAM_PREFIX: /payme/dev
 
 jobs:
   deploy:
@@ -49,6 +50,40 @@ jobs:
           uv pip install --target build/lambda .
           mkdir -p terraform/environments/dev/.tmp
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_ROOT }}
+        run: terraform init
+
+      - name: Resolve frontend env from Terraform + SSM
+        working-directory: ${{ env.TF_ROOT }}
+        run: |
+          API_BASE_URL="$(terraform output -raw api_base_url)"
+          COGNITO_USER_POOL_ID="$(terraform output -raw cognito_user_pool_id)"
+          COGNITO_USER_POOL_CLIENT_ID="$(terraform output -raw cognito_user_pool_client_id)"
+          COGNITO_DOMAIN_PREFIX="$(aws ssm get-parameter --name "${PARAM_PREFIX}/cognito_domain_prefix" --query 'Parameter.Value' --output text)"
+          CALLBACK_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/callback_urls" --query 'Parameter.Value' --output text)"
+          LOGOUT_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/logout_urls" --query 'Parameter.Value' --output text)"
+
+          FIRST_CALLBACK_URL="$(echo "$CALLBACK_URLS" | cut -d',' -f1 | xargs)"
+          FIRST_LOGOUT_URL="$(echo "$LOGOUT_URLS" | cut -d',' -f1 | xargs)"
+          COGNITO_OAUTH_DOMAIN="${COGNITO_DOMAIN_PREFIX}.auth.${AWS_REGION}.amazoncognito.com"
+
+          {
+            echo "VITE_API_BASE_URL=${API_BASE_URL}"
+            echo "VITE_COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}"
+            echo "VITE_COGNITO_USER_POOL_CLIENT_ID=${COGNITO_USER_POOL_CLIENT_ID}"
+            echo "VITE_COGNITO_REGION=${AWS_REGION}"
+            echo "VITE_COGNITO_OAUTH_DOMAIN=${COGNITO_OAUTH_DOMAIN}"
+            echo "VITE_OAUTH_REDIRECT_SIGN_IN=${FIRST_CALLBACK_URL}"
+            echo "VITE_OAUTH_REDIRECT_SIGN_OUT=${FIRST_LOGOUT_URL}"
+          } >> "$GITHUB_ENV"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -61,16 +96,6 @@ jobs:
         run: |
           npm ci
           npm run build -- --mode dev
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.6.0
-          terraform_wrapper: false
-
-      - name: Terraform Init
-        working-directory: ${{ env.TF_ROOT }}
-        run: terraform init
 
       - name: Get Cloudflare API token
         id: cloudflare_token
