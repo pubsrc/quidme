@@ -345,7 +345,12 @@
         "logout": "Log out",
         "open": "Menu"
       },
-      "logo_alt": "Quidme logo"
+      "logo_alt": "Quidme logo",
+      "language": {
+        "label": "Language",
+        "english": "English",
+        "turkish": "Turkish"
+      }
     }
   }
 }

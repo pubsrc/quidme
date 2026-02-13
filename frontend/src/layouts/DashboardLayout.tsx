@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { signOutWithCognito } from "../lib/auth";
+import { LOCALE_STORAGE_KEY } from "../app/i18n";
 
 const navItems = [
   {
@@ -47,10 +48,16 @@ const navItems = [
 ];
 
 const DashboardLayout = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const currentLanguage = (i18n.resolvedLanguage || "en").startsWith("tr") ? "tr" : "en";
+
+  const setLanguage = async (lang: "en" | "tr") => {
+    await i18n.changeLanguage(lang);
+    localStorage.setItem(LOCALE_STORAGE_KEY, lang);
+  };
 
   useEffect(() => {
     setMobileSidebarOpen(false);
@@ -90,6 +97,17 @@ const DashboardLayout = () => {
           </nav>
 
           <div className="mt-4 flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-1">
+              <select
+                value={currentLanguage}
+                onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
+                aria-label={t("layouts.dashboard.language.label")}
+                className="h-8 w-14 rounded-md border border-slate-200 bg-white px-1 text-center text-xs text-slate-700 outline-none"
+              >
+                <option value="en">🇬🇧</option>
+                <option value="tr">🇹🇷</option>
+              </select>
+            </div>
             <NavLink
               to="settings"
               title={t("layouts.dashboard.nav.settings")}
@@ -139,6 +157,20 @@ const DashboardLayout = () => {
                 </button>
               </div>
               <nav className="space-y-2">
+                <div className="mb-2 rounded-xl bg-slate-50 p-2">
+                  <div className="px-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    {t("layouts.dashboard.language.label")}
+                  </div>
+                  <select
+                    value={currentLanguage}
+                    onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
+                    aria-label={t("layouts.dashboard.language.label")}
+                    className="mt-2 h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none"
+                  >
+                    <option value="en">🇬🇧 {t("layouts.dashboard.language.english")}</option>
+                    <option value="tr">🇹🇷 {t("layouts.dashboard.language.turkish")}</option>
+                  </select>
+                </div>
                 {navItems.map((item) => (
                   <NavLink
                     key={item.to}
