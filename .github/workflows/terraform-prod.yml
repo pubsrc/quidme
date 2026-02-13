@@ -98,6 +98,13 @@ jobs:
           npm ci
           npm run build -- --mode prod
 
+      - name: Validate frontend env injection
+        run: |
+          if grep -R --line-number "localhost" frontend/dist; then
+            echo "Frontend build still contains localhost references. Failing deploy."
+            exit 1
+          fi
+
       - name: Get Cloudflare API token
         id: cloudflare_token
         env:
@@ -118,3 +125,11 @@ jobs:
           TF_VAR_cloudflare_api_token: ${{ steps.cloudflare_token.outputs.token }}
         working-directory: ${{ env.TF_ROOT }}
         run: terraform apply -input=false -auto-approve
+
+      - name: Invalidate CloudFront cache
+        working-directory: ${{ env.TF_ROOT }}
+        run: |
+          DISTRIBUTION_ID="$(terraform output -raw frontend_cloudfront_distribution_id)"
+          aws cloudfront create-invalidation \
+            --distribution-id "$DISTRIBUTION_ID" \
+            --paths "/*"

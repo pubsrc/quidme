@@ -27,6 +27,10 @@ output "frontend_cloudfront_domain_name" {
   value = module.frontend_hosting.cloudfront_domain_name
 }
 
+output "frontend_cloudfront_distribution_id" {
+  value = module.frontend_hosting.cloudfront_distribution_id
+}
+
 output "frontend_url" {
   value = module.frontend_hosting.frontend_url
 }
