@@ -3,7 +3,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 locals {
-  bucket_name       = lower("${var.project_name}-${var.environment}-frontend-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}")
+  bucket_name       = lower("${var.project_name}-${var.environment}-frontend-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.region}")
   use_custom_domain = length(var.domain_aliases) > 0
 
   files = fileset(var.frontend_build_dir, "**")
