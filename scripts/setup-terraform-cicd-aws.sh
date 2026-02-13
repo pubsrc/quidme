@@ -46,7 +46,7 @@ readonly PROJECT_NAME="quidme"
 
 # GitHub repository (must be explicit)
 readonly GITHUB_ORG="pubsrc"
-readonly GITHUB_REPO="quidme"
+readonly GITHUB_REPO="payme"
 
 : "${PROJECT_NAME:?Missing PROJECT_NAME. Set explicitly to the target project name.}"
 : "${GITHUB_REPO:?Missing GITHUB_REPO. Set explicitly to the target GitHub repo.}"

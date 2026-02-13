@@ -30,3 +30,4 @@ crash.log
 override.tf
 override.tf.json
 *.tfvars
+.DS_Store
