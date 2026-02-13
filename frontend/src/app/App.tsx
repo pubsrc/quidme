@@ -16,6 +16,7 @@ import ProfilePage from "../pages/ProfilePage";
 import SettingsPage from "../pages/SettingsPage";
 import { RequireAuth } from "../components/RequireAuth";
 import { RequireGuest } from "../components/RequireGuest";
+import { RequireNoStripeAccount } from "../components/RequireNoStripeAccount";
 
 const App = () => {
   return (
@@ -74,7 +75,9 @@ const App = () => {
         <Route
           path="start"
           element={
-            <StartPage />
+            <RequireNoStripeAccount>
+              <StartPage />
+            </RequireNoStripeAccount>
           }
         />
         <Route path="payment-links" element={<PaymentLinksPage />} />
