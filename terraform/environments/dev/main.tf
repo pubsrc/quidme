@@ -35,6 +35,8 @@ module "secrets" {
 
   stripe_secret_name                = "${var.project_name}-stripe-api-key"
   stripe_secret_placeholder         = var.stripe_secret_placeholder
+  stripe_webhook_secret_name        = "${var.project_name}-stripe-webhook-secret"
+  stripe_webhook_secret_placeholder = var.stripe_webhook_secret_placeholder
   google_oauth_secret_name          = "${var.project_name}-google-oauth-pi-key"
   google_client_id_placeholder      = var.google_client_id_placeholder
   google_client_secret_placeholder  = var.google_client_secret_placeholder

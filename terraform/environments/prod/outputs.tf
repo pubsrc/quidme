@@ -35,6 +35,10 @@ output "cloudflaire_api_token_secret_name" {
   value = module.secrets.cloudflaire_api_token_secret_name
 }
 
+output "stripe_webhook_secret_name" {
+  value = module.secrets.stripe_webhook_secret_name
+}
+
 output "cloudflare_frontend_record_id" {
   value = cloudflare_record.frontend_root.id
 }

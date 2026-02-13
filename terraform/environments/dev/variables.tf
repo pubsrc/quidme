@@ -13,6 +13,11 @@ variable "stripe_secret_placeholder" {
   default = "sk_test_placeholder"
 }
 
+variable "stripe_webhook_secret_placeholder" {
+  type    = string
+  default = "stripe-webhook-secret-placeholder"
+}
+
 variable "google_client_id_placeholder" {
   type    = string
   default = "google-client-id-placeholder"
