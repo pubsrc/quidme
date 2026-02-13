@@ -2,11 +2,13 @@ name: Terraform - Prod
 
 on:
   push:
+    branches: [main]
     tags: ["v*"]
     paths:
       - 'terraform/**'
       - 'src/**'
       - 'frontend/**'
+      - 'scripts/**'
       - 'pyproject.toml'
       - 'frontend/package.json'
       - 'frontend/package-lock.json'
@@ -71,17 +73,23 @@ jobs:
         working-directory: ${{ env.TF_ROOT }}
         run: terraform init
 
-      - name: Validate required secrets
+      - name: Get Cloudflare API token
+        id: cloudflare_token
         env:
-          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLAIRE_API_TOKEN }}
+          GITHUB_CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLAIRE_API_TOKEN }}
         run: |
-          if [ -z "$TF_VAR_cloudflare_api_token" ]; then
-            echo "CLOUDFLAIRE_API_TOKEN is not set for the prod environment."
+          token=$(aws secretsmanager get-secret-value --secret-id payme-cloudflaire-api-token --query SecretString --output text 2>/dev/null || echo "")
+          if [[ -z "$token" ]]; then token="$GITHUB_CLOUDFLARE_TOKEN"; fi
+          if [[ -z "$token" ]]; then
+            echo "Set CLOUDFLARE_API_TOKEN/CLOUDFLAIRE_API_TOKEN in GitHub secrets or store the token in AWS Secrets Manager (payme-cloudflaire-api-token)"
             exit 1
           fi
+          echo "token<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$token" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Terraform Apply
         env:
-          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLAIRE_API_TOKEN }}
+          TF_VAR_cloudflare_api_token: ${{ steps.cloudflare_token.outputs.token }}
         working-directory: ${{ env.TF_ROOT }}
         run: terraform apply -input=false -auto-approve
