@@ -1,0 +1,255 @@
+name: Frontend Deploy
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-deploy.yml"
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Target environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - prod
+
+jobs:
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev' || (github.event_name == 'workflow_dispatch' && github.event.inputs.target_env == 'dev')
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      TF_ROOT: terraform/environments/dev
+      AWS_REGION: eu-west-2
+      PARAM_PREFIX: /payme/dev
+      BUILD_MODE: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN || secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_ROOT }}
+        run: terraform init
+
+      - name: Resolve frontend env from Terraform + SSM
+        working-directory: ${{ env.TF_ROOT }}
+        run: |
+          API_BASE_URL="$(terraform output -raw api_base_url)"
+          COGNITO_USER_POOL_ID="$(terraform output -raw cognito_user_pool_id)"
+          COGNITO_USER_POOL_CLIENT_ID="$(terraform output -raw cognito_user_pool_client_id)"
+          FRONTEND_BUCKET_NAME="$(terraform output -raw frontend_bucket_name)"
+          CLOUDFRONT_DISTRIBUTION_ID="$(terraform output -raw frontend_cloudfront_distribution_id)"
+          COGNITO_DOMAIN_PREFIX="$(aws ssm get-parameter --name "${PARAM_PREFIX}/cognito_domain_prefix" --query 'Parameter.Value' --output text)"
+          CALLBACK_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/callback_urls" --query 'Parameter.Value' --output text)"
+          LOGOUT_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/logout_urls" --query 'Parameter.Value' --output text)"
+
+          FIRST_CALLBACK_URL="$(echo "$CALLBACK_URLS" | cut -d',' -f1 | xargs)"
+          FIRST_LOGOUT_URL="$(echo "$LOGOUT_URLS" | cut -d',' -f1 | xargs)"
+          COGNITO_OAUTH_DOMAIN="${COGNITO_DOMAIN_PREFIX}.auth.${AWS_REGION}.amazoncognito.com"
+
+          {
+            echo "VITE_API_BASE_URL=${API_BASE_URL}"
+            echo "VITE_COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}"
+            echo "VITE_COGNITO_USER_POOL_CLIENT_ID=${COGNITO_USER_POOL_CLIENT_ID}"
+            echo "VITE_COGNITO_REGION=${AWS_REGION}"
+            echo "VITE_COGNITO_OAUTH_DOMAIN=${COGNITO_OAUTH_DOMAIN}"
+            echo "VITE_OAUTH_REDIRECT_SIGN_IN=${FIRST_CALLBACK_URL}"
+            echo "VITE_OAUTH_REDIRECT_SIGN_OUT=${FIRST_LOGOUT_URL}"
+            echo "FRONTEND_BUCKET_NAME=${FRONTEND_BUCKET_NAME}"
+            echo "CLOUDFRONT_DISTRIBUTION_ID=${CLOUDFRONT_DISTRIBUTION_ID}"
+          } >> "$GITHUB_ENV"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build -- --mode "${BUILD_MODE}"
+
+      - name: Validate frontend env injection
+        run: |
+          if grep -R --line-number "localhost" frontend/dist; then
+            echo "Frontend build contains localhost references. Failing deploy."
+            exit 1
+          fi
+
+      - name: Upload frontend to S3
+        run: |
+          aws s3 sync frontend/dist "s3://${FRONTEND_BUCKET_NAME}" \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "index.html" \
+            --exclude "service-worker.js" \
+            --exclude "registerSW.js" \
+            --exclude "manifest.webmanifest"
+
+          aws s3 cp frontend/dist/index.html "s3://${FRONTEND_BUCKET_NAME}/index.html" \
+            --cache-control "no-cache, no-store, must-revalidate" \
+            --content-type "text/html"
+
+          if [ -f frontend/dist/service-worker.js ]; then
+            aws s3 cp frontend/dist/service-worker.js "s3://${FRONTEND_BUCKET_NAME}/service-worker.js" \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --content-type "application/javascript"
+          fi
+
+          if [ -f frontend/dist/registerSW.js ]; then
+            aws s3 cp frontend/dist/registerSW.js "s3://${FRONTEND_BUCKET_NAME}/registerSW.js" \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --content-type "application/javascript"
+          fi
+
+          if [ -f frontend/dist/manifest.webmanifest ]; then
+            aws s3 cp frontend/dist/manifest.webmanifest "s3://${FRONTEND_BUCKET_NAME}/manifest.webmanifest" \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --content-type "application/manifest+json"
+          fi
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
+            --paths "/*"
+
+  deploy-prod:
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.target_env == 'prod')
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      TF_ROOT: terraform/environments/prod
+      AWS_REGION: eu-west-2
+      PARAM_PREFIX: /payme/prod
+      BUILD_MODE: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN || secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_ROOT }}
+        run: terraform init
+
+      - name: Resolve frontend env from Terraform + SSM
+        working-directory: ${{ env.TF_ROOT }}
+        run: |
+          API_BASE_URL="$(terraform output -raw api_base_url)"
+          COGNITO_USER_POOL_ID="$(terraform output -raw cognito_user_pool_id)"
+          COGNITO_USER_POOL_CLIENT_ID="$(terraform output -raw cognito_user_pool_client_id)"
+          FRONTEND_BUCKET_NAME="$(terraform output -raw frontend_bucket_name)"
+          CLOUDFRONT_DISTRIBUTION_ID="$(terraform output -raw frontend_cloudfront_distribution_id)"
+          COGNITO_DOMAIN_PREFIX="$(aws ssm get-parameter --name "${PARAM_PREFIX}/cognito_domain_prefix" --query 'Parameter.Value' --output text)"
+          CALLBACK_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/callback_urls" --query 'Parameter.Value' --output text)"
+          LOGOUT_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/logout_urls" --query 'Parameter.Value' --output text)"
+
+          FIRST_CALLBACK_URL="$(echo "$CALLBACK_URLS" | cut -d',' -f1 | xargs)"
+          FIRST_LOGOUT_URL="$(echo "$LOGOUT_URLS" | cut -d',' -f1 | xargs)"
+          COGNITO_OAUTH_DOMAIN="${COGNITO_DOMAIN_PREFIX}.auth.${AWS_REGION}.amazoncognito.com"
+
+          {
+            echo "VITE_API_BASE_URL=${API_BASE_URL}"
+            echo "VITE_COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}"
+            echo "VITE_COGNITO_USER_POOL_CLIENT_ID=${COGNITO_USER_POOL_CLIENT_ID}"
+            echo "VITE_COGNITO_REGION=${AWS_REGION}"
+            echo "VITE_COGNITO_OAUTH_DOMAIN=${COGNITO_OAUTH_DOMAIN}"
+            echo "VITE_OAUTH_REDIRECT_SIGN_IN=${FIRST_CALLBACK_URL}"
+            echo "VITE_OAUTH_REDIRECT_SIGN_OUT=${FIRST_LOGOUT_URL}"
+            echo "FRONTEND_BUCKET_NAME=${FRONTEND_BUCKET_NAME}"
+            echo "CLOUDFRONT_DISTRIBUTION_ID=${CLOUDFRONT_DISTRIBUTION_ID}"
+          } >> "$GITHUB_ENV"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build -- --mode "${BUILD_MODE}"
+
+      - name: Validate frontend env injection
+        run: |
+          if grep -R --line-number "localhost" frontend/dist; then
+            echo "Frontend build contains localhost references. Failing deploy."
+            exit 1
+          fi
+
+      - name: Upload frontend to S3
+        run: |
+          aws s3 sync frontend/dist "s3://${FRONTEND_BUCKET_NAME}" \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "index.html" \
+            --exclude "service-worker.js" \
+            --exclude "registerSW.js" \
+            --exclude "manifest.webmanifest"
+
+          aws s3 cp frontend/dist/index.html "s3://${FRONTEND_BUCKET_NAME}/index.html" \
+            --cache-control "no-cache, no-store, must-revalidate" \
+            --content-type "text/html"
+
+          if [ -f frontend/dist/service-worker.js ]; then
+            aws s3 cp frontend/dist/service-worker.js "s3://${FRONTEND_BUCKET_NAME}/service-worker.js" \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --content-type "application/javascript"
+          fi
+
+          if [ -f frontend/dist/registerSW.js ]; then
+            aws s3 cp frontend/dist/registerSW.js "s3://${FRONTEND_BUCKET_NAME}/registerSW.js" \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --content-type "application/javascript"
+          fi
+
+          if [ -f frontend/dist/manifest.webmanifest ]; then
+            aws s3 cp frontend/dist/manifest.webmanifest "s3://${FRONTEND_BUCKET_NAME}/manifest.webmanifest" \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --content-type "application/manifest+json"
+          fi
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
+            --paths "/*"
