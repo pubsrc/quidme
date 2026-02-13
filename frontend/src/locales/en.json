@@ -1,0 +1,351 @@
+{
+  "app": {
+    "hero_title": "Sell products faster with Quidme",
+    "hero_subtitle": "Create product checkouts, manage subscriptions, track sales, and issue refunds in one place.",
+    "get_started": "Get Started",
+    "login": "Log In",
+    "signup": "Sign Up"
+  },
+  "pages": {
+    "callback": {
+      "signing_in": "Signing you in..."
+    },
+    "landing": {
+      "brand": "Quidme",
+      "brand_subtitle": "Product Selling",
+      "tagline": "Small app for small businesses",
+      "sign_in": "Sign in",
+      "snapshot_title": "Quidme Snapshot",
+      "snapshot_footer_title": "Products, subscriptions, and refunds in one place.",
+      "snapshot_footer_subtitle": "Built for independent sellers and small businesses.",
+      "ideas": {
+        "piano": "Piano lessons for children",
+        "lunch": "Home made lunch in Indian cuisine",
+        "spanish": "Spanish language lessons",
+        "maths": "Online Maths tuitions"
+      }
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in with your email or continue with Google.",
+      "email": "Email",
+      "password": "Password",
+      "hide_password": "Hide password",
+      "show_password": "Show password",
+      "hide": "Hide",
+      "show": "Show",
+      "signing_in": "Signing in...",
+      "sign_in": "Sign in",
+      "redirecting": "Redirecting...",
+      "continue_google": "Continue with Google",
+      "forgot_password": "Forgot password?",
+      "create_account": "Create account",
+      "errors": {
+        "sign_in_failed": "Unable to sign in.",
+        "google_failed": "Unable to start Google sign in."
+      }
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Get started with Quidme in minutes.",
+      "email": "Email",
+      "password": "Password",
+      "hide_password": "Hide password",
+      "show_password": "Show password",
+      "hide": "Hide",
+      "show": "Show",
+      "creating": "Creating...",
+      "create_account": "Create account",
+      "redirecting": "Redirecting...",
+      "continue_google": "Continue with Google",
+      "already_have": "Already have an account?",
+      "sign_in": "Sign in",
+      "errors": {
+        "signup_failed": "Unable to create account.",
+        "google_failed": "Unable to start Google sign in."
+      }
+    },
+    "verify_email": {
+      "title": "Verify your email",
+      "subtitle": "Enter the verification code sent to your inbox.",
+      "email": "Email",
+      "code": "Verification code",
+      "verifying": "Verifying...",
+      "verify": "Verify email",
+      "resend": "Resend code",
+      "messages": {
+        "verified": "Email verified. You can now sign in.",
+        "resent": "We sent a new verification code."
+      },
+      "errors": {
+        "verify_failed": "Verification failed.",
+        "resend_failed": "Unable to resend code."
+      }
+    },
+    "forgot_password": {
+      "title": "Reset your password",
+      "subtitle_request": "Request a reset code for your account.",
+      "subtitle_confirm": "Enter the code and choose a new password.",
+      "email": "Email",
+      "reset_code": "Reset code",
+      "new_password": "New password",
+      "hide_password": "Hide password",
+      "show_password": "Show password",
+      "hide": "Hide",
+      "show": "Show",
+      "sending": "Sending...",
+      "send_code": "Send reset code",
+      "updating": "Updating...",
+      "update_password": "Update password",
+      "back_login": "Back to login",
+      "messages": {
+        "sent": "We sent a reset code to your email.",
+        "updated": "Password updated. You can now sign in."
+      },
+      "errors": {
+        "send_failed": "Unable to send reset code.",
+        "reset_failed": "Unable to reset password."
+      }
+    },
+    "start": {
+      "title": "Start selling with Quidme",
+      "subtitle": "Create your Stripe Express account with minimal details. Country selection is currently limited to the United Kingdom.",
+      "country": "United Kingdom",
+      "account_type": "Express account",
+      "logout": "Log out",
+      "cancel": "Cancel",
+      "starting": "Starting...",
+      "ok": "OK",
+      "errors": {
+        "create_account_failed": "Unable to create your account. Please try again."
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "A quick overview of your product sales activity.",
+      "total_earnings": "Total Earnings",
+      "pending_earnings": "Pending Earnings",
+      "account_status": "Account Status",
+      "verified": "Verified",
+      "pending": "Pending",
+      "recent_transactions": "Recent Transactions",
+      "recent_subtitle": "A log of your most recent sales.",
+      "view_all": "View All",
+      "customer": "Customer",
+      "status": "Status",
+      "date": "Date",
+      "amount": "Amount",
+      "default_customer": "Customer",
+      "just_now": "just now",
+      "minutes_ago": "{{count}} minute ago",
+      "minutes_ago_plural": "{{count}} minutes ago",
+      "hours_ago": "{{count}} hour ago",
+      "hours_ago_plural": "{{count}} hours ago",
+      "days_ago": "{{count}} day ago",
+      "days_ago_plural": "{{count}} days ago",
+      "years_ago": "over {{count}} year ago",
+      "years_ago_plural": "over {{count}} years ago",
+      "status_refunded": "refunded",
+      "status_pending": "pending",
+      "loading_transactions": "Loading transactions...",
+      "no_transactions": "No transactions yet."
+    },
+    "products": {
+      "title": "Products",
+      "subtitle": "Create and manage one-time and recurring product checkout links.",
+      "add_product": "Add Product",
+      "load_failed": "Unable to load links.",
+      "disable_failed": "Unable to disable link.",
+      "loading": "Loading...",
+      "empty": "No products yet. Add your first product checkout.",
+      "default_subscription_product": "Subscription Product",
+      "default_product": "Product"
+    },
+    "product_details": {
+      "open_from_list": "Open this page from the products list.",
+      "loading": "Loading product checkout...",
+      "back": "Back to products",
+      "not_found": "Product checkout not found.",
+      "default_title": "Product",
+      "amount": "Amount",
+      "earnings": "Earnings",
+      "expires": "Expires",
+      "no_expiry": "No expiry",
+      "transactions": "Transactions",
+      "transactions_info": "Transactions are recorded automatically when payments succeed. View all transactions in the Transactions page."
+    },
+    "transactions": {
+      "title": "Transactions",
+      "subtitle": "Review all customer purchases and refunds.",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "reset": "Reset",
+      "fetch_failed": "Unable to fetch transactions.",
+      "refund_failed": "Refund failed.",
+      "customer": "Customer",
+      "status": "Status",
+      "date": "Date",
+      "amount": "Amount",
+      "default_customer": "Customer",
+      "just_now": "just now",
+      "minutes_ago": "{{count}} minutes ago",
+      "hours_ago": "{{count}} hours ago",
+      "days_ago": "{{count}} days ago",
+      "years_ago": "over {{count}} years ago",
+      "status_refunded": "refunded",
+      "status_pending": "pending",
+      "refund": "Refund",
+      "refunding": "Refunding...",
+      "no_transactions": "No transactions found.",
+      "loading_transactions": "Loading transactions...",
+      "confirm_refund_title": "Confirm refund",
+      "confirm_refund_text": "Are you sure you want to refund this transaction?",
+      "cancel": "Cancel",
+      "confirm_refund": "Confirm refund"
+    },
+    "customer_subscriptions": {
+      "title": "Customer subscription",
+      "subtitle": "Subscriptions created from your product checkout links.",
+      "limit": "Limit",
+      "load_failed": "Unable to load customer subscriptions.",
+      "load_more_failed": "Unable to load more subscriptions.",
+      "cancel_failed": "Unable to cancel subscription.",
+      "loading": "Loading customer subscriptions...",
+      "customer": "Customer",
+      "status": "Status",
+      "phone": "Phone",
+      "plan": "Plan",
+      "period": "Period",
+      "address": "Address",
+      "dash": "—",
+      "cancel_subscription": "Cancel subscription",
+      "canceled": "Canceled",
+      "empty": "No customer subscriptions yet.",
+      "loading_more": "Loading...",
+      "load_more": "Load more"
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "Business details and onboarding status.",
+      "loading_status": "Loading status...",
+      "status": "Status",
+      "connected_required": "Connected account required",
+      "start_onboarding": "Start onboarding",
+      "verified": "Verified",
+      "verified_body": "Your account can accept payments and receive payouts.",
+      "earnings": "Account earnings",
+      "onboarding_body": "Complete onboarding to transfer funds in your account.",
+      "opening": "Opening...",
+      "onboarding_failed": "Unable to start onboarding. Please try again."
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Manage your account and selling settings.",
+      "profile": "Profile",
+      "email": "Email",
+      "danger_zone": "Danger Zone",
+      "delete_account": "Delete Account",
+      "delete_description": "Permanently delete your account and all associated data. This action cannot be undone.",
+      "delete_modal_title": "Delete account",
+      "delete_modal_intro": "This will permanently delete your account and all data associated with it:",
+      "delete_item_links": "Product checkout links and subscription checkouts",
+      "delete_item_transactions": "Transaction history",
+      "delete_item_stripe": "Stripe Connect account",
+      "delete_item_login": "Your login account (you will be signed out)",
+      "delete_confirm": "I understand that all my data will be permanently deleted",
+      "delete_failed": "Failed to delete account. Please try again.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "delete_my_account": "Delete my account"
+    }
+  },
+  "components": {
+    "create_link_dialog": {
+      "cta_one_time": "Create product checkout",
+      "cta_subscription": "Create subscription checkout",
+      "errors": {
+        "title_required": "Please add a title.",
+        "invalid_amount": "Enter a valid amount (up to 2 decimals).",
+        "create_failed": "Unable to create link."
+      },
+      "amount_placeholder": "10.00",
+      "one_time": "One-time",
+      "repeat": "Repeat",
+      "collapse": "Collapse details",
+      "expand": "Expand details",
+      "title_placeholder": "Enter title",
+      "description_placeholder": "Description (optional)",
+      "currency": "Currency",
+      "interval": "Interval",
+      "customer_fields": "Customer must provide",
+      "field_email": "email",
+      "field_name": "name",
+      "field_phone": "phone",
+      "field_address": "address",
+      "expiry_optional": "Expiry date (optional)",
+      "creating": "Creating...",
+      "interval_options": {
+        "day": "Daily",
+        "week": "Weekly",
+        "month": "Monthly",
+        "year": "Yearly"
+      },
+      "currency_options": {
+        "gbp": "GBP — British Pound",
+        "eur": "EUR — Euro",
+        "usd": "USD — US Dollar"
+      },
+      "title_placeholders": {
+        "piano": "Piano lessons for children",
+        "lunch": "Home made lunch in Indian cuisine",
+        "spanish": "Spanish language lessons",
+        "maths": "Online Maths tuitions"
+      }
+    },
+    "link_card": {
+      "default_title": "Product",
+      "recurring": "Recurring",
+      "disabled": "Disabled",
+      "disable": "Disable",
+      "amount": "Amount",
+      "earnings": "Earnings",
+      "interval": "Interval",
+      "expires": "Expires",
+      "no_expiry": "No expiry"
+    },
+    "payment_link_share": {
+      "copied": "Copied",
+      "copy_link": "Copy link",
+      "show_qr": "Show QR code",
+      "share_link": "Share link",
+      "qr_code": "QR code",
+      "qr_title": "Product checkout QR",
+      "close": "Close",
+      "generating": "Generating QR code...",
+      "copy_qr": "Copy QR image",
+      "qr_alt": "Product checkout QR code"
+    },
+    "require": {
+      "checking_session": "Checking session..."
+    }
+  },
+  "layouts": {
+    "dashboard": {
+      "nav": {
+        "dashboard": "Dashboard",
+        "products": "Products",
+        "transactions": "Transactions",
+        "account": "Account",
+        "settings": "Settings"
+      },
+      "menu": {
+        "title": "Menu",
+        "close": "Close menu",
+        "logout": "Log out",
+        "open": "Menu"
+      },
+      "logo_alt": "Quidme logo"
+    }
+  }
+}

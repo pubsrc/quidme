@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { requestPasswordReset, confirmPasswordReset } from "../lib/auth";
 
 const ForgotPasswordPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -21,10 +23,10 @@ const ForgotPasswordPage = () => {
 
     try {
       await requestPasswordReset(email);
-      setMessage("We sent a reset code to your email.");
+      setMessage(t("pages.forgot_password.messages.sent"));
       setStep("confirm");
     } catch (err: any) {
-      setError(err?.message || "Unable to send reset code.");
+      setError(err?.message || t("pages.forgot_password.errors.send_failed"));
     } finally {
       setLoading(false);
     }
@@ -38,10 +40,10 @@ const ForgotPasswordPage = () => {
 
     try {
       await confirmPasswordReset(email, code, newPassword);
-      setMessage("Password updated. You can now sign in.");
+      setMessage(t("pages.forgot_password.messages.updated"));
       setTimeout(() => navigate("/login", { replace: true }), 1500);
     } catch (err: any) {
-      setError(err?.message || "Unable to reset password.");
+      setError(err?.message || t("pages.forgot_password.errors.reset_failed"));
     } finally {
       setLoading(false);
     }
@@ -50,17 +52,17 @@ const ForgotPasswordPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow">
-        <h1 className="text-2xl font-semibold text-brand-navy">Reset your password</h1>
+        <h1 className="text-2xl font-semibold text-brand-navy">{t("pages.forgot_password.title")}</h1>
         <p className="mt-2 text-sm text-slate-600">
           {step === "request"
-            ? "Request a reset code for your account."
-            : "Enter the code and choose a new password."}
+            ? t("pages.forgot_password.subtitle_request")
+            : t("pages.forgot_password.subtitle_confirm")}
         </p>
 
         {step === "request" ? (
           <form className="mt-6 space-y-4" onSubmit={handleRequest}>
             <div>
-              <label className="text-sm font-medium text-slate-700">Email</label>
+              <label className="text-sm font-medium text-slate-700">{t("pages.forgot_password.email")}</label>
               <input
                 type="email"
                 value={email}
@@ -79,13 +81,13 @@ const ForgotPasswordPage = () => {
               className="w-full rounded-full bg-brand-sky px-4 py-3 text-sm font-semibold text-white"
               disabled={loading}
             >
-              {loading ? "Sending..." : "Send reset code"}
+              {loading ? t("pages.forgot_password.sending") : t("pages.forgot_password.send_code")}
             </button>
           </form>
         ) : (
           <form className="mt-6 space-y-4" onSubmit={handleConfirm}>
             <div>
-              <label className="text-sm font-medium text-slate-700">Email</label>
+              <label className="text-sm font-medium text-slate-700">{t("pages.forgot_password.email")}</label>
               <input
                 type="email"
                 value={email}
@@ -96,7 +98,7 @@ const ForgotPasswordPage = () => {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700">Reset code</label>
+              <label className="text-sm font-medium text-slate-700">{t("pages.forgot_password.reset_code")}</label>
               <input
                 type="text"
                 value={code}
@@ -107,7 +109,7 @@ const ForgotPasswordPage = () => {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700">New password</label>
+              <label className="text-sm font-medium text-slate-700">{t("pages.forgot_password.new_password")}</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -122,10 +124,10 @@ const ForgotPasswordPage = () => {
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-slate-700"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? t("pages.forgot_password.hide_password") : t("pages.forgot_password.show_password")}
                   disabled={loading}
                 >
-                  <span className="text-xs font-semibold">{showPassword ? "Hide" : "Show"}</span>
+                  <span className="text-xs font-semibold">{showPassword ? t("pages.forgot_password.hide") : t("pages.forgot_password.show")}</span>
                 </button>
               </div>
             </div>
@@ -138,7 +140,7 @@ const ForgotPasswordPage = () => {
               className="w-full rounded-full bg-brand-sky px-4 py-3 text-sm font-semibold text-white"
               disabled={loading}
             >
-              {loading ? "Updating..." : "Update password"}
+              {loading ? t("pages.forgot_password.updating") : t("pages.forgot_password.update_password")}
             </button>
           </form>
         )}
@@ -148,7 +150,7 @@ const ForgotPasswordPage = () => {
           onClick={() => navigate("/login")}
           className="mt-6 w-full rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700"
         >
-          Back to login
+          {t("pages.forgot_password.back_login")}
         </button>
       </div>
     </div>

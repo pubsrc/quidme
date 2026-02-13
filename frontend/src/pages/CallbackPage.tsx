@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
+import { useTranslation } from "react-i18next";
 
 const CallbackPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +26,7 @@ const CallbackPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="text-slate-600">Signing you in...</div>
+      <div className="text-slate-600">{t("pages.callback.signing_in")}</div>
     </div>
   );
 };

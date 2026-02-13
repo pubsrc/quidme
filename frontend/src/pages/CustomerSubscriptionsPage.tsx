@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 
 const CustomerSubscriptionsPage = () => {
+  const { t } = useTranslation();
   const [stripeSubscriptions, setStripeSubscriptions] = useState<any[]>([]);
   const [stripeLoading, setStripeLoading] = useState(false);
   const [stripeError, setStripeError] = useState<string | null>(null);
@@ -19,7 +21,7 @@ const CustomerSubscriptionsPage = () => {
         setStripeHasMore(Boolean(response.has_more));
         setStripeCursor(response.next_cursor || null);
       } catch (err: any) {
-        setStripeError(err?.message || "Unable to load customer subscriptions.");
+        setStripeError(err?.message || t("pages.customer_subscriptions.load_failed"));
       } finally {
         setStripeLoading(false);
       }
@@ -41,7 +43,7 @@ const CustomerSubscriptionsPage = () => {
       setStripeHasMore(Boolean(response.has_more));
       setStripeCursor(response.next_cursor || null);
     } catch (err: any) {
-      setStripeError(err?.message || "Unable to load more subscriptions.");
+      setStripeError(err?.message || t("pages.customer_subscriptions.load_more_failed"));
     } finally {
       setStripeLoading(false);
     }
@@ -56,7 +58,7 @@ const CustomerSubscriptionsPage = () => {
         prev.map((item) => (item.id === subscriptionId ? { ...item, status: "canceled" } : item))
       );
     } catch (err: any) {
-      setStripeError(err?.message || "Unable to cancel subscription.");
+      setStripeError(err?.message || t("pages.customer_subscriptions.cancel_failed"));
     } finally {
       setStripeLoading(false);
     }
@@ -66,11 +68,11 @@ const CustomerSubscriptionsPage = () => {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-semibold text-brand-navy">Customer subscription</h2>
-          <p className="text-sm text-slate-500">Subscriptions created from your product checkout links.</p>
+          <h2 className="text-2xl font-semibold text-brand-navy">{t("pages.customer_subscriptions.title")}</h2>
+          <p className="text-sm text-slate-500">{t("pages.customer_subscriptions.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-600">
-          <span>Limit</span>
+          <span>{t("pages.customer_subscriptions.limit")}</span>
           <select
             className="rounded-lg border border-slate-200 px-2 py-1"
             value={stripeLimit}
@@ -85,7 +87,7 @@ const CustomerSubscriptionsPage = () => {
 
       {stripeLoading && (
         <div className="rounded-2xl bg-white p-6 text-sm text-slate-500 shadow">
-          Loading customer subscriptions...
+          {t("pages.customer_subscriptions.loading")}
         </div>
       )}
       {stripeError && <div className="text-sm text-red-500">{stripeError}</div>}
@@ -95,32 +97,32 @@ const CustomerSubscriptionsPage = () => {
           <div key={subscription.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="text-sm font-semibold">{subscription.customer?.name ?? "Customer"}</div>
-                <div className="text-xs text-slate-500">{subscription.customer?.email ?? "—"}</div>
+                <div className="text-sm font-semibold">{subscription.customer?.name ?? t("pages.customer_subscriptions.customer")}</div>
+                <div className="text-xs text-slate-500">{subscription.customer?.email ?? t("pages.customer_subscriptions.dash")}</div>
               </div>
-              <div className="text-xs text-slate-500">Status: {subscription.status}</div>
+              <div className="text-xs text-slate-500">{t("pages.customer_subscriptions.status")}: {subscription.status}</div>
             </div>
             <div className="mt-3 grid gap-2 text-xs text-slate-500 md:grid-cols-2">
-              <div>Phone: {subscription.customer?.phone ?? "—"}</div>
+              <div>{t("pages.customer_subscriptions.phone")}: {subscription.customer?.phone ?? t("pages.customer_subscriptions.dash")}</div>
               <div>
-                Plan:{" "}
+                {t("pages.customer_subscriptions.plan")}:{" "}
                 {subscription.plan?.amount
                   ? `${(subscription.plan.amount / 100).toFixed(2)} ${subscription.plan.currency?.toUpperCase()}`
-                  : "—"}{" "}
-                / {subscription.plan?.interval ?? "—"}
+                  : t("pages.customer_subscriptions.dash")}{" "}
+                / {subscription.plan?.interval ?? t("pages.customer_subscriptions.dash")}
               </div>
               <div>
-                Period:{" "}
+                {t("pages.customer_subscriptions.period")}:{" "}
                 {subscription.current_period_start
                   ? new Date(subscription.current_period_start).toLocaleDateString()
-                  : "—"}{" "}
+                  : t("pages.customer_subscriptions.dash")}{" "}
                 -{" "}
                 {subscription.current_period_end
                   ? new Date(subscription.current_period_end).toLocaleDateString()
-                  : "—"}
+                  : t("pages.customer_subscriptions.dash")}
               </div>
               <div>
-                Address:{" "}
+                {t("pages.customer_subscriptions.address")}:{" "}
                 {subscription.customer?.address
                   ? [
                       subscription.customer.address.line1,
@@ -132,7 +134,7 @@ const CustomerSubscriptionsPage = () => {
                     ]
                       .filter(Boolean)
                       .join(", ")
-                  : "—"}
+                  : t("pages.customer_subscriptions.dash")}
               </div>
             </div>
             <div className="mt-3 flex justify-end">
@@ -141,14 +143,14 @@ const CustomerSubscriptionsPage = () => {
                 disabled={stripeLoading || subscription.status === "canceled"}
                 className="rounded-full border border-slate-200 px-3 py-1 text-xs"
               >
-                {subscription.status === "canceled" ? "Canceled" : "Cancel subscription"}
+                {subscription.status === "canceled" ? t("pages.customer_subscriptions.canceled") : t("pages.customer_subscriptions.cancel_subscription")}
               </button>
             </div>
           </div>
         ))}
         {stripeSubscriptions.length === 0 && !stripeLoading && (
           <div className="rounded-2xl bg-white p-6 text-sm text-slate-500 shadow">
-            No customer subscriptions yet.
+            {t("pages.customer_subscriptions.empty")}
           </div>
         )}
       </div>
@@ -160,7 +162,7 @@ const CustomerSubscriptionsPage = () => {
             disabled={stripeLoading}
             className="rounded-full border border-slate-200 px-4 py-2 text-sm"
           >
-            {stripeLoading ? "Loading..." : "Load more"}
+            {stripeLoading ? t("pages.customer_subscriptions.loading_more") : t("pages.customer_subscriptions.load_more")}
           </button>
         </div>
       )}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { useAccountStatus } from "../lib/useAccountStatus";
 
@@ -14,6 +15,7 @@ const formatEarnings = (pending_earnings: Record<string, number> | undefined): s
 };
 
 const ProfilePage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { account, status, isLoading } = useAccountStatus();
   const [loading, setLoading] = useState(false);
@@ -30,7 +32,7 @@ const ProfilePage = () => {
       const response = await api.createOnboardingLink();
       window.location.href = response.onboarding_url;
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Unable to start onboarding. Please try again.");
+      setError(err instanceof Error ? err.message : t("pages.account.onboarding_failed"));
       setLoading(false);
     }
   };
@@ -38,22 +40,22 @@ const ProfilePage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-semibold text-brand-navy md:text-4xl">Account</h2>
-        <p className="text-sm text-slate-500 md:text-base">Business details and onboarding status.</p>
+        <h2 className="text-3xl font-semibold text-brand-navy md:text-4xl">{t("pages.account.title")}</h2>
+        <p className="text-sm text-slate-500 md:text-base">{t("pages.account.subtitle")}</p>
       </div>
 
       <div className="rounded-2xl bg-white p-4 shadow md:p-6">
         {isLoading ? (
-          <div className="text-sm text-slate-500">Loading status...</div>
+          <div className="text-sm text-slate-500">{t("pages.account.loading_status")}</div>
         ) : !hasAccount ? (
           <div>
-            <div className="text-sm text-slate-500">Status</div>
-            <div className="text-lg font-semibold">Connected account required</div>
+            <div className="text-sm text-slate-500">{t("pages.account.status")}</div>
+            <div className="text-lg font-semibold">{t("pages.account.connected_required")}</div>
             <button
               onClick={() => navigate("/app/start")}
               className="mt-4 rounded-full bg-brand-sky px-5 py-2 text-sm font-semibold text-white"
             >
-              Start onboarding
+              {t("pages.account.start_onboarding")}
             </button>
           </div>
         ) : isVerified ? (
@@ -63,24 +65,24 @@ const ProfilePage = () => {
                 <path d="M20 6 9 17l-5-5" />
               </svg>
             </div>
-            <div className="mt-4 text-xl font-semibold text-brand-navy md:mt-5 md:text-2xl">Verified</div>
-            <div className="mt-1 text-sm text-slate-500">Your account can accept payments and receive payouts.</div>
+            <div className="mt-4 text-xl font-semibold text-brand-navy md:mt-5 md:text-2xl">{t("pages.account.verified")}</div>
+            <div className="mt-1 text-sm text-slate-500">{t("pages.account.verified_body")}</div>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="text-3xl font-bold tracking-tight text-brand-navy md:text-4xl">
               {formatEarnings(account?.pending_earnings)}
             </div>
-            <div className="mt-1 text-sm font-medium text-slate-500">Account earnings</div>
+            <div className="mt-1 text-sm font-medium text-slate-500">{t("pages.account.earnings")}</div>
             <p className="mt-6 max-w-sm text-slate-600">
-              Complete onboarding to transfer funds in your account.
+              {t("pages.account.onboarding_body")}
             </p>
             <button
               onClick={handleStartOnboarding}
               className="mt-8 rounded-full bg-green-600 px-6 py-3 text-base font-semibold text-white shadow hover:bg-green-700 md:px-8 md:py-4 md:text-lg"
               disabled={loading}
             >
-              {loading ? "Opening..." : "Start onboarding"}
+              {loading ? t("pages.account.opening") : t("pages.account.start_onboarding")}
             </button>
             {error && <div className="mt-4 text-sm text-red-500">{error}</div>}
           </div>

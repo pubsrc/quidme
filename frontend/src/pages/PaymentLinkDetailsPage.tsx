@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { LinkResponse } from "../lib/api";
 import PaymentLinkShare from "../components/PaymentLinkShare";
 
 const formatAmount = (value: number) => (value / 100).toFixed(2);
 
 const PaymentLinkDetailsPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,7 +26,7 @@ const PaymentLinkDetailsPage = () => {
       setLoading(false);
       return;
     }
-    setError("Open this page from the products list.");
+    setError(t("pages.product_details.open_from_list"));
     setLoading(false);
   }, [id, location.state]);
 
@@ -37,7 +39,7 @@ const PaymentLinkDetailsPage = () => {
   if (loading) {
     return (
       <div className="rounded-2xl bg-white p-6 text-sm text-slate-500 shadow">
-        Loading product checkout...
+        {t("pages.product_details.loading")}
       </div>
     );
   }
@@ -46,10 +48,10 @@ const PaymentLinkDetailsPage = () => {
     return (
       <div className="space-y-4">
         <button onClick={() => navigate("/app/payment-links")} className="text-sm text-slate-500 hover:text-slate-700">
-          Back to products
+          {t("pages.product_details.back")}
         </button>
         <div className="rounded-2xl bg-white p-6 text-sm text-red-500 shadow">
-          {error || "Product checkout not found."}
+          {error || t("pages.product_details.not_found")}
         </div>
       </div>
     );
@@ -58,7 +60,7 @@ const PaymentLinkDetailsPage = () => {
   return (
     <div className="space-y-6">
       <button onClick={() => navigate("/app/payment-links")} className="text-sm text-slate-500 hover:text-slate-700">
-        Back to products
+        {t("pages.product_details.back")}
       </button>
 
       <div className="rounded-2xl bg-white p-6 shadow">
@@ -67,24 +69,24 @@ const PaymentLinkDetailsPage = () => {
         </div>
         <div className="mt-1 flex items-center justify-between">
           <div>
-            <div className="text-lg font-semibold text-brand-navy">{link.title ?? "Product"}</div>
+            <div className="text-lg font-semibold text-brand-navy">{link.title ?? t("pages.product_details.default_title")}</div>
             <div className="text-sm text-slate-500">{link.description}</div>
           </div>
           <div className="text-sm text-slate-500">{link.status}</div>
         </div>
         <div className="mt-4 grid gap-3 text-sm text-slate-600 md:grid-cols-3">
           <div>
-            <div className="text-xs text-slate-400">Amount</div>
+            <div className="text-xs text-slate-400">{t("pages.product_details.amount")}</div>
             <div className="font-semibold">{formatAmount(link.amount)}</div>
           </div>
           <div>
-            <div className="text-xs text-slate-400">Earnings</div>
+            <div className="text-xs text-slate-400">{t("pages.product_details.earnings")}</div>
             <div className="font-semibold">{formatAmount(link.earnings_amount ?? 0)}</div>
           </div>
           <div>
-            <div className="text-xs text-slate-400">Expires</div>
+            <div className="text-xs text-slate-400">{t("pages.product_details.expires")}</div>
             <div className="font-semibold">
-              {link.expires_at ? new Date(link.expires_at).toLocaleDateString() : "No expiry"}
+              {link.expires_at ? new Date(link.expires_at).toLocaleDateString() : t("pages.product_details.no_expiry")}
             </div>
           </div>
         </div>
@@ -94,10 +96,9 @@ const PaymentLinkDetailsPage = () => {
       </div>
 
       <div className="rounded-2xl bg-white p-6 shadow">
-        <h3 className="text-lg font-semibold text-brand-navy">Transactions</h3>
+        <h3 className="text-lg font-semibold text-brand-navy">{t("pages.product_details.transactions")}</h3>
         <p className="mt-2 text-sm text-slate-500">
-          Transactions are recorded automatically when payments succeed. View all transactions in the Transactions
-          page.
+          {t("pages.product_details.transactions_info")}
         </p>
       </div>
 
