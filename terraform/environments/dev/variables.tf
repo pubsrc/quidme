@@ -128,3 +128,18 @@ variable "cloudflare_proxied" {
   type    = bool
   default = true
 }
+
+variable "api_domain_name" {
+  type    = string
+  default = "api.dev.quidme.uk"
+}
+
+variable "api_acm_certificate_arn" {
+  type    = string
+  default = ""
+}
+
+variable "api_cloudflare_proxied" {
+  type    = bool
+  default = true
+}

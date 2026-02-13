@@ -2,6 +2,10 @@ output "api_endpoint" {
   value = module.api_gateway.api_endpoint
 }
 
+output "api_base_url" {
+  value = "https://${var.api_domain_name}"
+}
+
 output "cognito_user_pool_id" {
   value = module.cognito.user_pool_id
 }
@@ -41,4 +45,8 @@ output "stripe_webhook_secret_name" {
 
 output "cloudflare_frontend_record_id" {
   value = cloudflare_record.frontend_dev.id
+}
+
+output "cloudflare_api_record_id" {
+  value = cloudflare_record.api_domain.id
 }
