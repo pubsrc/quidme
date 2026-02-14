@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api, type LinkResponse } from "../lib/api";
 import CreateLinkDialog from "../components/CreateLinkDialog";
 import LinkCard from "../components/LinkCard";
@@ -7,6 +8,7 @@ import LinkCard from "../components/LinkCard";
 type LinkKind = "one_time" | "subscription";
 
 const PaymentLinksPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [createKind, setCreateKind] = useState<LinkKind>("one_time");
   const [paymentLinks, setPaymentLinks] = useState<LinkResponse[]>([]);
@@ -28,7 +30,7 @@ const PaymentLinksPage = () => {
         setPaymentLinks(payments || []);
         setSubscriptionLinks(subscriptions || []);
       } catch (err: any) {
-        setError(err?.message || "Unable to load links.");
+        setError(err?.message || t("pages.products.load_failed"));
       } finally {
         setIsLoadingLinks(false);
       }
@@ -56,7 +58,7 @@ const PaymentLinksPage = () => {
       await api.disablePaymentLink(linkId);
       setPaymentLinks((prev) => prev.map((l) => (l.id === linkId ? { ...l, status: "DISABLED" } : l)));
     } catch (err: any) {
-      setError(err?.message || "Unable to disable link.");
+      setError(err?.message || t("pages.products.disable_failed"));
     } finally {
       setIsBusy(false);
     }
@@ -71,7 +73,7 @@ const PaymentLinksPage = () => {
         prev.map((l) => (l.id === subscriptionId ? { ...l, status: "DISABLED" } : l))
       );
     } catch (err: any) {
-      setError(err?.message || "Unable to disable link.");
+      setError(err?.message || t("pages.products.disable_failed"));
     } finally {
       setIsBusy(false);
     }
@@ -81,8 +83,8 @@ const PaymentLinksPage = () => {
     <div className="space-y-6 md:space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">Products</h2>
-          <p className="mt-2 text-base text-slate-500 md:text-lg">Create and manage one-time and recurring product checkout links.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">{t("pages.products.title")}</h2>
+          <p className="mt-2 text-base text-slate-500 md:text-lg">{t("pages.products.subtitle")}</p>
         </div>
         <button
           type="button"
@@ -90,7 +92,7 @@ const PaymentLinksPage = () => {
           className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 md:gap-3 md:rounded-2xl md:px-6 md:py-3 md:text-lg"
         >
           <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/60 text-sm">+</span>
-          Add Product
+          {t("pages.products.add_product")}
         </button>
       </div>
 
@@ -99,11 +101,11 @@ const PaymentLinksPage = () => {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {isLoadingLinks && <div className="col-span-full text-base text-slate-500 md:text-lg">Loading...</div>}
+        {isLoadingLinks && <div className="col-span-full text-base text-slate-500 md:text-lg">{t("pages.products.loading")}</div>}
 
         {!isLoadingLinks && allLinks.length === 0 && (
           <div className="col-span-full rounded-2xl border border-slate-200 bg-white px-4 py-8 text-base text-slate-600 md:rounded-3xl md:px-6 md:py-10 md:text-lg">
-            No products yet. Add your first product checkout.
+            {t("pages.products.empty")}
           </div>
         )}
 
@@ -116,7 +118,7 @@ const PaymentLinksPage = () => {
             loading={isBusy}
             showInterval={link.__kind === "subscription"}
             showEarnings={false}
-            defaultTitle={link.__kind === "subscription" ? "Subscription Product" : "Product"}
+            defaultTitle={link.__kind === "subscription" ? t("pages.products.default_subscription_product") : t("pages.products.default_product")}
             mockStyle
           />
         ))}

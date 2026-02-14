@@ -2,26 +2,39 @@ name: Terraform - Dev
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
     paths:
       - 'terraform/**'
       - 'src/**'
-      - 'frontend/**'
+      - 'scripts/**'
       - 'pyproject.toml'
-      - 'frontend/package.json'
-      - 'frontend/package-lock.json'
       - '.github/workflows/terraform-dev.yml'
   workflow_dispatch:
 
 env:
   TF_ROOT: terraform/environments/dev
+  AWS_REGION: eu-west-2
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN || secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -37,33 +50,39 @@ jobs:
           uv pip install --target build/lambda .
           mkdir -p terraform/environments/dev/.tmp
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Build frontend
-        working-directory: frontend
-        run: |
-          npm ci
-          npm run build
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.6.0
+          terraform_wrapper: false
+
+      - name: Terraform fmt (check)
+        working-directory: terraform
+        run: terraform fmt -check -recursive
 
       - name: Terraform Init
         working-directory: ${{ env.TF_ROOT }}
         run: terraform init
 
+      - name: Get Cloudflare API token
+        id: cloudflare_token
+        env:
+          GITHUB_CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLAIRE_API_TOKEN }}
+        run: |
+          token=$(aws secretsmanager get-secret-value --secret-id payme-cloudflaire-api-token --query SecretString --output text 2>/dev/null || echo "")
+          if [[ -z "$token" ]]; then token="$GITHUB_CLOUDFLARE_TOKEN"; fi
+          if [[ -z "$token" ]]; then
+            echo "Set CLOUDFLARE_API_TOKEN/CLOUDFLAIRE_API_TOKEN in GitHub secrets or store the token in AWS Secrets Manager (payme-cloudflaire-api-token)"
+            exit 1
+          fi
+          echo "token<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$token" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
       - name: Terraform Apply
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLAIRE_API_TOKEN }}
+          TF_VAR_cloudflare_api_token: ${{ steps.cloudflare_token.outputs.token }}
         working-directory: ${{ env.TF_ROOT }}
-        run: terraform apply -auto-approve
+        run: |
+          terraform plan -input=false -out=tfplan
+          terraform apply -input=false -auto-approve tfplan

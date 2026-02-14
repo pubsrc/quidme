@@ -1,26 +1,27 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api, type LinkResponse } from "../lib/api";
 
 type LinkKind = "one_time" | "subscription";
 
 const currencies = [
-  { code: "gbp", label: "GBP — British Pound", flag: "🇬🇧" },
-  { code: "eur", label: "EUR — Euro", flag: "🇪🇺" },
-  { code: "usd", label: "USD — US Dollar", flag: "🇺🇸" },
+  { code: "gbp", labelKey: "components.create_link_dialog.currency_options.gbp", flag: "🇬🇧" },
+  { code: "eur", labelKey: "components.create_link_dialog.currency_options.eur", flag: "🇪🇺" },
+  { code: "usd", labelKey: "components.create_link_dialog.currency_options.usd", flag: "🇺🇸" },
 ];
 
 const intervals = [
-  { value: "day", label: "Daily" },
-  { value: "week", label: "Weekly" },
-  { value: "month", label: "Monthly" },
-  { value: "year", label: "Yearly" },
+  { value: "day", labelKey: "components.create_link_dialog.interval_options.day" },
+  { value: "week", labelKey: "components.create_link_dialog.interval_options.week" },
+  { value: "month", labelKey: "components.create_link_dialog.interval_options.month" },
+  { value: "year", labelKey: "components.create_link_dialog.interval_options.year" },
 ];
 
 const titlePlaceholderPhrases = [
-  "Piano lessons for children",
-  "Home made lunch in Indian cuisine",
-  "Spanish language lessons",
-  "Online Maths tuitions",
+  "components.create_link_dialog.title_placeholders.piano",
+  "components.create_link_dialog.title_placeholders.lunch",
+  "components.create_link_dialog.title_placeholders.spanish",
+  "components.create_link_dialog.title_placeholders.maths",
 ];
 
 const currencySymbol = (code: string) => {
@@ -49,6 +50,7 @@ export type CreateLinkDialogProps = {
 };
 
 const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }: CreateLinkDialogProps) => {
+  const { t } = useTranslation();
   const [kind, setKind] = useState<LinkKind>(initialKind);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -64,13 +66,19 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
-  const [placeholderText, setPlaceholderText] = useState(titlePlaceholderPhrases[0]);
+  const [placeholderText, setPlaceholderText] = useState(t(titlePlaceholderPhrases[0]));
   const [placeholderPhraseIndex, setPlaceholderPhraseIndex] = useState(0);
   const [placeholderCharIndex, setPlaceholderCharIndex] = useState(0);
   const [isDeletingPlaceholder, setIsDeletingPlaceholder] = useState(false);
   const [placeholderPaused, setPlaceholderPaused] = useState(false);
 
-  const ctaLabel = useMemo(() => (kind === "one_time" ? "Create product checkout" : "Create subscription checkout"), [kind]);
+  const ctaLabel = useMemo(
+    () =>
+      kind === "one_time"
+        ? t("components.create_link_dialog.cta_one_time")
+        : t("components.create_link_dialog.cta_subscription"),
+    [kind, t]
+  );
   const symbol = useMemo(() => currencySymbol(currency), [currency]);
 
   const resetAndClose = () => {
@@ -96,7 +104,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
     if (!open) return;
     // Re-open should start collapsed unless we're creating a recurring link.
     setExpanded(initialKind === "subscription");
-    setPlaceholderText(titlePlaceholderPhrases[0]);
+    setPlaceholderText(t(titlePlaceholderPhrases[0]));
     setPlaceholderPhraseIndex(0);
     setPlaceholderCharIndex(0);
     setIsDeletingPlaceholder(false);
@@ -111,7 +119,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
   useEffect(() => {
     if (!open || title.trim() || placeholderPaused) return;
 
-    const currentPhrase = titlePlaceholderPhrases[placeholderPhraseIndex];
+    const currentPhrase = t(titlePlaceholderPhrases[placeholderPhraseIndex]);
     const nextDelay = isDeletingPlaceholder ? 35 : 75;
     const timer = window.setTimeout(() => {
       if (!isDeletingPlaceholder) {
@@ -151,11 +159,11 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
     setError(null);
     try {
       if (!title.trim()) {
-        throw new Error("Please add a title.");
+        throw new Error(t("components.create_link_dialog.errors.title_required"));
       }
       const amountMinor = toMinorUnits(amount);
       if (!amountMinor) {
-        throw new Error("Enter a valid amount (up to 2 decimals).");
+        throw new Error(t("components.create_link_dialog.errors.invalid_amount"));
       }
 
       const commonPayload = {
@@ -178,7 +186,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
       onCreated(response, kind);
       resetAndClose();
     } catch (err: any) {
-      setError(err?.message || "Unable to create link.");
+      setError(err?.message || t("components.create_link_dialog.errors.create_failed"));
       setLoading(false);
     }
   };
@@ -199,8 +207,8 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
           <input
             inputMode="decimal"
             type="text"
-            className="w-[12rem] text-5xl bg-transparent text-center font-semibold tracking-tight text-slate-700 placeholder:text-slate-300 outline-none"
-            placeholder="10.00"
+            className="w-[12rem] bg-transparent text-center text-5xl font-semibold tracking-tight text-slate-700 placeholder:text-slate-300 outline-none"
+            placeholder={t("components.create_link_dialog.amount_placeholder")}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
@@ -215,7 +223,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
                 kind === "one_time" ? "bg-orange-100 text-orange-700 ring-1 ring-orange-200" : "bg-slate-100 text-slate-600"
               }`}
             >
-              One-time
+              {t("components.create_link_dialog.one_time")}
             </button>
             <button
               type="button"
@@ -227,14 +235,14 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
                 kind === "subscription" ? "bg-sky-100 text-sky-700 ring-1 ring-sky-200" : "bg-slate-100 text-slate-600"
               }`}
             >
-              Repeat
+              {t("components.create_link_dialog.repeat")}
             </button>
           </div>
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
             className="rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-            aria-label={expanded ? "Collapse details" : "Expand details"}
+            aria-label={expanded ? t("components.create_link_dialog.collapse") : t("components.create_link_dialog.expand")}
           >
             <svg
               viewBox="0 0 24 24"
@@ -250,7 +258,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
 
         <input
           className="mt-5 w-full rounded-xl border border-slate-200 px-4 py-3 text-base outline-none focus:border-brand-sky"
-          placeholder={placeholderText || "Enter title"}
+          placeholder={placeholderText || t("components.create_link_dialog.title_placeholder")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -261,7 +269,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
               className={`w-full rounded-xl border border-slate-200 px-4 py-3 text-base outline-none transition-all duration-200 focus:border-brand-sky ${
                 descriptionFocused ? "min-h-[140px]" : "min-h-[88px]"
               }`}
-              placeholder="Description (optional)"
+              placeholder={t("components.create_link_dialog.description_placeholder")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onFocus={() => setDescriptionFocused(true)}
@@ -270,7 +278,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="text-xs font-semibold tracking-wide text-slate-400">Currency</div>
+                <div className="text-xs font-semibold tracking-wide text-slate-400">{t("components.create_link_dialog.currency")}</div>
                 <select
                   className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-base outline-none focus:border-brand-sky"
                   value={currency}
@@ -278,7 +286,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
                 >
                   {currencies.map((item) => (
                     <option key={item.code} value={item.code}>
-                      {item.flag} {item.label}
+                      {item.flag} {t(item.labelKey)}
                     </option>
                   ))}
                 </select>
@@ -286,7 +294,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
 
               {kind === "subscription" ? (
                 <div>
-                  <div className="text-xs font-semibold tracking-wide text-slate-400">Interval</div>
+                  <div className="text-xs font-semibold tracking-wide text-slate-400">{t("components.create_link_dialog.interval")}</div>
                   <select
                     className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-base outline-none focus:border-brand-sky"
                     value={interval}
@@ -294,7 +302,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
                   >
                     {intervals.map((it) => (
                       <option key={it.value} value={it.value}>
-                        {it.label}
+                        {t(it.labelKey)}
                       </option>
                     ))}
                   </select>
@@ -305,7 +313,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
             </div>
 
             <div className="rounded-2xl border border-slate-200 p-4">
-              <div className="text-sm font-semibold text-slate-700">Customer must provide</div>
+              <div className="text-sm font-semibold text-slate-700">{t("components.create_link_dialog.customer_fields")}</div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -314,7 +322,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
                     requireEmail ? "bg-sky-100 text-sky-700 ring-1 ring-sky-200" : "bg-slate-100 text-slate-600"
                   }`}
                 >
-                  email
+                  {t("components.create_link_dialog.field_email")}
                 </button>
                 <button
                   type="button"
@@ -323,7 +331,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
                     requireName ? "bg-sky-100 text-sky-700 ring-1 ring-sky-200" : "bg-slate-100 text-slate-600"
                   }`}
                 >
-                  name
+                  {t("components.create_link_dialog.field_name")}
                 </button>
                 <button
                   type="button"
@@ -332,7 +340,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
                     requirePhone ? "bg-sky-100 text-sky-700 ring-1 ring-sky-200" : "bg-slate-100 text-slate-600"
                   }`}
                 >
-                  phone
+                  {t("components.create_link_dialog.field_phone")}
                 </button>
                 <button
                   type="button"
@@ -341,13 +349,13 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
                     requireAddress ? "bg-sky-100 text-sky-700 ring-1 ring-sky-200" : "bg-slate-100 text-slate-600"
                   }`}
                 >
-                  address
+                  {t("components.create_link_dialog.field_address")}
                 </button>
               </div>
             </div>
 
             <div>
-              <div className="text-xs font-semibold tracking-wide text-slate-400">Expiry date (optional)</div>
+              <div className="text-xs font-semibold tracking-wide text-slate-400">{t("components.create_link_dialog.expiry_optional")}</div>
               <input
                 type="date"
                 className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-base outline-none focus:border-brand-sky"
@@ -370,7 +378,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
               : "bg-sky-300 hover:bg-sky-400"
           }`}
         >
-          {loading ? "Creating..." : ctaLabel}
+          {loading ? t("components.create_link_dialog.creating") : ctaLabel}
         </button>
       </div>
     </div>

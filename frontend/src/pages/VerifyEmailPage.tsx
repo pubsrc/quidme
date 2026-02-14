@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { confirmSignUpWithCognito, resendConfirmationCode } from "../lib/auth";
 
 const VerifyEmailPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialEmail = searchParams.get("email") ?? "";
@@ -21,10 +23,10 @@ const VerifyEmailPage = () => {
 
     try {
       await confirmSignUpWithCognito(email, code);
-      setMessage("Email verified. You can now sign in.");
+      setMessage(t("pages.verify_email.messages.verified"));
       setTimeout(() => navigate("/login", { replace: true }), 1500);
     } catch (err: any) {
-      setError(err?.message || "Verification failed.");
+      setError(err?.message || t("pages.verify_email.errors.verify_failed"));
     } finally {
       setLoading(false);
     }
@@ -37,9 +39,9 @@ const VerifyEmailPage = () => {
 
     try {
       await resendConfirmationCode(email);
-      setMessage("We sent a new verification code.");
+      setMessage(t("pages.verify_email.messages.resent"));
     } catch (err: any) {
-      setError(err?.message || "Unable to resend code.");
+      setError(err?.message || t("pages.verify_email.errors.resend_failed"));
     } finally {
       setLoading(false);
     }
@@ -48,14 +50,12 @@ const VerifyEmailPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow">
-        <h1 className="text-2xl font-semibold text-brand-navy">Verify your email</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Enter the verification code sent to your inbox.
-        </p>
+        <h1 className="text-2xl font-semibold text-brand-navy">{t("pages.verify_email.title")}</h1>
+        <p className="mt-2 text-sm text-slate-600">{t("pages.verify_email.subtitle")}</p>
 
         <form className="mt-6 space-y-4" onSubmit={handleVerify}>
           <div>
-            <label className="text-sm font-medium text-slate-700">Email</label>
+            <label className="text-sm font-medium text-slate-700">{t("pages.verify_email.email")}</label>
             <input
               type="email"
               value={email}
@@ -66,7 +66,7 @@ const VerifyEmailPage = () => {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">Verification code</label>
+            <label className="text-sm font-medium text-slate-700">{t("pages.verify_email.code")}</label>
             <input
               type="text"
               value={code}
@@ -85,7 +85,7 @@ const VerifyEmailPage = () => {
             className="w-full rounded-full bg-brand-sky px-4 py-3 text-sm font-semibold text-white"
             disabled={loading}
           >
-            {loading ? "Verifying..." : "Verify email"}
+            {loading ? t("pages.verify_email.verifying") : t("pages.verify_email.verify")}
           </button>
         </form>
 
@@ -95,7 +95,7 @@ const VerifyEmailPage = () => {
           className="mt-4 w-full rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700"
           disabled={loading}
         >
-          Resend code
+          {t("pages.verify_email.resend")}
         </button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api, type TransactionItem } from "../lib/api";
 import { useAccountStatus } from "../lib/useAccountStatus";
 
@@ -13,23 +14,24 @@ const currencySymbol = (code?: string) => {
 
 const formatMoney = (amountMinor: number, currency?: string) => `${currencySymbol(currency)}${(amountMinor / 100).toFixed(2)}`;
 
-const formatTimeAgo = (isoDate: string) => {
+const formatTimeAgo = (isoDate: string, t: (key: string, options?: Record<string, unknown>) => string) => {
   const d = new Date(isoDate);
   if (Number.isNaN(d.getTime())) return isoDate;
   const diffMs = Date.now() - d.getTime();
   const min = Math.floor(diffMs / 60000);
-  if (min < 1) return "just now";
-  if (min < 60) return `${min} minute${min === 1 ? "" : "s"} ago`;
+  if (min < 1) return t("pages.dashboard.just_now");
+  if (min < 60) return min === 1 ? t("pages.dashboard.minutes_ago", { count: min }) : t("pages.dashboard.minutes_ago_plural", { count: min });
   const hrs = Math.floor(min / 60);
-  if (hrs < 24) return `${hrs} hour${hrs === 1 ? "" : "s"} ago`;
+  if (hrs < 24) return hrs === 1 ? t("pages.dashboard.hours_ago", { count: hrs }) : t("pages.dashboard.hours_ago_plural", { count: hrs });
   const days = Math.floor(hrs / 24);
-  if (days < 30) return `${days} day${days === 1 ? "" : "s"} ago`;
+  if (days < 30) return days === 1 ? t("pages.dashboard.days_ago", { count: days }) : t("pages.dashboard.days_ago_plural", { count: days });
   const years = Math.floor(days / 365);
-  if (years >= 1) return `over ${years} year${years === 1 ? "" : "s"} ago`;
+  if (years >= 1) return years === 1 ? t("pages.dashboard.years_ago", { count: years }) : t("pages.dashboard.years_ago_plural", { count: years });
   return d.toLocaleDateString();
 };
 
 const DashboardPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { account, status } = useAccountStatus();
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
@@ -66,25 +68,25 @@ const DashboardPage = () => {
   return (
     <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">Dashboard</h1>
-        <p className="mt-2 text-base text-slate-500 md:text-lg">A quick overview of your product sales activity.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">{t("pages.dashboard.title")}</h1>
+        <p className="mt-2 text-base text-slate-500 md:text-lg">{t("pages.dashboard.subtitle")}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 md:rounded-3xl md:px-6 md:py-5">
-          <div className="text-base text-slate-600 md:text-xl">Total Earnings</div>
+          <div className="text-base text-slate-600 md:text-xl">{t("pages.dashboard.total_earnings")}</div>
           <div className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">{formatMoney(totals.totalEarnings, totals.mainCurrency)}</div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 md:rounded-3xl md:px-6 md:py-5">
-          <div className="text-base text-slate-600 md:text-xl">Pending Earnings</div>
+          <div className="text-base text-slate-600 md:text-xl">{t("pages.dashboard.pending_earnings")}</div>
           <div className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">
             {formatMoney(totals.pendingEarningsMinor, totals.mainCurrency)}
           </div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 md:rounded-3xl md:px-6 md:py-5 md:col-span-2 xl:col-span-1">
-          <div className="text-base text-slate-600 md:text-xl">Account Status</div>
+          <div className="text-base text-slate-600 md:text-xl">{t("pages.dashboard.account_status")}</div>
           <div className={`mt-2 text-3xl font-bold md:text-4xl ${status.payouts_enabled ? "text-emerald-600" : "text-amber-600"}`}>
-            {status.payouts_enabled ? "Verified" : "Pending"}
+            {status.payouts_enabled ? t("pages.dashboard.verified") : t("pages.dashboard.pending")}
           </div>
         </div>
       </div>
@@ -92,15 +94,15 @@ const DashboardPage = () => {
       <div className="rounded-2xl border border-slate-200 bg-white p-4 md:rounded-3xl md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Recent Transactions</h2>
-            <p className="mt-2 text-base text-slate-500 md:text-lg">A log of your most recent sales.</p>
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">{t("pages.dashboard.recent_transactions")}</h2>
+            <p className="mt-2 text-base text-slate-500 md:text-lg">{t("pages.dashboard.recent_subtitle")}</p>
           </div>
           <button
             type="button"
             onClick={() => navigate("/app/transactions")}
             className="rounded-xl bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 md:rounded-2xl md:px-6 md:py-3 md:text-lg"
           >
-            View All
+            {t("pages.dashboard.view_all")}
           </button>
         </div>
 
@@ -108,18 +110,18 @@ const DashboardPage = () => {
           <table className="min-w-full border-separate border-spacing-y-0">
             <thead>
               <tr className="text-left text-sm text-slate-500 md:text-xl">
-                <th className="border-b border-slate-200 pb-3 pr-4">Customer</th>
-                <th className="border-b border-slate-200 pb-3 pr-4">Status</th>
-                <th className="border-b border-slate-200 pb-3 pr-4">Date</th>
-                <th className="border-b border-slate-200 pb-3 text-right">Amount</th>
+                <th className="border-b border-slate-200 pb-3 pr-4">{t("pages.dashboard.customer")}</th>
+                <th className="border-b border-slate-200 pb-3 pr-4">{t("pages.dashboard.status")}</th>
+                <th className="border-b border-slate-200 pb-3 pr-4">{t("pages.dashboard.date")}</th>
+                <th className="border-b border-slate-200 pb-3 text-right">{t("pages.dashboard.amount")}</th>
               </tr>
             </thead>
             <tbody>
               {!loading &&
                 recentRows.map((tx) => {
-                  const customer = tx.customer_name || "Customer";
+                  const customer = tx.customer_name || t("pages.dashboard.default_customer");
                   const email = tx.customer_email || "—";
-                  const statusKey = tx.refunded ? "refunded" : tx.status?.toLowerCase() || "pending";
+                  const statusKey = tx.refunded ? t("pages.dashboard.status_refunded") : tx.status?.toLowerCase() || t("pages.dashboard.status_pending");
                   const statusClass =
                     statusKey === "succeeded"
                       ? "bg-emerald-100 text-emerald-700"
@@ -138,7 +140,7 @@ const DashboardPage = () => {
                           {statusKey}
                         </span>
                       </td>
-                      <td className="border-b border-slate-100 py-4 pr-4 text-sm md:text-lg">{formatTimeAgo(tx.created_at)}</td>
+                      <td className="border-b border-slate-100 py-4 pr-4 text-sm md:text-lg">{formatTimeAgo(tx.created_at, t)}</td>
                       <td className="border-b border-slate-100 py-4 text-right text-base font-semibold md:text-xl">
                         {formatMoney(tx.amount, tx.currency)}
                       </td>
@@ -149,14 +151,14 @@ const DashboardPage = () => {
               {!loading && recentRows.length === 0 && (
                 <tr>
                   <td colSpan={4} className="py-8 text-center text-xl text-slate-500">
-                    No transactions yet.
+                    {t("pages.dashboard.no_transactions")}
                   </td>
                 </tr>
               )}
               {loading && (
                 <tr>
                   <td colSpan={4} className="py-8 text-center text-xl text-slate-500">
-                    Loading transactions...
+                    {t("pages.dashboard.loading_transactions")}
                   </td>
                 </tr>
               )}

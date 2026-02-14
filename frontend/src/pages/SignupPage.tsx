@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { signUpWithCognito, signInWithGoogle } from "../lib/auth";
 import { config } from "../lib/config";
 
 const SignupPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +28,7 @@ const SignupPage = () => {
         navigate(`/verify-email?email=${encodeURIComponent(email)}`, { replace: true });
       }
     } catch (err: any) {
-      setError(err?.message || "Unable to create account.");
+      setError(err?.message || t("pages.signup.errors.signup_failed"));
     } finally {
       setLoading(false);
     }
@@ -38,7 +40,7 @@ const SignupPage = () => {
     try {
       await signInWithGoogle();
     } catch (err: any) {
-      setError(err?.message || "Unable to start Google sign in.");
+      setError(err?.message || t("pages.signup.errors.google_failed"));
       setGoogleLoading(false);
     }
   };
@@ -46,14 +48,12 @@ const SignupPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow">
-        <h1 className="text-2xl font-semibold text-brand-navy">Create your account</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Get started with Quidme in minutes.
-        </p>
+        <h1 className="text-2xl font-semibold text-brand-navy">{t("pages.signup.title")}</h1>
+        <p className="mt-2 text-sm text-slate-600">{t("pages.signup.subtitle")}</p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="text-sm font-medium text-slate-700">Email</label>
+            <label className="text-sm font-medium text-slate-700">{t("pages.signup.email")}</label>
             <input
               type="email"
               value={email}
@@ -64,7 +64,7 @@ const SignupPage = () => {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">Password</label>
+            <label className="text-sm font-medium text-slate-700">{t("pages.signup.password")}</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -79,10 +79,10 @@ const SignupPage = () => {
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-slate-700"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? t("pages.signup.hide_password") : t("pages.signup.show_password")}
                 disabled={loading}
               >
-                <span className="text-xs font-semibold">{showPassword ? "Hide" : "Show"}</span>
+                <span className="text-xs font-semibold">{showPassword ? t("pages.signup.hide") : t("pages.signup.show")}</span>
               </button>
             </div>
           </div>
@@ -94,7 +94,7 @@ const SignupPage = () => {
             className="w-full rounded-full bg-brand-sky px-4 py-3 text-sm font-semibold text-white"
             disabled={loading}
           >
-            {loading ? "Creating..." : "Create account"}
+            {loading ? t("pages.signup.creating") : t("pages.signup.create_account")}
           </button>
         </form>
 
@@ -105,18 +105,18 @@ const SignupPage = () => {
             className="mt-4 w-full rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700"
             disabled={loading || googleLoading}
           >
-            {googleLoading ? "Redirecting..." : "Continue with Google"}
+            {googleLoading ? t("pages.signup.redirecting") : t("pages.signup.continue_google")}
           </button>
         )}
 
         <div className="mt-6 text-center text-sm text-slate-600">
-          Already have an account?{" "}
+          {t("pages.signup.already_have")}{" "}
           <button
             type="button"
             onClick={() => navigate("/login")}
             className="text-brand-sky hover:underline"
           >
-            Sign in
+            {t("pages.signup.sign_in")}
           </button>
         </div>
       </div>

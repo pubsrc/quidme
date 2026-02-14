@@ -6,6 +6,14 @@ variable "stripe_secret_placeholder" {
   type = string
 }
 
+variable "stripe_webhook_secret_name" {
+  type = string
+}
+
+variable "stripe_webhook_secret_placeholder" {
+  type = string
+}
+
 variable "google_oauth_secret_name" {
   type = string
 }

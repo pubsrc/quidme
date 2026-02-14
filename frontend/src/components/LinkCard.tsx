@@ -1,4 +1,5 @@
 import type { LinkResponse } from "../lib/api";
+import { useTranslation } from "react-i18next";
 import PaymentLinkShare from "./PaymentLinkShare";
 
 type LinkCardProps = {
@@ -31,11 +32,13 @@ const LinkCard = ({
   onOpen,
   loading,
   showShare = true,
-  defaultTitle = "Product",
+  defaultTitle,
   showInterval = false,
   showEarnings = true,
   mockStyle = false,
 }: LinkCardProps) => {
+  const { t } = useTranslation();
+  const resolvedDefaultTitle = defaultTitle ?? t("components.link_card.default_title");
   const isDisabled = link.status === "DISABLED";
   const handleOpen = () => {
     if (onOpen) onOpen(link.id);
@@ -69,7 +72,7 @@ const LinkCard = ({
               : undefined
           }
         >
-          <div className="text-lg font-semibold leading-tight text-slate-900 md:text-xl">{link.title ?? defaultTitle}</div>
+          <div className="text-lg font-semibold leading-tight text-slate-900 md:text-xl">{link.title ?? resolvedDefaultTitle}</div>
 
           <div className="mt-4 grid grid-cols-4 gap-2 text-center text-xs text-slate-700 md:text-sm">
             <div className="truncate">{currency}</div>
@@ -83,7 +86,7 @@ const LinkCard = ({
           <div className="w-8" />
           <div className="flex-1 flex justify-center">
             {showInterval ? (
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-emerald-600" title="Recurring">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-emerald-600" title={t("components.link_card.recurring")}>
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M3 12a9 9 0 0 1 15.3-6.3" />
                   <path d="M21 12a9 9 0 0 1-15.3 6.3" />
@@ -99,7 +102,7 @@ const LinkCard = ({
               className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600 hover:bg-slate-50 md:text-sm"
               disabled={loading || isDisabled}
             >
-              {isDisabled ? "Disabled" : "Disable"}
+              {isDisabled ? t("components.link_card.disabled") : t("components.link_card.disable")}
             </button>
           ) : (
             <div className="w-16" />
@@ -114,7 +117,7 @@ const LinkCard = ({
       <div className="flex items-start justify-between">
         <div>
           <div className="text-sm text-slate-500">{link.currency?.toUpperCase()}</div>
-          <div className="text-lg font-semibold">{link.title ?? defaultTitle}</div>
+          <div className="text-lg font-semibold">{link.title ?? resolvedDefaultTitle}</div>
         </div>
         {showShare && link.url && <PaymentLinkShare url={link.url} compact />}
       </div>
@@ -136,23 +139,23 @@ const LinkCard = ({
       >
         <div className="mt-3 grid gap-2 text-sm text-slate-600 md:grid-cols-3">
           <div>
-            <div className="text-xs text-slate-400">Amount</div>
+            <div className="text-xs text-slate-400">{t("components.link_card.amount")}</div>
             <div className="font-semibold">{formatMinorUnits(link.amount)}</div>
           </div>
           {showEarnings && (
             <div>
-              <div className="text-xs text-slate-400">Earnings</div>
+              <div className="text-xs text-slate-400">{t("components.link_card.earnings")}</div>
               <div className="font-semibold">{formatMinorUnits(link.earnings_amount ?? 0)}</div>
             </div>
           )}
           <div>
-            <div className="text-xs text-slate-400">{showInterval ? "Interval" : "Expires"}</div>
+            <div className="text-xs text-slate-400">{showInterval ? t("components.link_card.interval") : t("components.link_card.expires")}</div>
             <div className="font-semibold">
               {showInterval
                 ? link.interval ?? "—"
                 : link.expires_at
                 ? formatDate(link.expires_at)
-                : "No expiry"}
+                : t("components.link_card.no_expiry")}
             </div>
           </div>
         </div>
@@ -179,7 +182,7 @@ const LinkCard = ({
               className="rounded-full border border-slate-200 px-3 py-1 text-sm"
               disabled={loading || isDisabled}
             >
-              {isDisabled ? "Disabled" : "Disable"}
+              {isDisabled ? t("components.link_card.disabled") : t("components.link_card.disable")}
             </button>
           )}
         </div>

@@ -1,10 +1,10 @@
 import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../lib/useAuth";
+import { useAccountStatus } from "../lib/useAccountStatus";
 
-export const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+export const RequireNoStripeAccount = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { status, isLoading } = useAccountStatus();
 
   if (isLoading) {
     return (
@@ -14,9 +14,10 @@ export const RequireAuth = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+  if (status.has_connected_account) {
+    return <Navigate to="/app/payment-links" replace />;
   }
 
   return <>{children}</>;
 };
+

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { signOutWithCognito } from "../lib/auth";
+import { LOCALE_STORAGE_KEY } from "../app/i18n";
 
 const navItems = [
   {
     to: "dashboard",
-    label: "Dashboard",
+    labelKey: "layouts.dashboard.nav.dashboard",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M3 12 12 4l9 8" />
@@ -15,7 +17,7 @@ const navItems = [
   },
   {
     to: "payment-links",
-    label: "Products",
+    labelKey: "layouts.dashboard.nav.products",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M12 2v20" />
@@ -25,7 +27,7 @@ const navItems = [
   },
   {
     to: "transactions",
-    label: "Transactions",
+    labelKey: "layouts.dashboard.nav.transactions",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M3 3v18h18" />
@@ -35,7 +37,7 @@ const navItems = [
   },
   {
     to: "profile",
-    label: "Account",
+    labelKey: "layouts.dashboard.nav.account",
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M20 21a8 8 0 0 0-16 0" />
@@ -46,9 +48,16 @@ const navItems = [
 ];
 
 const DashboardLayout = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const currentLanguage = (i18n.resolvedLanguage || "en").startsWith("tr") ? "tr" : "en";
+
+  const setLanguage = async (lang: "en" | "tr") => {
+    await i18n.changeLanguage(lang);
+    localStorage.setItem(LOCALE_STORAGE_KEY, lang);
+  };
 
   useEffect(() => {
     setMobileSidebarOpen(false);
@@ -67,7 +76,7 @@ const DashboardLayout = () => {
       <div className="flex h-full">
         <aside className="hidden h-full w-[92px] flex-col items-center border-r border-slate-200 bg-[#f8fafc] py-5 md:flex">
           <div className="mb-7 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 ring-1 ring-amber-300">
-            <img src="/quidme-logo.svg" alt="Quidme logo" className="h-9 w-9" />
+            <img src="/quidme-logo.svg" alt={t("layouts.dashboard.logo_alt")} className="h-9 w-9" />
           </div>
 
           <nav className="flex flex-1 flex-col items-center gap-3">
@@ -75,7 +84,7 @@ const DashboardLayout = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
-                title={item.label}
+                title={t(item.labelKey)}
                 className={({ isActive }) =>
                   `flex h-12 w-12 items-center justify-center rounded-full transition ${
                     isActive ? "bg-emerald-500 text-white" : "text-slate-500 hover:bg-slate-100"
@@ -88,9 +97,20 @@ const DashboardLayout = () => {
           </nav>
 
           <div className="mt-4 flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-1">
+              <select
+                value={currentLanguage}
+                onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
+                aria-label={t("layouts.dashboard.language.label")}
+                className="h-8 w-14 rounded-md border border-slate-200 bg-white px-1 text-center text-xs text-slate-700 outline-none"
+              >
+                <option value="en">🇬🇧</option>
+                <option value="tr">🇹🇷</option>
+              </select>
+            </div>
             <NavLink
               to="settings"
-              title="Settings"
+              title={t("layouts.dashboard.nav.settings")}
               className={({ isActive }) =>
                 `flex h-12 w-12 items-center justify-center rounded-full transition ${
                   isActive ? "bg-emerald-500 text-white" : "text-slate-500 hover:bg-slate-100"
@@ -105,7 +125,7 @@ const DashboardLayout = () => {
             <button
               type="button"
               onClick={handleLogout}
-              title="Log out"
+              title={t("layouts.dashboard.menu.logout")}
               className="flex h-12 w-12 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
@@ -122,14 +142,14 @@ const DashboardLayout = () => {
             <aside className="absolute left-0 top-0 h-full w-72 border-r border-slate-200 bg-white p-5">
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <img src="/quidme-logo.svg" alt="Quidme logo" className="h-7 w-7" />
-                  <div className="text-lg font-semibold text-slate-800">Quidme</div>
+                  <img src="/quidme-logo.svg" alt={t("layouts.dashboard.logo_alt")} className="h-7 w-7" />
+                  <div className="text-lg font-semibold text-slate-800">{t("pages.landing.brand")}</div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setMobileSidebarOpen(false)}
                   className="rounded-full p-2 text-slate-500 hover:bg-slate-100"
-                  aria-label="Close menu"
+                  aria-label={t("layouts.dashboard.menu.close")}
                 >
                   <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M18 6 6 18M6 6l12 12" />
@@ -137,6 +157,20 @@ const DashboardLayout = () => {
                 </button>
               </div>
               <nav className="space-y-2">
+                <div className="mb-2 rounded-xl bg-slate-50 p-2">
+                  <div className="px-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    {t("layouts.dashboard.language.label")}
+                  </div>
+                  <select
+                    value={currentLanguage}
+                    onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
+                    aria-label={t("layouts.dashboard.language.label")}
+                    className="mt-2 h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none"
+                  >
+                    <option value="en">🇬🇧 {t("layouts.dashboard.language.english")}</option>
+                    <option value="tr">🇹🇷 {t("layouts.dashboard.language.turkish")}</option>
+                  </select>
+                </div>
                 {navItems.map((item) => (
                   <NavLink
                     key={item.to}
@@ -148,7 +182,7 @@ const DashboardLayout = () => {
                     }
                   >
                     {item.icon}
-                    <span>{item.label}</span>
+                    <span>{t(item.labelKey)}</span>
                   </NavLink>
                 ))}
                 <NavLink
@@ -163,7 +197,7 @@ const DashboardLayout = () => {
                     <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
                     <path d="M19.4 15a7.9 7.9 0 0 0 .1-1 7.9 7.9 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a8.5 8.5 0 0 0-1.7-1l-.4-2.6h-4l-.4 2.6a8.5 8.5 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7.9 7.9 0 0 0-.1 1 7.9 7.9 0 0 0 .1 1l-2 1.5 2 3.5 2.4-1a8.5 8.5 0 0 0 1.7 1l.4 2.6h4l.4-2.6a8.5 8.5 0 0 0 1.7-1l2.4 1 2-3.5-2-1.5Z" />
                   </svg>
-                  <span>Settings</span>
+                  <span>{t("layouts.dashboard.nav.settings")}</span>
                 </NavLink>
               </nav>
               <button
@@ -176,7 +210,7 @@ const DashboardLayout = () => {
                   <path d="M16 17l5-5-5-5" />
                   <path d="M21 12H9" />
                 </svg>
-                Log out
+                {t("layouts.dashboard.menu.logout")}
               </button>
             </aside>
           </div>
@@ -192,7 +226,7 @@ const DashboardLayout = () => {
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-              Menu
+              {t("layouts.dashboard.menu.open")}
             </button>
           </div>
           <Outlet />

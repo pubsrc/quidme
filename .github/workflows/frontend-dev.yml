@@ -1,0 +1,76 @@
+name: Frontend - Dev
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-dev.yml'
+  workflow_dispatch:
+
+env:
+  TF_ROOT: terraform/environments/dev
+  AWS_REGION: eu-west-2
+  PARAM_PREFIX: /payme/dev
+
+concurrency:
+  group: frontend-dev
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN || secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+          terraform_wrapper: false
+
+      - name: Terraform init
+        working-directory: ${{ env.TF_ROOT }}
+        run: terraform init
+
+      - name: Load frontend env and deploy targets
+        working-directory: ${{ env.TF_ROOT }}
+        run: |
+          echo "VITE_API_BASE_URL=$(terraform output -raw api_base_url)" >> "$GITHUB_ENV"
+          echo "VITE_COGNITO_USER_POOL_ID=$(terraform output -raw cognito_user_pool_id)" >> "$GITHUB_ENV"
+          echo "VITE_COGNITO_USER_POOL_CLIENT_ID=$(terraform output -raw cognito_user_pool_client_id)" >> "$GITHUB_ENV"
+          echo "VITE_COGNITO_REGION=${AWS_REGION}" >> "$GITHUB_ENV"
+          COGNITO_DOMAIN_PREFIX="$(aws ssm get-parameter --name "${PARAM_PREFIX}/cognito_domain_prefix" --query 'Parameter.Value' --output text)"
+          CALLBACK_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/callback_urls" --query 'Parameter.Value' --output text)"
+          LOGOUT_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/logout_urls" --query 'Parameter.Value' --output text)"
+          echo "VITE_COGNITO_OAUTH_DOMAIN=${COGNITO_DOMAIN_PREFIX}.auth.${AWS_REGION}.amazoncognito.com" >> "$GITHUB_ENV"
+          echo "VITE_OAUTH_REDIRECT_SIGN_IN=$(echo "$CALLBACK_URLS" | cut -d',' -f1 | xargs)" >> "$GITHUB_ENV"
+          echo "VITE_OAUTH_REDIRECT_SIGN_OUT=$(echo "$LOGOUT_URLS" | cut -d',' -f1 | xargs)" >> "$GITHUB_ENV"
+          echo "FRONTEND_BUCKET_NAME=$(terraform output -raw frontend_bucket_name)" >> "$GITHUB_ENV"
+          echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output -raw frontend_cloudfront_distribution_id)" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build -- --mode dev
+
+      - name: Upload to S3
+        run: aws s3 sync frontend/dist "s3://${FRONTEND_BUCKET_NAME}" --delete
+
+      - name: Invalidate CloudFront
+        run: aws cloudfront create-invalidation --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" --paths '/*'

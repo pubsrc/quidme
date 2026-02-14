@@ -1,10 +1,10 @@
 locals {
-  users_table            = "${var.project_name}-users"
-  user_identities_table  = "${var.project_name}-user-identities"
-  stripe_accounts_table  = "${var.project_name}-stripe-accounts"
-  payment_links_table    = "${var.project_name}-payment-links"
+  users_table              = "${var.project_name}-users"
+  user_identities_table    = "${var.project_name}-user-identities"
+  stripe_accounts_table    = "${var.project_name}-stripe-accounts"
+  payment_links_table      = "${var.project_name}-payment-links"
   subscription_links_table = "${var.project_name}-subscription-links"
-  transactions_table     = "${var.project_name}-transactions"
+  transactions_table       = "${var.project_name}-transactions"
 }
 
 resource "aws_dynamodb_table" "users" {
@@ -36,7 +36,7 @@ resource "aws_dynamodb_table" "user_identities" {
   }
 
   global_secondary_index {
-    name            = "user_id_index"
+    name = "user_id_index"
     key_schema {
       attribute_name = "user_id"
       key_type       = "HASH"
@@ -63,7 +63,7 @@ resource "aws_dynamodb_table" "user_accounts" {
   }
 
   global_secondary_index {
-    name            = "stripe_account_id_index"
+    name = "stripe_account_id_index"
     key_schema {
       attribute_name = "stripe_account_id"
       key_type       = "HASH"
@@ -100,7 +100,7 @@ resource "aws_dynamodb_table" "payment_links" {
   }
 
   global_secondary_index {
-    name            = "user_id_index"
+    name = "user_id_index"
     key_schema {
       attribute_name = "user_id"
       key_type       = "HASH"
@@ -109,7 +109,7 @@ resource "aws_dynamodb_table" "payment_links" {
   }
 
   global_secondary_index {
-    name            = "status_expires_at_index"
+    name = "status_expires_at_index"
     key_schema {
       attribute_name = "status"
       key_type       = "HASH"
@@ -169,7 +169,7 @@ resource "aws_dynamodb_table" "subscription_links" {
   }
 
   global_secondary_index {
-    name            = "user_id_index"
+    name = "user_id_index"
     key_schema {
       attribute_name = "user_id"
       key_type       = "HASH"
@@ -178,7 +178,7 @@ resource "aws_dynamodb_table" "subscription_links" {
   }
 
   global_secondary_index {
-    name            = "status_expires_at_index"
+    name = "status_expires_at_index"
     key_schema {
       attribute_name = "status"
       key_type       = "HASH"

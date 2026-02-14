@@ -1,0 +1,356 @@
+{
+  "app": {
+    "hero_title": "Quidme ile ürünlerinizi daha hızlı satın",
+    "hero_subtitle": "Tek seferlik ürün ödeme bağlantıları oluşturun, abonelikleri yönetin, satışları takip edin ve iade işlemlerini tek yerden yapın.",
+    "get_started": "Başlayın",
+    "login": "Giriş Yap",
+    "signup": "Kayıt Ol"
+  },
+  "pages": {
+    "callback": {
+      "signing_in": "Girişiniz yapılıyor..."
+    },
+    "landing": {
+      "brand": "Quidme",
+      "brand_subtitle": "Ürün Satışı",
+      "tagline": "Küçük işletmeler için küçük bir uygulama",
+      "sign_in": "Giriş yap",
+      "snapshot_title": "Quidme Özeti",
+      "snapshot_footer_title": "Ürünler, abonelikler ve iadeler tek yerde.",
+      "snapshot_footer_subtitle": "Bağımsız satıcılar ve küçük işletmeler için tasarlandı.",
+      "ideas": {
+        "piano": "Çocuklar için piyano dersleri",
+        "lunch": "Ev yapımı Hint mutfağı öğle yemekleri",
+        "spanish": "İspanyolca dil dersleri",
+        "maths": "Çevrim içi matematik dersleri"
+      }
+    },
+    "login": {
+      "title": "Tekrar hoş geldiniz",
+      "subtitle": "E-postanızla giriş yapın veya Google ile devam edin.",
+      "email": "E-posta",
+      "password": "Şifre",
+      "hide_password": "Şifreyi gizle",
+      "show_password": "Şifreyi göster",
+      "hide": "Gizle",
+      "show": "Göster",
+      "signing_in": "Giriş yapılıyor...",
+      "sign_in": "Giriş yap",
+      "redirecting": "Yönlendiriliyor...",
+      "continue_google": "Google ile devam et",
+      "forgot_password": "Şifremi unuttum?",
+      "create_account": "Hesap oluştur",
+      "errors": {
+        "sign_in_failed": "Giriş yapılamadı.",
+        "google_failed": "Google girişi başlatılamadı."
+      }
+    },
+    "signup": {
+      "title": "Hesabınızı oluşturun",
+      "subtitle": "Quidme ile dakikalar içinde başlayın.",
+      "email": "E-posta",
+      "password": "Şifre",
+      "hide_password": "Şifreyi gizle",
+      "show_password": "Şifreyi göster",
+      "hide": "Gizle",
+      "show": "Göster",
+      "creating": "Oluşturuluyor...",
+      "create_account": "Hesap oluştur",
+      "redirecting": "Yönlendiriliyor...",
+      "continue_google": "Google ile devam et",
+      "already_have": "Zaten hesabınız var mı?",
+      "sign_in": "Giriş yap",
+      "errors": {
+        "signup_failed": "Hesap oluşturulamadı.",
+        "google_failed": "Google girişi başlatılamadı."
+      }
+    },
+    "verify_email": {
+      "title": "E-postanızı doğrulayın",
+      "subtitle": "Gelen kutunuza gönderilen doğrulama kodunu girin.",
+      "email": "E-posta",
+      "code": "Doğrulama kodu",
+      "verifying": "Doğrulanıyor...",
+      "verify": "E-postayı doğrula",
+      "resend": "Kodu tekrar gönder",
+      "messages": {
+        "verified": "E-posta doğrulandı. Artık giriş yapabilirsiniz.",
+        "resent": "Yeni doğrulama kodu gönderildi."
+      },
+      "errors": {
+        "verify_failed": "Doğrulama başarısız.",
+        "resend_failed": "Kod tekrar gönderilemedi."
+      }
+    },
+    "forgot_password": {
+      "title": "Şifrenizi sıfırlayın",
+      "subtitle_request": "Hesabınız için sıfırlama kodu isteyin.",
+      "subtitle_confirm": "Kodu girin ve yeni bir şifre seçin.",
+      "email": "E-posta",
+      "reset_code": "Sıfırlama kodu",
+      "new_password": "Yeni şifre",
+      "hide_password": "Şifreyi gizle",
+      "show_password": "Şifreyi göster",
+      "hide": "Gizle",
+      "show": "Göster",
+      "sending": "Gönderiliyor...",
+      "send_code": "Sıfırlama kodu gönder",
+      "updating": "Güncelleniyor...",
+      "update_password": "Şifreyi güncelle",
+      "back_login": "Girişe dön",
+      "messages": {
+        "sent": "Sıfırlama kodu e-posta adresinize gönderildi.",
+        "updated": "Şifre güncellendi. Artık giriş yapabilirsiniz."
+      },
+      "errors": {
+        "send_failed": "Sıfırlama kodu gönderilemedi.",
+        "reset_failed": "Şifre sıfırlanamadı."
+      }
+    },
+    "start": {
+      "title": "Quidme ile satışa başlayın",
+      "subtitle": "Stripe Express hesabınızı minimum bilgilerle oluşturun. Ülke seçimi şu anda yalnızca Birleşik Krallık ile sınırlıdır.",
+      "country": "Birleşik Krallık",
+      "account_type": "Express hesap",
+      "logout": "Çıkış yap",
+      "cancel": "İptal",
+      "starting": "Başlatılıyor...",
+      "ok": "Tamam",
+      "errors": {
+        "create_account_failed": "Hesabınız oluşturulamadı. Lütfen tekrar deneyin."
+      }
+    },
+    "dashboard": {
+      "title": "Panel",
+      "subtitle": "Ürün satış faaliyetinizin hızlı özeti.",
+      "total_earnings": "Toplam Kazanç",
+      "pending_earnings": "Bekleyen Kazanç",
+      "account_status": "Hesap Durumu",
+      "verified": "Doğrulandı",
+      "pending": "Beklemede",
+      "recent_transactions": "Son İşlemler",
+      "recent_subtitle": "En son satışlarınızın listesi.",
+      "view_all": "Tümünü Gör",
+      "customer": "Müşteri",
+      "status": "Durum",
+      "date": "Tarih",
+      "amount": "Tutar",
+      "default_customer": "Müşteri",
+      "just_now": "az önce",
+      "minutes_ago": "{{count}} dakika önce",
+      "minutes_ago_plural": "{{count}} dakika önce",
+      "hours_ago": "{{count}} saat önce",
+      "hours_ago_plural": "{{count}} saat önce",
+      "days_ago": "{{count}} gün önce",
+      "days_ago_plural": "{{count}} gün önce",
+      "years_ago": "{{count}} yıl önce",
+      "years_ago_plural": "{{count}} yıl önce",
+      "status_refunded": "iade edildi",
+      "status_pending": "beklemede",
+      "loading_transactions": "İşlemler yükleniyor...",
+      "no_transactions": "Henüz işlem yok."
+    },
+    "products": {
+      "title": "Ürünler",
+      "subtitle": "Tek seferlik ve tekrarlayan ürün ödeme bağlantıları oluşturun ve yönetin.",
+      "add_product": "Ürün Ekle",
+      "load_failed": "Bağlantılar yüklenemedi.",
+      "disable_failed": "Bağlantı devre dışı bırakılamadı.",
+      "loading": "Yükleniyor...",
+      "empty": "Henüz ürün yok. İlk ürün ödeme bağlantınızı oluşturun.",
+      "default_subscription_product": "Abonelik Ürünü",
+      "default_product": "Ürün"
+    },
+    "product_details": {
+      "open_from_list": "Bu sayfayı ürünler listesinden açın.",
+      "loading": "Ürün ödeme bağlantısı yükleniyor...",
+      "back": "Ürünlere dön",
+      "not_found": "Ürün ödeme bağlantısı bulunamadı.",
+      "default_title": "Ürün",
+      "amount": "Tutar",
+      "earnings": "Kazanç",
+      "expires": "Bitiş",
+      "no_expiry": "Süresiz",
+      "transactions": "İşlemler",
+      "transactions_info": "Ödemeler başarılı olduğunda işlemler otomatik kaydedilir. Tüm işlemleri İşlemler sayfasında görebilirsiniz."
+    },
+    "transactions": {
+      "title": "İşlemler",
+      "subtitle": "Tüm müşteri satın alımlarını ve iadeleri inceleyin.",
+      "from": "Başlangıç",
+      "to": "Bitiş",
+      "apply": "Uygula",
+      "reset": "Sıfırla",
+      "fetch_failed": "İşlemler getirilemedi.",
+      "refund_failed": "İade başarısız oldu.",
+      "customer": "Müşteri",
+      "status": "Durum",
+      "date": "Tarih",
+      "amount": "Tutar",
+      "default_customer": "Müşteri",
+      "just_now": "az önce",
+      "minutes_ago": "{{count}} dakika önce",
+      "hours_ago": "{{count}} saat önce",
+      "days_ago": "{{count}} gün önce",
+      "years_ago": "{{count}} yıl önce",
+      "status_refunded": "iade edildi",
+      "status_pending": "beklemede",
+      "refund": "İade",
+      "refunding": "İade ediliyor...",
+      "no_transactions": "İşlem bulunamadı.",
+      "loading_transactions": "İşlemler yükleniyor...",
+      "confirm_refund_title": "İadeyi onayla",
+      "confirm_refund_text": "Bu işlemi iade etmek istediğinizden emin misiniz?",
+      "cancel": "İptal",
+      "confirm_refund": "İadeyi onayla"
+    },
+    "customer_subscriptions": {
+      "title": "Müşteri abonelikleri",
+      "subtitle": "Ürün ödeme bağlantılarınızdan oluşturulan abonelikler.",
+      "limit": "Limit",
+      "load_failed": "Müşteri abonelikleri yüklenemedi.",
+      "load_more_failed": "Daha fazla abonelik yüklenemedi.",
+      "cancel_failed": "Abonelik iptal edilemedi.",
+      "loading": "Müşteri abonelikleri yükleniyor...",
+      "customer": "Müşteri",
+      "status": "Durum",
+      "phone": "Telefon",
+      "plan": "Plan",
+      "period": "Dönem",
+      "address": "Adres",
+      "dash": "—",
+      "cancel_subscription": "Aboneliği iptal et",
+      "canceled": "İptal edildi",
+      "empty": "Henüz müşteri aboneliği yok.",
+      "loading_more": "Yükleniyor...",
+      "load_more": "Daha fazla yükle"
+    },
+    "account": {
+      "title": "Hesap",
+      "subtitle": "İşletme bilgileri ve onboarding durumu.",
+      "loading_status": "Durum yükleniyor...",
+      "status": "Durum",
+      "connected_required": "Bağlı hesap gerekli",
+      "start_onboarding": "Onboarding başlat",
+      "verified": "Doğrulandı",
+      "verified_body": "Hesabınız ödeme kabul edebilir ve ödeme alabilir.",
+      "earnings": "Hesap kazancı",
+      "onboarding_body": "Hesabınızdaki fonları aktarmak için onboarding işlemini tamamlayın.",
+      "opening": "Açılıyor...",
+      "onboarding_failed": "Onboarding başlatılamadı. Lütfen tekrar deneyin."
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "subtitle": "Hesabınızı ve satış ayarlarınızı yönetin.",
+      "profile": "Profil",
+      "email": "E-posta",
+      "danger_zone": "Tehlikeli Bölge",
+      "delete_account": "Hesabı Sil",
+      "delete_description": "Hesabınızı ve ilişkili tüm verileri kalıcı olarak silin. Bu işlem geri alınamaz.",
+      "delete_modal_title": "Hesabı sil",
+      "delete_modal_intro": "Bu işlem hesabınızı ve ilgili tüm verileri kalıcı olarak siler:",
+      "delete_item_links": "Ürün ödeme bağlantıları ve abonelik ödemeleri",
+      "delete_item_transactions": "İşlem geçmişi",
+      "delete_item_stripe": "Stripe Connect hesabı",
+      "delete_item_login": "Giriş hesabınız (çıkış yapılacak)",
+      "delete_confirm": "Tüm verilerimin kalıcı olarak silineceğini anlıyorum",
+      "delete_failed": "Hesap silinemedi. Lütfen tekrar deneyin.",
+      "cancel": "İptal",
+      "deleting": "Siliniyor...",
+      "delete_my_account": "Hesabımı sil"
+    }
+  },
+  "components": {
+    "create_link_dialog": {
+      "cta_one_time": "Ürün ödemesi oluştur",
+      "cta_subscription": "Abonelik ödemesi oluştur",
+      "errors": {
+        "title_required": "Lütfen bir başlık girin.",
+        "invalid_amount": "Geçerli bir tutar girin (en fazla 2 ondalık).",
+        "create_failed": "Bağlantı oluşturulamadı."
+      },
+      "amount_placeholder": "10.00",
+      "one_time": "Tek sefer",
+      "repeat": "Tekrarlı",
+      "collapse": "Detayları daralt",
+      "expand": "Detayları genişlet",
+      "title_placeholder": "Başlık girin",
+      "description_placeholder": "Açıklama (opsiyonel)",
+      "currency": "Para birimi",
+      "interval": "Periyot",
+      "customer_fields": "Müşteri bilgileri",
+      "field_email": "e-posta",
+      "field_name": "isim",
+      "field_phone": "telefon",
+      "field_address": "adres",
+      "expiry_optional": "Bitiş tarihi (opsiyonel)",
+      "creating": "Oluşturuluyor...",
+      "interval_options": {
+        "day": "Günlük",
+        "week": "Haftalık",
+        "month": "Aylık",
+        "year": "Yıllık"
+      },
+      "currency_options": {
+        "gbp": "GBP — İngiliz Sterlini",
+        "eur": "EUR — Euro",
+        "usd": "USD — Amerikan Doları"
+      },
+      "title_placeholders": {
+        "piano": "Çocuklar için piyano dersleri",
+        "lunch": "Ev yapımı Hint mutfağı öğle yemekleri",
+        "spanish": "İspanyolca dil dersleri",
+        "maths": "Çevrim içi matematik dersleri"
+      }
+    },
+    "link_card": {
+      "default_title": "Ürün",
+      "recurring": "Tekrarlı",
+      "disabled": "Devre dışı",
+      "disable": "Devre dışı bırak",
+      "amount": "Tutar",
+      "earnings": "Kazanç",
+      "interval": "Periyot",
+      "expires": "Bitiş",
+      "no_expiry": "Süresiz"
+    },
+    "payment_link_share": {
+      "copied": "Kopyalandı",
+      "copy_link": "Bağlantıyı kopyala",
+      "show_qr": "QR kodunu göster",
+      "share_link": "Bağlantıyı paylaş",
+      "qr_code": "QR kod",
+      "qr_title": "Ürün ödeme QR",
+      "close": "Kapat",
+      "generating": "QR kod oluşturuluyor...",
+      "copy_qr": "QR görselini kopyala",
+      "qr_alt": "Ürün ödeme QR kodu"
+    },
+    "require": {
+      "checking_session": "Oturum kontrol ediliyor..."
+    }
+  },
+  "layouts": {
+    "dashboard": {
+      "nav": {
+        "dashboard": "Panel",
+        "products": "Ürünler",
+        "transactions": "İşlemler",
+        "account": "Hesap",
+        "settings": "Ayarlar"
+      },
+      "menu": {
+        "title": "Menü",
+        "close": "Menüyü kapat",
+        "logout": "Çıkış yap",
+        "open": "Menü"
+      },
+      "logo_alt": "Quidme logosu",
+      "language": {
+        "label": "Dil",
+        "english": "İngilizce",
+        "turkish": "Türkçe"
+      }
+    }
+  }
+}

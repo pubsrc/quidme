@@ -13,6 +13,11 @@ variable "stripe_secret_placeholder" {
   default = "sk_live_placeholder"
 }
 
+variable "stripe_webhook_secret_placeholder" {
+  type    = string
+  default = "stripe-webhook-secret-placeholder"
+}
+
 variable "google_client_id_placeholder" {
   type    = string
   default = "google-client-id-placeholder"
@@ -88,11 +93,6 @@ variable "parameter_prefix" {
   default = "/payme/prod"
 }
 
-variable "frontend_build_dir" {
-  type    = string
-  default = "../../../frontend/dist"
-}
-
 variable "frontend_domain_aliases" {
   type    = list(string)
   default = []
@@ -120,6 +120,21 @@ variable "cloudflare_record_name" {
 }
 
 variable "cloudflare_proxied" {
+  type    = bool
+  default = true
+}
+
+variable "api_domain_name" {
+  type    = string
+  default = "api.quidme.uk"
+}
+
+variable "api_acm_certificate_arn" {
+  type    = string
+  default = ""
+}
+
+variable "api_cloudflare_proxied" {
   type    = bool
   default = true
 }
