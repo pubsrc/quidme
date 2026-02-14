@@ -2,6 +2,17 @@ resource "aws_apigatewayv2_api" "api" {
   name          = "${var.project_name}-api"
   protocol_type = "HTTP"
   tags          = var.tags
+
+  # Ensure API Gateway always returns CORS headers (including on 401/403 produced
+  # by the JWT authorizer) so the browser does not surface these as "CORS errors".
+  # Frontend uses bearer tokens, so credentials/cookies are not required.
+  cors_configuration {
+    allow_credentials = false
+    allow_headers     = ["*"]
+    allow_methods     = ["*"]
+    allow_origins     = var.cors_allowed_origins
+    max_age           = 3600
+  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda" {

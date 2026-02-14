@@ -230,6 +230,7 @@ module "api_gateway" {
   cognito_user_pool_id  = module.cognito.user_pool_id
   cognito_app_client_id = module.cognito.app_client_id
   region                = var.aws_region
+  cors_allowed_origins  = var.cors_allowed_origins_default
   tags                  = local.tags
 }
 
