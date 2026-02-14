@@ -5,27 +5,6 @@ data "aws_region" "current" {}
 locals {
   bucket_name       = lower("${var.project_name}-${var.environment}-frontend-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.region}")
   use_custom_domain = length(var.domain_aliases) > 0
-
-  files = fileset(var.frontend_build_dir, "**")
-
-  content_types = {
-    css         = "text/css"
-    gif         = "image/gif"
-    html        = "text/html"
-    ico         = "image/x-icon"
-    jpg         = "image/jpeg"
-    jpeg        = "image/jpeg"
-    js          = "application/javascript"
-    json        = "application/json"
-    map         = "application/json"
-    png         = "image/png"
-    svg         = "image/svg+xml"
-    txt         = "text/plain"
-    webmanifest = "application/manifest+json"
-    woff        = "font/woff"
-    woff2       = "font/woff2"
-    xml         = "application/xml"
-  }
 }
 
 resource "aws_s3_bucket" "frontend" {
@@ -124,7 +103,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     cloudfront_default_certificate = !local.use_custom_domain
     acm_certificate_arn            = local.use_custom_domain ? var.acm_certificate_arn : null
     ssl_support_method             = local.use_custom_domain ? "sni-only" : null
-    minimum_protocol_version       = local.use_custom_domain ? "TLSv1.2_2021" : "TLSv1"
+    minimum_protocol_version       = "TLSv1.2_2021"
   }
 
   tags = var.tags
@@ -161,23 +140,4 @@ data "aws_iam_policy_document" "frontend_bucket_policy" {
 resource "aws_s3_bucket_policy" "frontend" {
   bucket = aws_s3_bucket.frontend.id
   policy = data.aws_iam_policy_document.frontend_bucket_policy.json
-}
-
-resource "aws_s3_object" "frontend_assets" {
-  for_each = {
-    for file in local.files :
-    file => file
-    if !endswith(file, "/")
-  }
-
-  bucket = aws_s3_bucket.frontend.id
-  key    = each.value
-  source = "${var.frontend_build_dir}/${each.value}"
-  etag   = filemd5("${var.frontend_build_dir}/${each.value}")
-
-  content_type = lookup(
-    local.content_types,
-    lower(element(reverse(split(".", each.value)), 0)),
-    "application/octet-stream"
-  )
 }

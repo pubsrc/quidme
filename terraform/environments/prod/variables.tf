@@ -93,11 +93,6 @@ variable "parameter_prefix" {
   default = "/payme/prod"
 }
 
-variable "frontend_build_dir" {
-  type    = string
-  default = "../../../frontend/dist"
-}
-
 variable "frontend_domain_aliases" {
   type    = list(string)
   default = []

@@ -246,7 +246,6 @@ module "frontend_hosting" {
   source              = "../../modules/frontend_hosting"
   project_name        = var.project_name
   environment         = "prod"
-  frontend_build_dir  = var.frontend_build_dir
   domain_aliases      = var.frontend_domain_aliases
   acm_certificate_arn = local.frontend_certificate_arn
   tags                = local.tags

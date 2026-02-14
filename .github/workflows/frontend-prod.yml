@@ -13,6 +13,10 @@ env:
   AWS_REGION: eu-west-2
   PARAM_PREFIX: /payme/prod
 
+concurrency:
+  group: frontend-prod
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
