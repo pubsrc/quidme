@@ -7,18 +7,14 @@ on:
     paths:
       - 'terraform/**'
       - 'src/**'
-      - 'frontend/**'
       - 'scripts/**'
       - 'pyproject.toml'
-      - 'frontend/package.json'
-      - 'frontend/package-lock.json'
       - '.github/workflows/terraform-prod.yml'
   workflow_dispatch:
 
 env:
   TF_ROOT: terraform/environments/prod
   AWS_REGION: eu-west-2
-  PARAM_PREFIX: /payme/prod
 
 jobs:
   deploy:
@@ -61,50 +57,6 @@ jobs:
         working-directory: ${{ env.TF_ROOT }}
         run: terraform init
 
-      - name: Resolve frontend env from Terraform + SSM
-        working-directory: ${{ env.TF_ROOT }}
-        run: |
-          API_BASE_URL="$(terraform output -raw api_base_url)"
-          COGNITO_USER_POOL_ID="$(terraform output -raw cognito_user_pool_id)"
-          COGNITO_USER_POOL_CLIENT_ID="$(terraform output -raw cognito_user_pool_client_id)"
-          COGNITO_DOMAIN_PREFIX="$(aws ssm get-parameter --name "${PARAM_PREFIX}/cognito_domain_prefix" --query 'Parameter.Value' --output text)"
-          CALLBACK_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/callback_urls" --query 'Parameter.Value' --output text)"
-          LOGOUT_URLS="$(aws ssm get-parameter --name "${PARAM_PREFIX}/logout_urls" --query 'Parameter.Value' --output text)"
-
-          FIRST_CALLBACK_URL="$(echo "$CALLBACK_URLS" | cut -d',' -f1 | xargs)"
-          FIRST_LOGOUT_URL="$(echo "$LOGOUT_URLS" | cut -d',' -f1 | xargs)"
-          COGNITO_OAUTH_DOMAIN="${COGNITO_DOMAIN_PREFIX}.auth.${AWS_REGION}.amazoncognito.com"
-
-          {
-            echo "VITE_API_BASE_URL=${API_BASE_URL}"
-            echo "VITE_COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}"
-            echo "VITE_COGNITO_USER_POOL_CLIENT_ID=${COGNITO_USER_POOL_CLIENT_ID}"
-            echo "VITE_COGNITO_REGION=${AWS_REGION}"
-            echo "VITE_COGNITO_OAUTH_DOMAIN=${COGNITO_OAUTH_DOMAIN}"
-            echo "VITE_OAUTH_REDIRECT_SIGN_IN=${FIRST_CALLBACK_URL}"
-            echo "VITE_OAUTH_REDIRECT_SIGN_OUT=${FIRST_LOGOUT_URL}"
-          } >> "$GITHUB_ENV"
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Build frontend
-        working-directory: frontend
-        run: |
-          npm ci
-          npm run build -- --mode prod
-
-      - name: Validate frontend env injection
-        run: |
-          if grep -R --line-number "localhost" frontend/dist; then
-            echo "Frontend build still contains localhost references. Failing deploy."
-            exit 1
-          fi
-
       - name: Get Cloudflare API token
         id: cloudflare_token
         env:
@@ -125,11 +77,3 @@ jobs:
           TF_VAR_cloudflare_api_token: ${{ steps.cloudflare_token.outputs.token }}
         working-directory: ${{ env.TF_ROOT }}
         run: terraform apply -input=false -auto-approve
-
-      - name: Invalidate CloudFront cache
-        working-directory: ${{ env.TF_ROOT }}
-        run: |
-          DISTRIBUTION_ID="$(terraform output -raw frontend_cloudfront_distribution_id)"
-          aws cloudfront create-invalidation \
-            --distribution-id "$DISTRIBUTION_ID" \
-            --paths "/*"
