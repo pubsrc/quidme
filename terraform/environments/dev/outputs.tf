@@ -3,7 +3,7 @@ output "api_endpoint" {
 }
 
 output "api_base_url" {
-  value = "https://${var.api_domain_name}"
+  value = trimspace(var.api_domain_name) == "" ? module.api_gateway.api_endpoint : "https://${var.api_domain_name}"
 }
 
 output "cognito_user_pool_id" {
@@ -39,18 +39,6 @@ output "frontend_domain_aliases" {
   value = module.frontend_hosting.domain_aliases
 }
 
-output "cloudflaire_api_token_secret_name" {
-  value = module.secrets.cloudflaire_api_token_secret_name
-}
-
 output "stripe_webhook_secret_name" {
   value = module.secrets.stripe_webhook_secret_name
-}
-
-output "cloudflare_frontend_record_id" {
-  value = cloudflare_dns_record.frontend_dev.id
-}
-
-output "cloudflare_api_record_id" {
-  value = cloudflare_dns_record.api_domain.id
 }

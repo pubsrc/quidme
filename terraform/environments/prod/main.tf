@@ -42,8 +42,6 @@ module "secrets" {
   google_oauth_secret_name          = "${var.project_name}-google-oauth-pi-key"
   google_client_id_placeholder      = var.google_client_id_placeholder
   google_client_secret_placeholder  = var.google_client_secret_placeholder
-  cloudflaire_api_token_secret_name = "${var.project_name}-cloudflaire-api-token"
-  cloudflaire_api_token_placeholder = var.cloudflaire_api_token_placeholder
   tags                              = local.tags
 }
 
@@ -251,12 +249,6 @@ module "frontend_hosting" {
   tags                = local.tags
 }
 
-data "cloudflare_zone" "frontend" {
-  filter = {
-    name = var.cloudflare_zone_name
-  }
-}
-
 resource "aws_acm_certificate" "api" {
   count             = local.api_manage_certificate ? 1 : 0
   domain_name       = var.api_domain_name
@@ -267,31 +259,13 @@ resource "aws_acm_certificate" "api" {
   }
 }
 
-resource "cloudflare_dns_record" "api_cert_validation" {
-  for_each = local.api_manage_certificate ? {
-    for option in aws_acm_certificate.api[0].domain_validation_options :
-    option.domain_name => {
-      name    = option.resource_record_name
-      type    = option.resource_record_type
-      content = option.resource_record_value
-    }
-  } : {}
-
-  zone_id = data.cloudflare_zone.frontend.id
-  name    = each.value.name
-  type    = each.value.type
-  content = each.value.content
-  ttl     = 1
-  proxied = false
-}
-
 resource "aws_acm_certificate_validation" "api" {
-  count = local.api_manage_certificate ? 1 : 0
-
+  count           = local.api_manage_certificate ? 1 : 0
   certificate_arn = aws_acm_certificate.api[0].arn
 
+  # DNS records must exist (for example, in Cloudflare) for this to complete.
   validation_record_fqdns = [
-    for record in cloudflare_dns_record.api_cert_validation : trimsuffix(record.name, ".")
+    for dvo in aws_acm_certificate.api[0].domain_validation_options : dvo.resource_record_name
   ]
 }
 
@@ -311,15 +285,6 @@ resource "aws_apigatewayv2_api_mapping" "api" {
   stage       = "$default"
 }
 
-resource "cloudflare_dns_record" "api_domain" {
-  zone_id = data.cloudflare_zone.frontend.id
-  name    = var.api_domain_name
-  type    = "CNAME"
-  content = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].target_domain_name
-  proxied = var.api_cloudflare_proxied
-  ttl     = 1
-}
-
 resource "aws_acm_certificate" "frontend" {
   count                     = local.frontend_manage_certificate ? 1 : 0
   provider                  = aws.us_east_1
@@ -332,40 +297,13 @@ resource "aws_acm_certificate" "frontend" {
   }
 }
 
-resource "cloudflare_dns_record" "frontend_cert_validation" {
-  for_each = local.frontend_manage_certificate ? {
-    for option in aws_acm_certificate.frontend[0].domain_validation_options :
-    option.domain_name => {
-      name    = option.resource_record_name
-      type    = option.resource_record_type
-      content = option.resource_record_value
-    }
-  } : {}
-
-  zone_id = data.cloudflare_zone.frontend.id
-  name    = each.value.name
-  type    = each.value.type
-  content = each.value.content
-  ttl     = 1
-  proxied = false
-}
-
 resource "aws_acm_certificate_validation" "frontend" {
-  count    = local.frontend_manage_certificate ? 1 : 0
-  provider = aws.us_east_1
-
+  count           = local.frontend_manage_certificate ? 1 : 0
+  provider        = aws.us_east_1
   certificate_arn = aws_acm_certificate.frontend[0].arn
 
+  # DNS records must exist (for example, in Cloudflare) for this to complete.
   validation_record_fqdns = [
-    for record in cloudflare_dns_record.frontend_cert_validation : trimsuffix(record.name, ".")
+    for dvo in aws_acm_certificate.frontend[0].domain_validation_options : dvo.resource_record_name
   ]
-}
-
-resource "cloudflare_dns_record" "frontend_root" {
-  zone_id = data.cloudflare_zone.frontend.id
-  name    = var.cloudflare_record_name
-  type    = "CNAME"
-  content = module.frontend_hosting.cloudfront_domain_name
-  proxied = var.cloudflare_proxied
-  ttl     = 1
 }
