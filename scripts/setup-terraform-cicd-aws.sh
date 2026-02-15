@@ -42,7 +42,7 @@ readonly AWS_REGION="eu-west-2"
 # Project/repo naming (must be explicitly set to avoid accidental deploys).
 # Set these via environment variables before running, for example:
 #   PROJECT_NAME=payme GITHUB_REPO=payme GITHUB_ORG=pubsrc ./scripts/setup-terraform-cicd-aws.sh
-readonly PROJECT_NAME="payme"
+readonly PROJECT_NAME="quidme"
 
 # GitHub repository (must be explicit)
 readonly GITHUB_ORG="pubsrc"
@@ -71,13 +71,13 @@ readonly TOOLS_IAM_ROLE_NAME="${TOOLS_IAM_ROLE_NAME:-github-actions-terraform-${
 readonly DEV_IAM_ROLE_NAME="${DEV_IAM_ROLE_NAME:-github-actions-terraform-${PROJECT_NAME}-dev}"
 readonly PROD_IAM_ROLE_NAME="${PROD_IAM_ROLE_NAME:-github-actions-terraform-${PROJECT_NAME}-prod}"
 
-readonly TOOLS_STATE_BUCKET="${TOOLS_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-tools}"
-readonly DEV_STATE_BUCKET="${DEV_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-dev}"
-readonly PROD_STATE_BUCKET="${PROD_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-prod}"
+readonly TOOLS_STATE_BUCKET="${TOOLS_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-tools-${TOOLS_ACCOUNT_ID}}"
+readonly DEV_STATE_BUCKET="${DEV_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-dev-${DEV_ACCOUNT_ID}}"
+readonly PROD_STATE_BUCKET="${PROD_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-prod-${PROD_ACCOUNT_ID}}"
 
-readonly TOOLS_LOCK_TABLE="${TOOLS_LOCK_TABLE:-${PROJECT_NAME}-terraform-lock-tools}"
-readonly DEV_LOCK_TABLE="${DEV_LOCK_TABLE:-${PROJECT_NAME}-terraform-lock-dev}"
-readonly PROD_LOCK_TABLE="${PROD_LOCK_TABLE:-${PROJECT_NAME}-terraform-lock-prod}"
+readonly TOOLS_LOCK_TABLE="${TOOLS_LOCK_TABLE:-${PROJECT_NAME}-terraform-state-lock-tools}"
+readonly DEV_LOCK_TABLE="${DEV_LOCK_TABLE:-${PROJECT_NAME}-terraform-state-lock-dev}"
+readonly PROD_LOCK_TABLE="${PROD_LOCK_TABLE:-${PROJECT_NAME}-terraform-state-lock-prod}"
 
 ################################################################################
 # HELPER FUNCTIONS
@@ -180,27 +180,6 @@ create_iam_role() {
     local account_type=$1
     local account_id=$2
     local role_name=$3
-    local state_bucket
-    local lock_table
-
-    case "$account_type" in
-        tools)
-            state_bucket="$TOOLS_STATE_BUCKET"
-            lock_table="$TOOLS_LOCK_TABLE"
-            ;;
-        dev)
-            state_bucket="$DEV_STATE_BUCKET"
-            lock_table="$DEV_LOCK_TABLE"
-            ;;
-        prod)
-            state_bucket="$PROD_STATE_BUCKET"
-            lock_table="$PROD_LOCK_TABLE"
-            ;;
-        *)
-            echo "Unknown account type: $account_type"
-            exit 1
-            ;;
-    esac
     
     echo ""
     echo "========================================="
@@ -248,7 +227,7 @@ EOF
         "s3:GetBucketAcl",
         "s3:GetBucketLocation"
       ],
-      "Resource": "arn:aws:s3:::${state_bucket}"
+      "Resource": "arn:aws:s3:::terraform-state-*"
     },
     {
       "Sid": "TerraformStateObjectAccess",
@@ -258,7 +237,7 @@ EOF
         "s3:PutObject",
         "s3:DeleteObject"
       ],
-      "Resource": "arn:aws:s3:::${state_bucket}/*"
+      "Resource": "arn:aws:s3:::terraform-state-*/*"
     },
     {
       "Sid": "TerraformStateLock",
@@ -269,35 +248,7 @@ EOF
         "dynamodb:PutItem",
         "dynamodb:DeleteItem"
       ],
-      "Resource": "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/${lock_table}"
-    },
-    {
-      "Sid": "DynamoDBProjectTables",
-      "Effect": "Allow",
-      "Action": [
-        "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem",
-        "dynamodb:CreateTable",
-        "dynamodb:DeleteTable",
-        "dynamodb:DescribeContinuousBackups",
-        "dynamodb:DescribeTable",
-        "dynamodb:DescribeTimeToLive",
-        "dynamodb:GetItem",
-        "dynamodb:ListTagsOfResource",
-        "dynamodb:PutItem",
-        "dynamodb:Query",
-        "dynamodb:Scan",
-        "dynamodb:TagResource",
-        "dynamodb:UntagResource",
-        "dynamodb:UpdateContinuousBackups",
-        "dynamodb:UpdateItem",
-        "dynamodb:UpdateTable",
-        "dynamodb:UpdateTimeToLive"
-      ],
-      "Resource": [
-        "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/${PROJECT_NAME}-*",
-        "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/${PROJECT_NAME}-*/index/*"
-      ]
+      "Resource": "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/terraform-state-lock-*"
     },
     {
       "Sid": "S3BucketManagement",
@@ -382,14 +333,9 @@ EOF
         "lambda:*",
         "logs:*",
         "events:*",
-        "apigateway:*",
         "s3:*",
         "elasticloadbalancing:*",
         "iam:GetRole",
-        "iam:GetPolicy",
-        "iam:GetPolicyVersion",
-        "iam:ListPolicies",
-        "iam:ListPolicyVersions",
         "iam:ListRoles",
         "iam:PassRole",
         "iam:CreateRole",

@@ -16,17 +16,30 @@ We no longer manage Cloudflare DNS records with the Terraform Cloudflare provide
 
 ## How To Update Cloudflare (Prod)
 
-Use the GitHub Actions workflow:
+Run the script manually:
 
-- `Update Cloudflare DNS - Prod` (`.github/workflows/update-cloudflare-prod.yml`)
+- `/Users/bilal/projects/ai/payme/scripts/update-cloudflare-prod.sh`
 
-It reads Terraform outputs from `terraform/environments/prod` and upserts:
+It can upsert:
 
 - `quidme.uk` CNAME → CloudFront distribution domain
 - `api.quidme.uk` CNAME → API Gateway custom domain target
 - ACM DNS validation records for:
   - `quidme.uk` (CloudFront/ACM in `us-east-1`)
   - `api.quidme.uk` (ACM in `eu-west-2`)
+
+Example (from `terraform/environments/prod`):
+
+```bash
+export CLOUDFLARE_API_TOKEN="..."
+
+export FRONTEND_CNAME_TARGET="$(terraform output -raw frontend_cloudfront_domain_name)"
+export API_CNAME_TARGET="$(terraform output -raw api_custom_domain_target)"
+export FRONTEND_ACM_VALIDATION_RECORDS_JSON="$(terraform output -json frontend_acm_validation_records)"
+export API_ACM_VALIDATION_RECORDS_JSON="$(terraform output -json api_acm_validation_records)"
+
+../../scripts/update-cloudflare-prod.sh
+```
 
 ## One-Time State Migration
 
