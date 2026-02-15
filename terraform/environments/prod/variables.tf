@@ -28,11 +28,6 @@ variable "google_client_secret_placeholder" {
   default = "google-client-secret-placeholder"
 }
 
-variable "cloudflaire_api_token_placeholder" {
-  type    = string
-  default = "cloudflare-api-token-placeholder"
-}
-
 variable "service_fee_bps_default" {
   type    = number
   default = 500
@@ -103,27 +98,6 @@ variable "frontend_acm_certificate_arn" {
   default = ""
 }
 
-variable "cloudflare_api_token" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "cloudflare_zone_name" {
-  type    = string
-  default = "quidme.uk"
-}
-
-variable "cloudflare_record_name" {
-  type    = string
-  default = "@"
-}
-
-variable "cloudflare_proxied" {
-  type    = bool
-  default = true
-}
-
 variable "api_domain_name" {
   type    = string
   default = "api.quidme.uk"
@@ -132,9 +106,4 @@ variable "api_domain_name" {
 variable "api_acm_certificate_arn" {
   type    = string
   default = ""
-}
-
-variable "api_cloudflare_proxied" {
-  type    = bool
-  default = true
 }

@@ -26,14 +26,6 @@ variable "google_client_secret_placeholder" {
   type = string
 }
 
-variable "cloudflaire_api_token_secret_name" {
-  type = string
-}
-
-variable "cloudflaire_api_token_placeholder" {
-  type = string
-}
-
 variable "tags" {
   type    = map(string)
   default = {}
