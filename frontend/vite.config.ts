@@ -7,19 +7,36 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.png"],
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
+      injectManifest: {
+        minify: false,
+      },
+      includeAssets: [
+        "favicon.ico",
+        "apple-touch-icon.png",
+        "favicon-16x16.png",
+        "favicon-32x32.png",
+        "site.webmanifest"
+      ],
       manifest: {
-        name: "Payme",
-        short_name: "Payme",
-        description: "Stripe Connect payment platform",
-        theme_color: "#0ea5e9",
-        background_color: "#f8fafc",
+        name: "Quidme",
+        short_name: "Quidme",
+        description: "Small app for small businesses",
+        theme_color: "#fd9918",
+        background_color: "#fff6de",
         display: "standalone",
         icons: [
           {
-            src: "favicon.png",
-            sizes: "any",
-            type: "image/png+xml"
+            src: "android-chrome-192x192.png",
+            sizes: "192x192",
+            type: "image/png"
+          },
+          {
+            src: "android-chrome-512x512.png",
+            sizes: "512x512",
+            type: "image/png"
           }
         ]
       }

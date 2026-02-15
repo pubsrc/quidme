@@ -146,6 +146,9 @@
       "years_ago": "over {{count}} year ago",
       "years_ago_plural": "over {{count}} years ago",
       "status_refunded": "refunded",
+      "status_succeeded": "succeeded",
+      "status_failed": "failed",
+      "status_unknown": "unknown",
       "status_pending": "pending",
       "loading_transactions": "Loading transactions...",
       "no_transactions": "No transactions yet."
@@ -194,6 +197,9 @@
       "days_ago": "{{count}} days ago",
       "years_ago": "over {{count}} years ago",
       "status_refunded": "refunded",
+      "status_succeeded": "succeeded",
+      "status_failed": "failed",
+      "status_unknown": "unknown",
       "status_pending": "pending",
       "refund": "Refund",
       "refunding": "Refunding...",
@@ -261,6 +267,11 @@
     }
   },
   "components": {
+    "require": {
+      "checking_session": "Checking session...",
+      "account_check_failed": "Unable to verify account status.",
+      "retry": "Retry"
+    },
     "create_link_dialog": {
       "cta_one_time": "Create product checkout",
       "cta_subscription": "Create subscription checkout",

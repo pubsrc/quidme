@@ -142,12 +142,24 @@ const TransactionsPage = () => {
             <tbody>
               {!loading &&
                 visibleRows.map((tx) => {
-                  const statusLabel = tx.refunded ? t("pages.transactions.status_refunded") : tx.status?.toLowerCase() || t("pages.transactions.status_pending");
+                  const statusCode = tx.refunded ? "refunded" : (tx.status?.toLowerCase() || "pending");
+                  const statusLabel =
+                    statusCode === "succeeded"
+                      ? t("pages.transactions.status_succeeded")
+                      : statusCode === "refunded"
+                      ? t("pages.transactions.status_refunded")
+                      : statusCode === "failed"
+                      ? t("pages.transactions.status_failed")
+                      : statusCode === "pending"
+                      ? t("pages.transactions.status_pending")
+                      : tx.status || t("pages.transactions.status_unknown");
                   const statusClass =
-                    statusLabel === "succeeded"
+                    statusCode === "succeeded"
                       ? "bg-emerald-100 text-emerald-700"
-                      : statusLabel === "refunded"
+                      : statusCode === "refunded"
                       ? "bg-slate-200 text-slate-700"
+                      : statusCode === "failed"
+                      ? "bg-red-100 text-red-700"
                       : "bg-sky-100 text-sky-700";
                   return (
                     <tr key={tx.id}>
