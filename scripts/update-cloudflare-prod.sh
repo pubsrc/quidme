@@ -15,30 +15,108 @@ set -euo pipefail
 # - FRONTEND_ACM_VALIDATION_RECORDS_JSON (optional; output from Terraform `frontend_acm_validation_records`)
 # - API_ACM_VALIDATION_RECORDS_JSON (optional; output from Terraform `api_acm_validation_records`)
 
+# -----------------------------------------------------------------------------
+# Configuration (set these at the top, then run the script)
+# -----------------------------------------------------------------------------
+
+# Required: Cloudflare API token.
+: "${CLOUDFLARE_API_TOKEN:=}"
+
+# Optional: where to read Terraform outputs from (used to auto-fill targets).
+# Default resolves relative to the repo root, not the current working directory.
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+: "${TERRAFORM_ENV_DIR:=${REPO_ROOT}/terraform/environments/prod}"
+
+# If a relative path is provided, resolve it relative to repo root for stability.
+if [[ "${TERRAFORM_ENV_DIR}" != /* ]]; then
+  TERRAFORM_ENV_DIR="${REPO_ROOT}/${TERRAFORM_ENV_DIR}"
+fi
+
+# Optional: zone name (root domain) in Cloudflare.
+: "${CLOUDFLARE_ZONE_NAME:=quidme.uk}"
+
+# Frontend record:
+# - FRONTEND_RECORD_NAME: record name within the zone. Use "@" for the zone apex.
+# - FRONTEND_CNAME_TARGET: CloudFront distribution domain name (e.g. d123.cloudfront.net).
+# - FRONTEND_PROXIED: Cloudflare proxy toggle (true/false).
+: "${FRONTEND_RECORD_NAME:=@}"
+: "${FRONTEND_CNAME_TARGET:=}"
+: "${FRONTEND_PROXIED:=true}"
+
+# API record:
+# - API_RECORD_NAME: record name within the zone (e.g. "api").
+# - API_CNAME_TARGET: API Gateway custom domain target (looks like `xxxxx.execute-api...`).
+# - API_PROXIED: should usually be false for API Gateway custom domains.
+: "${API_RECORD_NAME:=api}"
+: "${API_CNAME_TARGET:=}"
+: "${API_PROXIED:=false}"
+
+# Optional: ACM validation records exported from Terraform outputs (JSON arrays).
+# These are created as proxied=false.
+: "${FRONTEND_ACM_VALIDATION_RECORDS_JSON:=[]}"
+: "${API_ACM_VALIDATION_RECORDS_JSON:=[]}"
+
+# -----------------------------------------------------------------------------
+# Validation
+# -----------------------------------------------------------------------------
+
 if [[ -z "${CLOUDFLARE_API_TOKEN:-}" ]]; then
-  echo "Missing CLOUDFLARE_API_TOKEN. Set it in GitHub Secrets or your shell." >&2
+  echo "Missing CLOUDFLARE_API_TOKEN. Export it in your shell environment." >&2
   exit 1
 fi
 
-ZONE_NAME="${CLOUDFLARE_ZONE_NAME:-quidme.uk}"
+terraform_output() {
+  local name="$1"
+  terraform -chdir="${TERRAFORM_ENV_DIR}" output -raw "$name"
+}
 
-FRONTEND_RECORD_NAME="${FRONTEND_RECORD_NAME:-@}"
-FRONTEND_CNAME_TARGET="${FRONTEND_CNAME_TARGET:-}"
-FRONTEND_PROXIED="${FRONTEND_PROXIED:-true}"
+terraform_output_json() {
+  local name="$1"
+  terraform -chdir="${TERRAFORM_ENV_DIR}" output -json "$name"
+}
 
-API_RECORD_NAME="${API_RECORD_NAME:-api}"
-API_CNAME_TARGET="${API_CNAME_TARGET:-}"
-API_PROXIED="${API_PROXIED:-false}"
+if [[ -z "${FRONTEND_CNAME_TARGET:-}" || -z "${API_CNAME_TARGET:-}" ]]; then
+  if [[ -d "${TERRAFORM_ENV_DIR}" ]] && command -v terraform >/dev/null 2>&1; then
+    # Auto-fill from Terraform outputs (unless explicitly provided by env).
+    if [[ -z "${FRONTEND_CNAME_TARGET:-}" ]]; then
+      FRONTEND_CNAME_TARGET="$(terraform_output frontend_cloudfront_domain_name 2>/dev/null || true)"
+    fi
+    if [[ -z "${API_CNAME_TARGET:-}" ]]; then
+      API_CNAME_TARGET="$(terraform_output api_custom_domain_target 2>/dev/null || true)"
+    fi
 
-FRONTEND_ACM_VALIDATION_RECORDS_JSON="${FRONTEND_ACM_VALIDATION_RECORDS_JSON:-[]}"
-API_ACM_VALIDATION_RECORDS_JSON="${API_ACM_VALIDATION_RECORDS_JSON:-[]}"
+    # Also auto-fill ACM validation records if they still have their defaults.
+    if [[ "${FRONTEND_ACM_VALIDATION_RECORDS_JSON:-}" == "[]" ]]; then
+      FRONTEND_ACM_VALIDATION_RECORDS_JSON="$(terraform_output_json frontend_acm_validation_records 2>/dev/null || echo "[]")"
+    fi
+    if [[ "${API_ACM_VALIDATION_RECORDS_JSON:-}" == "[]" ]]; then
+      API_ACM_VALIDATION_RECORDS_JSON="$(terraform_output_json api_acm_validation_records 2>/dev/null || echo "[]")"
+    fi
+  fi
+fi
+
+ZONE_NAME="${CLOUDFLARE_ZONE_NAME}"
+
+FRONTEND_RECORD_NAME="${FRONTEND_RECORD_NAME}"
+FRONTEND_CNAME_TARGET="${FRONTEND_CNAME_TARGET}"
+FRONTEND_PROXIED="${FRONTEND_PROXIED}"
+
+API_RECORD_NAME="${API_RECORD_NAME}"
+API_CNAME_TARGET="${API_CNAME_TARGET}"
+API_PROXIED="${API_PROXIED}"
+
+FRONTEND_ACM_VALIDATION_RECORDS_JSON="${FRONTEND_ACM_VALIDATION_RECORDS_JSON}"
+API_ACM_VALIDATION_RECORDS_JSON="${API_ACM_VALIDATION_RECORDS_JSON}"
 
 if [[ -z "$FRONTEND_CNAME_TARGET" ]]; then
-  echo "Missing FRONTEND_CNAME_TARGET" >&2
+  echo "Missing FRONTEND_CNAME_TARGET." >&2
+  echo "Set it explicitly, or ensure terraform outputs are available at TERRAFORM_ENV_DIR='${TERRAFORM_ENV_DIR}'." >&2
   exit 1
 fi
 if [[ -z "$API_CNAME_TARGET" ]]; then
-  echo "Missing API_CNAME_TARGET" >&2
+  echo "Missing API_CNAME_TARGET." >&2
+  echo "Set it explicitly, or ensure terraform outputs are available at TERRAFORM_ENV_DIR='${TERRAFORM_ENV_DIR}'." >&2
   exit 1
 fi
 
