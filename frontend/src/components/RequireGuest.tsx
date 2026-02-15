@@ -14,7 +14,7 @@ export const RequireGuest = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/app/start" replace />;
+    return <Navigate to="/app/payment-links" replace />;
   }
 
   return <>{children}</>;

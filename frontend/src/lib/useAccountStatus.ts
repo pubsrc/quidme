@@ -16,7 +16,8 @@ export const useAccountStatus = () => {
       setAccount(response);
     } catch (err: any) {
       setError(err?.message || "Unable to load account");
-      setAccount(undefined);
+      // Keep the last-known account value. If we have no prior value, `account`
+      // remains `undefined` and callers should treat that as an unknown state.
     } finally {
       setIsLoading(false);
     }
@@ -26,16 +27,18 @@ export const useAccountStatus = () => {
     refresh();
   }, [refresh]);
 
-  const has_connected_account = account != null;
-  const requires_onboarding = has_connected_account && account!.status !== "VERIFIED";
-  const payouts_enabled = account?.status === "VERIFIED";
+  const accountKnown = account !== undefined;
+  const has_connected_account = accountKnown && account !== null;
+  const requires_onboarding = has_connected_account && account.status !== "VERIFIED";
+  const payouts_enabled = has_connected_account && account.status === "VERIFIED";
 
   return {
-    account: account ?? null,
+    account: accountKnown ? account : null,
+    accountKnown,
     status: {
       has_connected_account,
       requires_onboarding: has_connected_account ? requires_onboarding : false,
-      payouts_enabled: payouts_enabled ?? false,
+      payouts_enabled,
     },
     isLoading,
     error,

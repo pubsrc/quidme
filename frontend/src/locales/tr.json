@@ -146,6 +146,9 @@
       "years_ago": "{{count}} yıl önce",
       "years_ago_plural": "{{count}} yıl önce",
       "status_refunded": "iade edildi",
+      "status_succeeded": "başarılı",
+      "status_failed": "başarısız",
+      "status_unknown": "bilinmiyor",
       "status_pending": "beklemede",
       "loading_transactions": "İşlemler yükleniyor...",
       "no_transactions": "Henüz işlem yok."
@@ -194,6 +197,9 @@
       "days_ago": "{{count}} gün önce",
       "years_ago": "{{count}} yıl önce",
       "status_refunded": "iade edildi",
+      "status_succeeded": "başarılı",
+      "status_failed": "başarısız",
+      "status_unknown": "bilinmiyor",
       "status_pending": "beklemede",
       "refund": "İade",
       "refunding": "İade ediliyor...",
@@ -261,6 +267,11 @@
     }
   },
   "components": {
+    "require": {
+      "checking_session": "Oturum kontrol ediliyor...",
+      "account_check_failed": "Hesap durumu doğrulanamadı.",
+      "retry": "Tekrar dene"
+    },
     "create_link_dialog": {
       "cta_one_time": "Ürün ödemesi oluştur",
       "cta_subscription": "Abonelik ödemesi oluştur",

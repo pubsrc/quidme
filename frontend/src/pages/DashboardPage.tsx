@@ -121,12 +121,24 @@ const DashboardPage = () => {
                 recentRows.map((tx) => {
                   const customer = tx.customer_name || t("pages.dashboard.default_customer");
                   const email = tx.customer_email || "—";
-                  const statusKey = tx.refunded ? t("pages.dashboard.status_refunded") : tx.status?.toLowerCase() || t("pages.dashboard.status_pending");
+                  const statusCode = tx.refunded ? "refunded" : (tx.status?.toLowerCase() || "pending");
+                  const statusLabel =
+                    statusCode === "succeeded"
+                      ? t("pages.dashboard.status_succeeded")
+                      : statusCode === "refunded"
+                      ? t("pages.dashboard.status_refunded")
+                      : statusCode === "failed"
+                      ? t("pages.dashboard.status_failed")
+                      : statusCode === "pending"
+                      ? t("pages.dashboard.status_pending")
+                      : tx.status || t("pages.dashboard.status_unknown");
                   const statusClass =
-                    statusKey === "succeeded"
+                    statusCode === "succeeded"
                       ? "bg-emerald-100 text-emerald-700"
-                      : statusKey === "refunded"
+                      : statusCode === "refunded"
                       ? "bg-slate-200 text-slate-700"
+                      : statusCode === "failed"
+                      ? "bg-red-100 text-red-700"
                       : "bg-sky-100 text-sky-700";
 
                   return (
@@ -137,7 +149,7 @@ const DashboardPage = () => {
                       </td>
                       <td className="border-b border-slate-100 py-4 pr-4">
                         <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize md:px-3 md:text-base ${statusClass}`}>
-                          {statusKey}
+                          {statusLabel}
                         </span>
                       </td>
                       <td className="border-b border-slate-100 py-4 pr-4 text-sm md:text-lg">{formatTimeAgo(tx.created_at, t)}</td>
