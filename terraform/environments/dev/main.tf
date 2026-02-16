@@ -189,6 +189,7 @@ module "iam_lambda" {
     module.dynamodb.user_accounts_table_arn,
     module.dynamodb.payment_links_table_arn,
     module.dynamodb.subscription_links_table_arn,
+    module.dynamodb.transactions_table_arn,
   ]
   dynamodb_index_arns = [
     "${module.dynamodb.user_identities_table_arn}/index/*",
