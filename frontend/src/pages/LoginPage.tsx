@@ -82,7 +82,33 @@ const LoginPage = () => {
                 aria-label={showPassword ? t("pages.login.hide_password") : t("pages.login.show_password")}
                 disabled={loading}
               >
-                <span className="text-xs font-semibold">{showPassword ? t("pages.login.hide") : t("pages.login.show")}</span>
+                {showPassword ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-5 w-5"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l18 18" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.58 10.58A2 2 0 0012 14a2 2 0 001.42-.58" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.88 5.09A10.94 10.94 0 0112 5c5.05 0 9.27 3.11 10.5 7-1.03 3.24-4.19 5.92-8.2 6.74" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.61 6.61C4.96 7.75 3.68 9.29 3 12c.51 1.62 1.54 3.09 2.92 4.27" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-5 w-5"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>
