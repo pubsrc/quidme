@@ -65,26 +65,25 @@ const SignupPage = () => {
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700">{t("pages.signup.password")}</label>
-            <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-sky"
+              required
+              minLength={6}
+              disabled={loading}
+            />
+            <label className="mt-2 inline-flex items-center gap-2 text-xs font-medium text-slate-600">
               <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-sky"
-                required
-                minLength={6}
+                type="checkbox"
+                checked={showPassword}
+                onChange={(e) => setShowPassword(e.target.checked)}
                 disabled={loading}
+                className="h-4 w-4 rounded border-slate-300 text-brand-sky focus:ring-brand-sky"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-slate-700"
-                aria-label={showPassword ? t("pages.signup.hide_password") : t("pages.signup.show_password")}
-                disabled={loading}
-              >
-                <span className="text-xs font-semibold">{showPassword ? t("pages.signup.hide") : t("pages.signup.show")}</span>
-              </button>
-            </div>
+              {t("pages.signup.show_password")}
+            </label>
           </div>
 
           {error && <div className="text-sm text-red-500">{error}</div>}
