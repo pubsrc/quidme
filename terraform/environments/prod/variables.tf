@@ -113,9 +113,3 @@ variable "api_acm_certificate_arn" {
   type    = string
   default = ""
 }
-
-variable "dns_zone_name" {
-  description = "Deprecated. Kept only for backward compatibility with older tfvars files."
-  type        = string
-  default     = ""
-}
