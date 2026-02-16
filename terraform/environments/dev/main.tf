@@ -85,6 +85,11 @@ data "aws_secretsmanager_secret_version" "stripe" {
   depends_on = [module.secrets]
 }
 
+data "aws_secretsmanager_secret_version" "stripe_webhook" {
+  secret_id  = module.secrets.stripe_webhook_secret_name
+  depends_on = [module.secrets]
+}
+
 data "aws_secretsmanager_secret_version" "google_oauth" {
   secret_id  = module.secrets.google_oauth_secret_name
   depends_on = [module.secrets]
@@ -173,6 +178,7 @@ module "iam_lambda" {
 locals {
   common_env = {
     STRIPE_SECRET                = data.aws_secretsmanager_secret_version.stripe.secret_string
+    STRIPE_WEBHOOK_SECRET        = data.aws_secretsmanager_secret_version.stripe_webhook.secret_string
     SERVICE_FEE_BPS              = data.aws_ssm_parameter.service_fee_bps.value
     SERVICE_FEE_FIXED            = data.aws_ssm_parameter.service_fee_fixed.value
     COGNITO_REGION               = var.aws_region
