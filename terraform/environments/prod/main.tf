@@ -25,10 +25,10 @@ locals {
   api_manage_certificate      = trimspace(var.api_domain_name) != "" && trimspace(var.api_acm_certificate_arn) == ""
   api_certificate_arn         = local.api_manage_certificate ? aws_acm_certificate_validation.api[0].certificate_arn : var.api_acm_certificate_arn
 
-  frontend_additional_alias_record_names = [
+  frontend_additional_alias_record_names = length(var.frontend_domain_aliases) > 1 ? [
     for alias in slice(var.frontend_domain_aliases, 1, length(var.frontend_domain_aliases)) :
     trimsuffix(alias, ".${var.dns_zone_name}")
-  ]
+  ] : []
 }
 
 data "archive_file" "lambda_zip" {
