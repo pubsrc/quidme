@@ -78,19 +78,6 @@ variable "cors_allowed_origins_default" {
   default = ["*"]
 }
 
-variable "cloudflare_zone_name" {
-  description = "Cloudflare zone name (e.g. quidme.uk). Used to manage DNS + ACM validation records."
-  type        = string
-  default     = ""
-}
-
-variable "cloudflare_api_token" {
-  description = "Cloudflare API token with DNS edit permissions for the zone."
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
 variable "lambda_source_dir" {
   type    = string
   default = "../../../build/lambda"

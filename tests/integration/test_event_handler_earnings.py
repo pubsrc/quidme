@@ -18,6 +18,7 @@ from payme.db.repositories import (
     TransactionsRepository,
     UsersRepository,
 )
+from payme.core.settings import settings
 from payme.services.stripe_event_handler import handle_invoice_paid, handle_payment_succeeded
 
 
@@ -164,7 +165,7 @@ def test_handle_payment_succeeded_earnings_in_payment_link_and_stripe_account() 
     link_id = "link-earn-1"
     amount = 1000
     service_fee = 55
-    expected_earnings = amount - service_fee
+    expected_earnings = amount - service_fee - settings.fixed_fee
     links_repo.create(
         link_id=link_id,
         user_id=user_id,
@@ -220,7 +221,7 @@ def test_handle_invoice_paid_earnings_in_subscription_link_and_stripe_account() 
     link_id = "sub-earn-1"
     amount = 3000
     service_fee = 150
-    expected_earnings = amount - service_fee
+    expected_earnings = amount - service_fee - settings.fixed_fee
     subs_repo.create(
         subscription_id=link_id,
         user_id=user_id,

@@ -78,17 +78,10 @@ variable "cors_allowed_origins_default" {
   default = ["*"]
 }
 
-variable "cloudflare_zone_name" {
-  description = "Cloudflare zone name (e.g. quidme.uk). Used to manage DNS + ACM validation records."
+variable "dns_zone_name" {
+  description = "Route 53 hosted zone name (root domain), e.g. quidme.uk."
   type        = string
-  default     = ""
-}
-
-variable "cloudflare_api_token" {
-  description = "Cloudflare API token with DNS edit permissions for the zone."
-  type        = string
-  sensitive   = true
-  default     = ""
+  default     = "quidme.uk"
 }
 
 variable "lambda_source_dir" {

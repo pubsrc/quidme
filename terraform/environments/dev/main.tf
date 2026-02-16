@@ -7,17 +7,23 @@ locals {
     Project     = var.project_name
   }
 
+  # Dev intentionally uses default AWS endpoints (no custom domains) unless you
+  # explicitly configure them. This avoids DNS/provider drift during iteration.
+  #
+  # If you later add `frontend_domain_aliases`, you must also provide
+  # `frontend_acm_certificate_arn` for a certificate that is already validated.
+  computed_payme_base_url = length(var.frontend_domain_aliases) > 0 ? "https://${var.frontend_domain_aliases[0]}" : module.frontend_hosting.frontend_url
+
+  payme_base_url_value      = var.payme_base_url_default != "https://example.com" ? var.payme_base_url_default : local.computed_payme_base_url
+  account_refresh_url_value = var.account_refresh_url_default != "https://example.com/refresh" ? var.account_refresh_url_default : "${local.payme_base_url_value}/app/profile"
+  account_return_url_value  = var.account_return_url_default != "https://example.com/return" ? var.account_return_url_default : "${local.payme_base_url_value}/app/profile"
+
   callback_urls_value = length(var.callback_urls_default) > 0 ? var.callback_urls_default : [
-    var.payme_base_url_default,
+    "${local.payme_base_url_value}/callback",
   ]
   logout_urls_value = length(var.logout_urls_default) > 0 ? var.logout_urls_default : [
-    var.payme_base_url_default,
+    local.payme_base_url_value,
   ]
-
-  frontend_manage_certificate = length(var.frontend_domain_aliases) > 0 && trimspace(var.frontend_acm_certificate_arn) == ""
-  frontend_certificate_arn    = local.frontend_manage_certificate ? aws_acm_certificate_validation.frontend[0].certificate_arn : var.frontend_acm_certificate_arn
-  api_manage_certificate      = trimspace(var.api_domain_name) != "" && trimspace(var.api_acm_certificate_arn) == ""
-  api_certificate_arn         = local.api_manage_certificate ? aws_acm_certificate_validation.api[0].certificate_arn : var.api_acm_certificate_arn
 }
 
 data "archive_file" "lambda_zip" {
@@ -55,13 +61,13 @@ module "ssm" {
   service_fee_fixed_value = var.service_fee_fixed_default
 
   payme_base_url_name  = "${var.parameter_prefix}/payme_base_url"
-  payme_base_url_value = var.payme_base_url_default
+  payme_base_url_value = local.payme_base_url_value
 
   account_refresh_url_name  = "${var.parameter_prefix}/account_refresh_url"
-  account_refresh_url_value = var.account_refresh_url_default
+  account_refresh_url_value = local.account_refresh_url_value
 
   account_return_url_name  = "${var.parameter_prefix}/account_return_url"
-  account_return_url_value = var.account_return_url_default
+  account_return_url_value = local.account_return_url_value
 
   cognito_domain_prefix_name  = "${var.parameter_prefix}/cognito_domain_prefix"
   cognito_domain_prefix_value = var.cognito_domain_prefix_default
@@ -252,142 +258,6 @@ module "frontend_hosting" {
   project_name        = var.project_name
   environment         = "dev"
   domain_aliases      = var.frontend_domain_aliases
-  acm_certificate_arn = local.frontend_certificate_arn
+  acm_certificate_arn = var.frontend_acm_certificate_arn
   tags                = local.tags
 }
-
-# Cloudflare DNS (dev) for frontend + API custom domain + ACM validation.
-data "cloudflare_zone" "zone" {
-  count = trimspace(var.cloudflare_zone_name) != "" ? 1 : 0
-  filter {
-    name = var.cloudflare_zone_name
-  }
-}
-
-locals {
-  cloudflare_zone_id = trimspace(var.cloudflare_zone_name) != "" ? data.cloudflare_zone.zone[0].id : ""
-}
-
-module "dns_cloudflare" {
-  count   = trimspace(var.cloudflare_zone_name) != "" ? 1 : 0
-  source  = "../../modules/dns_cloudflare"
-  zone_id = local.cloudflare_zone_id
-  records = merge(
-    length(var.frontend_domain_aliases) > 0 ? {
-      frontend_dev = {
-        type    = "CNAME"
-        name    = var.frontend_domain_aliases[0]
-        content = module.frontend_hosting.cloudfront_domain_name
-        proxied = false
-        ttl     = 1
-      }
-    } : {},
-    trimspace(var.api_domain_name) != "" ? {
-      api_dev = {
-        type    = "CNAME"
-        name    = var.api_domain_name
-        content = aws_apigatewayv2_domain_name.api[0].domain_name_configuration[0].target_domain_name
-        proxied = false
-        ttl     = 1
-      }
-    } : {},
-  )
-}
-
-resource "cloudflare_dns_record" "api_cert_validation" {
-  for_each = trimspace(var.cloudflare_zone_name) != "" && local.api_manage_certificate ? {
-    for dvo in aws_acm_certificate.api[0].domain_validation_options :
-    dvo.resource_record_name => dvo
-  } : {}
-
-  zone_id = local.cloudflare_zone_id
-  type    = each.value.resource_record_type
-  name    = trimsuffix(each.value.resource_record_name, ".")
-  content = each.value.resource_record_value
-  ttl     = 1
-  proxied = false
-}
-
-resource "cloudflare_dns_record" "frontend_cert_validation" {
-  for_each = trimspace(var.cloudflare_zone_name) != "" && local.frontend_manage_certificate ? {
-    for dvo in aws_acm_certificate.frontend[0].domain_validation_options :
-    dvo.resource_record_name => dvo
-  } : {}
-
-  zone_id = local.cloudflare_zone_id
-  type    = each.value.resource_record_type
-  name    = trimsuffix(each.value.resource_record_name, ".")
-  content = each.value.resource_record_value
-  ttl     = 1
-  proxied = false
-}
-
-# Optional: custom domain for the HTTP API (dev).
-resource "aws_acm_certificate" "api" {
-  count             = local.api_manage_certificate ? 1 : 0
-  domain_name       = var.api_domain_name
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_acm_certificate_validation" "api" {
-  count           = local.api_manage_certificate ? 1 : 0
-  certificate_arn = aws_acm_certificate.api[0].arn
-
-  validation_record_fqdns = [
-    for dvo in aws_acm_certificate.api[0].domain_validation_options : dvo.resource_record_name
-  ]
-
-  depends_on = [cloudflare_dns_record.api_cert_validation]
-}
-
-resource "aws_apigatewayv2_domain_name" "api" {
-  count       = trimspace(var.api_domain_name) != "" ? 1 : 0
-  domain_name = var.api_domain_name
-
-  domain_name_configuration {
-    certificate_arn = local.api_certificate_arn
-    endpoint_type   = "REGIONAL"
-    security_policy = "TLS_1_2"
-  }
-}
-
-resource "aws_apigatewayv2_api_mapping" "api" {
-  count       = trimspace(var.api_domain_name) != "" ? 1 : 0
-  api_id      = module.api_gateway.api_id
-  domain_name = aws_apigatewayv2_domain_name.api[0].id
-  stage       = "$default"
-}
-
-resource "aws_acm_certificate" "frontend" {
-  count                     = local.frontend_manage_certificate ? 1 : 0
-  provider                  = aws.us_east_1
-  domain_name               = var.frontend_domain_aliases[0]
-  subject_alternative_names = slice(var.frontend_domain_aliases, 1, length(var.frontend_domain_aliases))
-  validation_method         = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_acm_certificate_validation" "frontend" {
-  count           = local.frontend_manage_certificate ? 1 : 0
-  provider        = aws.us_east_1
-  certificate_arn = aws_acm_certificate.frontend[0].arn
-
-  validation_record_fqdns = [
-    for dvo in aws_acm_certificate.frontend[0].domain_validation_options : dvo.resource_record_name
-  ]
-
-  depends_on = [cloudflare_dns_record.frontend_cert_validation]
-}
-
-#
-# Dev is intentionally not public. We use the default AWS endpoints:
-# - Frontend uses the CloudFront distribution domain.
-# - API uses the API Gateway default endpoint.
-#
