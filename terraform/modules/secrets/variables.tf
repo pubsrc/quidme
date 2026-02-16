@@ -30,3 +30,9 @@ variable "tags" {
   type    = map(string)
   default = {}
 }
+
+variable "recovery_window_in_days" {
+  description = "Secrets Manager recovery window. Set to 0 to allow immediate recreation after destroy."
+  type        = number
+  default     = 0
+}

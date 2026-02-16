@@ -38,6 +38,12 @@ resource "aws_cognito_identity_provider" "google" {
     email    = "email"
     username = "sub"
   }
+
+  # AWS returns additional computed keys in provider_details that are not part
+  # of desired config and otherwise cause perpetual drift.
+  lifecycle {
+    ignore_changes = [provider_details]
+  }
 }
 
 resource "aws_cognito_user_pool_client" "app" {

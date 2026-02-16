@@ -1,6 +1,7 @@
 resource "aws_secretsmanager_secret" "stripe_secret" {
-  name = var.stripe_secret_name
-  tags = var.tags
+  name                    = var.stripe_secret_name
+  recovery_window_in_days = var.recovery_window_in_days
+  tags                    = var.tags
 }
 
 resource "aws_secretsmanager_secret_version" "stripe_secret" {
@@ -13,8 +14,9 @@ resource "aws_secretsmanager_secret_version" "stripe_secret" {
 }
 
 resource "aws_secretsmanager_secret" "stripe_webhook_secret" {
-  name = var.stripe_webhook_secret_name
-  tags = var.tags
+  name                    = var.stripe_webhook_secret_name
+  recovery_window_in_days = var.recovery_window_in_days
+  tags                    = var.tags
 }
 
 resource "aws_secretsmanager_secret_version" "stripe_webhook_secret" {
@@ -27,8 +29,9 @@ resource "aws_secretsmanager_secret_version" "stripe_webhook_secret" {
 }
 
 resource "aws_secretsmanager_secret" "google_oauth" {
-  name = var.google_oauth_secret_name
-  tags = var.tags
+  name                    = var.google_oauth_secret_name
+  recovery_window_in_days = var.recovery_window_in_days
+  tags                    = var.tags
 }
 
 resource "aws_secretsmanager_secret_version" "google_oauth" {
