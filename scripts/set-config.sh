@@ -81,6 +81,12 @@ VITE_COGNITO_OAUTH_DOMAIN="${VITE_COGNITO_OAUTH_DOMAIN:-${COGNITO_DOMAIN_PREFIX}
 VITE_OAUTH_REDIRECT_SIGN_IN="${VITE_OAUTH_REDIRECT_SIGN_IN:-$COGNITO_REDIRECT_URI}"
 VITE_OAUTH_REDIRECT_SIGN_OUT="${VITE_OAUTH_REDIRECT_SIGN_OUT:-$PAYME_BASE_URL}"
 
+# Frontend is served over HTTPS in dev/prod, so API base URL must also be HTTPS.
+if [[ "$VITE_API_BASE_URL" != https://* ]]; then
+  echo "VITE_API_BASE_URL must start with https:// for $ENV_NAME (current: $VITE_API_BASE_URL)" >&2
+  exit 1
+fi
+
 put_ssm() {
   local name="$1"
   local value="$2"
