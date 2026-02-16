@@ -24,6 +24,11 @@ locals {
   frontend_certificate_arn    = local.frontend_manage_certificate ? aws_acm_certificate_validation.frontend[0].certificate_arn : var.frontend_acm_certificate_arn
   api_manage_certificate      = trimspace(var.api_domain_name) != "" && trimspace(var.api_acm_certificate_arn) == ""
   api_certificate_arn         = local.api_manage_certificate ? aws_acm_certificate_validation.api[0].certificate_arn : var.api_acm_certificate_arn
+
+  frontend_additional_alias_record_names = [
+    for alias in slice(var.frontend_domain_aliases, 1, length(var.frontend_domain_aliases)) :
+    trimsuffix(alias, ".${var.dns_zone_name}")
+  ]
 }
 
 data "archive_file" "lambda_zip" {
@@ -127,11 +132,6 @@ data "aws_ssm_parameter" "account_return_url" {
   depends_on = [module.ssm]
 }
 
-data "aws_ssm_parameter" "cognito_domain_prefix" {
-  name       = module.ssm.cognito_domain_prefix_name
-  depends_on = [module.ssm]
-}
-
 data "aws_ssm_parameter" "callback_urls" {
   name       = module.ssm.callback_urls_name
   depends_on = [module.ssm]
@@ -156,7 +156,7 @@ module "cognito" {
   source               = "../../modules/cognito"
   user_pool_name       = "${var.project_name}-users"
   app_client_name      = "${var.project_name}-app"
-  domain_prefix        = data.aws_ssm_parameter.cognito_domain_prefix.value
+  domain_prefix        = var.cognito_domain_prefix_default
   google_client_id     = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_id
   google_client_secret = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_secret
   callback_urls        = split(",", data.aws_ssm_parameter.callback_urls.value)
@@ -322,7 +322,7 @@ resource "aws_acm_certificate_validation" "frontend" {
 resource "aws_route53_record" "api_cert_validation" {
   for_each = local.api_manage_certificate ? {
     for dvo in aws_acm_certificate.api[0].domain_validation_options :
-    dvo.resource_record_name => dvo
+    dvo.domain_name => dvo
   } : {}
 
   zone_id         = aws_route53_zone.primary.zone_id
@@ -336,7 +336,7 @@ resource "aws_route53_record" "api_cert_validation" {
 resource "aws_route53_record" "frontend_cert_validation" {
   for_each = local.frontend_manage_certificate ? {
     for dvo in aws_acm_certificate.frontend[0].domain_validation_options :
-    dvo.resource_record_name => dvo
+    dvo.domain_name => dvo
   } : {}
 
   zone_id         = aws_route53_zone.primary.zone_id
@@ -371,11 +371,11 @@ resource "aws_route53_record" "frontend_root_aaaa" {
   }
 }
 
-resource "aws_route53_record" "frontend_www_a" {
-  count   = length(var.frontend_domain_aliases) > 1 ? 1 : 0
-  zone_id = aws_route53_zone.primary.zone_id
-  name    = "www"
-  type    = "A"
+resource "aws_route53_record" "frontend_aliases_a" {
+  for_each = toset(local.frontend_additional_alias_record_names)
+  zone_id  = aws_route53_zone.primary.zone_id
+  name     = each.value
+  type     = "A"
 
   alias {
     name                   = module.frontend_hosting.cloudfront_domain_name
@@ -384,11 +384,11 @@ resource "aws_route53_record" "frontend_www_a" {
   }
 }
 
-resource "aws_route53_record" "frontend_www_aaaa" {
-  count   = length(var.frontend_domain_aliases) > 1 ? 1 : 0
-  zone_id = aws_route53_zone.primary.zone_id
-  name    = "www"
-  type    = "AAAA"
+resource "aws_route53_record" "frontend_aliases_aaaa" {
+  for_each = toset(local.frontend_additional_alias_record_names)
+  zone_id  = aws_route53_zone.primary.zone_id
+  name     = each.value
+  type     = "AAAA"
 
   alias {
     name                   = module.frontend_hosting.cloudfront_domain_name
