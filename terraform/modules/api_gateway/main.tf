@@ -48,9 +48,16 @@ resource "aws_apigatewayv2_route" "proxy" {
   authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
 }
 
-## NOTE: No explicit OPTIONS route.
-## HTTP API serves CORS preflight responses directly via `cors_configuration`
-## on the API, which also ensures consistent headers on authorizer failures.
+## NOTE:
+## We *must* explicitly allow unauthenticated OPTIONS requests because the
+## authenticated "ANY /{proxy+}" route also matches OPTIONS. Browsers treat a
+## non-2xx preflight (e.g. 401 from JWT authorizer) as a CORS failure.
+resource "aws_apigatewayv2_route" "cors_preflight" {
+  api_id             = aws_apigatewayv2_api.api.id
+  route_key          = "OPTIONS /{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+  authorization_type = "NONE"
+}
 
 resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.api.id
