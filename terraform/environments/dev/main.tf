@@ -127,11 +127,6 @@ data "aws_ssm_parameter" "account_return_url" {
   depends_on = [module.ssm]
 }
 
-data "aws_ssm_parameter" "cognito_domain_prefix" {
-  name       = module.ssm.cognito_domain_prefix_name
-  depends_on = [module.ssm]
-}
-
 data "aws_ssm_parameter" "callback_urls" {
   name       = module.ssm.callback_urls_name
   depends_on = [module.ssm]
@@ -156,7 +151,7 @@ module "cognito" {
   source               = "../../modules/cognito"
   user_pool_name       = "${var.project_name}-users"
   app_client_name      = "${var.project_name}-app"
-  domain_prefix        = data.aws_ssm_parameter.cognito_domain_prefix.value
+  domain_prefix        = var.cognito_domain_prefix_default
   google_client_id     = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_id
   google_client_secret = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_secret
   callback_urls        = split(",", data.aws_ssm_parameter.callback_urls.value)

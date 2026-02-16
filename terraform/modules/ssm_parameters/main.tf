@@ -58,10 +58,6 @@ resource "aws_ssm_parameter" "cognito_domain_prefix" {
   type  = "String"
   value = var.cognito_domain_prefix_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "callback_urls" {
