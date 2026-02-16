@@ -1,5 +1,5 @@
 output "api_endpoint" {
-  value = module.api_gateway.api_endpoint
+  value = trimspace(var.api_domain_name) != "" ? "https://${var.api_domain_name}" : module.api_gateway.api_endpoint
 }
 
 output "api_base_url" {

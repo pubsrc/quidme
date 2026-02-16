@@ -1,20 +1,22 @@
 """
 Centralized additive fee calculation for payment links.
 
-Canonical fee model (SOURCE OF TRUTH):
+Fee model (SOURCE OF TRUTH):
 
 Let:
     combined_pct = service_fee_percent + stripe_fee_percent
-    multiplier = 1 + combined_pct / 100
 
-Then:
+Then the customer-facing total is computed by "grossing up" the base amount:
 
-    total = amount * multiplier + fixed_fee
+    total = (amount + fixed_fee) / (1 - combined_pct/100)
 
-Service fee:
-    service_fee = fixed_fee / 2 + (service_fee_percent% of amount)
+The platform service fee is a percentage of the *total*:
 
-All other functions derive from this model.
+    service_fee_cents = total * service_fee_percent/100
+
+This matches the unit-test expectations and keeps a single consistent model for:
+1. Creating links (compute total + service_fee).
+2. Earning computation on payment events (compute earnings from total paid).
 """
 
 from __future__ import annotations
@@ -30,7 +32,9 @@ from payme.core.settings import settings
 
 def _multiplier(service_fee_percent: float, stripe_fee_percent: float) -> float:
     combined_pct = service_fee_percent + stripe_fee_percent
-    return 1 + combined_pct / 100
+    if combined_pct >= 100:
+        raise ValueError("combined percentage must be < 100")
+    return 1 / (1 - combined_pct / 100)
 
 
 def subtract_fees(amount: int, fee_cents: int) -> int:
@@ -49,9 +53,13 @@ def subtract_fees(amount: int, fee_cents: int) -> int:
 
 def amount_with_fee(
     amount_cents: int,
+    *,
+    fixed_fee: int | None = None,
+    service_fee_percent: float | None = None,
+    stripe_fee_percent: float | None = None,
 ) -> tuple[int, float, float, int]:
     """
-    Canonical additive fee model.
+    Compute the customer-facing total for a base amount.
 
     Returns:
         (
@@ -65,26 +73,16 @@ def amount_with_fee(
     if amount_cents < 0:
         raise ValueError("amount_cents must be non-negative")
 
-    fixed = settings.fixed_fee
-    svc_pct = settings.service_fee_percent
-    stripe_pct = settings.stripe_fee_percent
+    fixed = settings.fixed_fee if fixed_fee is None else fixed_fee
+    svc_pct = settings.service_fee_percent if service_fee_percent is None else service_fee_percent
+    stripe_pct = settings.stripe_fee_percent if stripe_fee_percent is None else stripe_fee_percent
 
     multiplier = _multiplier(svc_pct, stripe_pct)
+    total_cents = int(round((amount_cents + fixed) * multiplier))
 
-    # Total customer pays
-    total_cents = int(round(amount_cents * multiplier + fixed))
-
-    # Service fee amount
-    service_fee_cents = int(
-        round((fixed / 2) + (amount_cents * svc_pct / 100))
-    )
-
-    # Effective service % relative to base amount
-    effective_service_pct = (
-        (service_fee_cents / amount_cents) * 100
-        if amount_cents > 0
-        else 0.0
-    )
+    # Platform fee is defined as a percent of the total.
+    service_fee_cents = int(round(total_cents * svc_pct / 100))
+    effective_service_pct = float(svc_pct)
 
     return (
         total_cents,
@@ -113,8 +111,7 @@ def base_amount_from_total(total_cents: int) -> int:
     stripe_pct = settings.stripe_fee_percent
 
     multiplier = _multiplier(svc_pct, stripe_pct)
-
-    base_amount = (total_cents - fixed) / multiplier
+    base_amount = (total_cents / multiplier) - fixed
 
     return int(round(base_amount))
 
@@ -126,13 +123,20 @@ def base_amount_from_total(total_cents: int) -> int:
 
 def amount_with_subscription_fee(
     amount_cents: int,
+    *,
+    fixed_fee: int | None = None,
+    service_fee_percent: float | None = None,
+    stripe_fee_percent: float | None = None,
 ) -> tuple[int, float, float]:
     """
     Subscription links use same additive model.
     """
 
     total, effective_service_pct, stripe_pct, _ = amount_with_fee(
-        amount_cents
+        amount_cents,
+        fixed_fee=fixed_fee,
+        service_fee_percent=service_fee_percent,
+        stripe_fee_percent=stripe_fee_percent,
     )
 
     return (total, effective_service_pct, stripe_pct)
@@ -140,38 +144,36 @@ def amount_with_subscription_fee(
 
 def earnings_from_payment(
     total_paid_cents: int,
+    *,
+    known_service_fee_cents: int | None = None,
+    fixed_fee: int | None = None,
+    service_fee_percent: float | None = None,
+    stripe_fee_percent: float | None = None,
 ) -> int:
     """
-    Seller earnings derived from canonical model.
+    Seller earnings derived from the fee model.
 
-    Process:
-        1. Reverse total -> base amount
-        2. Recompute canonical fees
-        3. Subtract fixed + service + stripe
+    If Stripe provides an application_fee_amount, pass it as known_service_fee_cents.
+    Otherwise we compute service fee as a percentage of total_paid_cents.
     """
 
     if total_paid_cents < 0:
         raise ValueError("total_paid_cents must be non-negative")
 
-    fixed = settings.fixed_fee
-    svc_pct = settings.service_fee_percent
-    stripe_pct = settings.stripe_fee_percent
+    fixed = settings.fixed_fee if fixed_fee is None else fixed_fee
+    svc_pct = settings.service_fee_percent if service_fee_percent is None else service_fee_percent
+    stripe_pct = settings.stripe_fee_percent if stripe_fee_percent is None else stripe_fee_percent
 
-    # Recover original base amount
-    base_amount = base_amount_from_total(total_paid_cents)
+    _multiplier(svc_pct, stripe_pct)  # validates combined_pct < 100
 
-    # Recompute service fee deterministically
-    _, _, _, service_fee_cents = amount_with_fee(base_amount)
-
-    # Stripe fee (applied to base amount in this model)
-    stripe_fee_cents = int(round(base_amount * stripe_pct / 100))
-
-    earnings = (
-        total_paid_cents
-        - fixed
-        - service_fee_cents
-        - stripe_fee_cents
+    service_fee_cents = (
+        int(known_service_fee_cents)
+        if known_service_fee_cents is not None
+        else int(round(total_paid_cents * svc_pct / 100))
     )
+    stripe_fee_cents = int(round(total_paid_cents * stripe_pct / 100))
+
+    earnings = total_paid_cents - fixed - service_fee_cents - stripe_fee_cents
 
     return max(earnings, 0)
 

@@ -18,11 +18,21 @@ if [[ ! -f "$ENV_FILE" ]]; then
   echo "Env file not found: $ENV_FILE" >&2
   exit 1
 fi
+FRONTEND_ENV_FILE="$ROOT_DIR/frontend/.env.$ENV_NAME"
 
 # shellcheck disable=SC1090
 set -a
 source "$ENV_FILE"
 set +a
+
+# If frontend env exists, load VITE_* values from there too so frontend
+# runtime config can be synced to SSM by a single command.
+if [[ -f "$FRONTEND_ENV_FILE" ]]; then
+  # shellcheck disable=SC1090
+  set -a
+  source "$FRONTEND_ENV_FILE"
+  set +a
+fi
 
 PREFIX="/payme/$ENV_NAME"
 PROJECT="payme"
@@ -62,6 +72,14 @@ DDB_TABLE_SUBSCRIPTION_LINKS="${DDB_TABLE_SUBSCRIPTION_LINKS:-payme-subscription
 DDB_TABLE_USER_ACCOUNTS="${DDB_TABLE_USER_ACCOUNTS:-payme-user-accounts}"
 DDB_TABLE_TRANSACTIONS="${DDB_TABLE_TRANSACTIONS:-payme-transactions}"
 DDB_TABLE_STRIPE_ACCOUNTS="${DDB_TABLE_STRIPE_ACCOUNTS:-payme-stripe-accounts}"
+
+VITE_API_BASE_URL="${VITE_API_BASE_URL:-$PAYME_BASE_URL}"
+VITE_COGNITO_USER_POOL_ID="${VITE_COGNITO_USER_POOL_ID:-$COGNITO_USER_POOL_ID}"
+VITE_COGNITO_USER_POOL_CLIENT_ID="${VITE_COGNITO_USER_POOL_CLIENT_ID:-$COGNITO_APP_CLIENT_ID}"
+VITE_COGNITO_REGION="${VITE_COGNITO_REGION:-$COGNITO_REGION}"
+VITE_COGNITO_OAUTH_DOMAIN="${VITE_COGNITO_OAUTH_DOMAIN:-${COGNITO_DOMAIN_PREFIX}.auth.${COGNITO_REGION}.amazoncognito.com}"
+VITE_OAUTH_REDIRECT_SIGN_IN="${VITE_OAUTH_REDIRECT_SIGN_IN:-$COGNITO_REDIRECT_URI}"
+VITE_OAUTH_REDIRECT_SIGN_OUT="${VITE_OAUTH_REDIRECT_SIGN_OUT:-$PAYME_BASE_URL}"
 
 put_ssm() {
   local name="$1"
@@ -115,5 +133,12 @@ put_ssm "ddb_table_subscription_links" "$DDB_TABLE_SUBSCRIPTION_LINKS"
 put_ssm "ddb_table_user_accounts" "$DDB_TABLE_USER_ACCOUNTS"
 put_ssm "ddb_table_transactions" "$DDB_TABLE_TRANSACTIONS"
 put_ssm "ddb_table_stripe_accounts" "$DDB_TABLE_STRIPE_ACCOUNTS"
+put_ssm "vite_api_base_url" "$VITE_API_BASE_URL"
+put_ssm "vite_cognito_user_pool_id" "$VITE_COGNITO_USER_POOL_ID"
+put_ssm "vite_cognito_user_pool_client_id" "$VITE_COGNITO_USER_POOL_CLIENT_ID"
+put_ssm "vite_cognito_region" "$VITE_COGNITO_REGION"
+put_ssm "vite_cognito_oauth_domain" "$VITE_COGNITO_OAUTH_DOMAIN"
+put_ssm "vite_oauth_redirect_sign_in" "$VITE_OAUTH_REDIRECT_SIGN_IN"
+put_ssm "vite_oauth_redirect_sign_out" "$VITE_OAUTH_REDIRECT_SIGN_OUT"
 
-echo "Updated secrets and SSM parameters for $ENV_NAME in $REGION using $ENV_FILE"
+echo "Updated secrets and SSM parameters for $ENV_NAME in $REGION using $ENV_FILE (and $FRONTEND_ENV_FILE when present)"

@@ -10,6 +10,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from payme.core.settings import settings
 from payme.services.stripe_event_handler import (
     handle_invoice_paid,
     handle_payment_succeeded,
@@ -79,6 +80,10 @@ def test_handle_payment_succeeded_updates_payment_link_and_stripe_account_earnin
     mock_links_repo.get.return_value = {"link_id": "link-1", "service_fee": 55}
     mock_links_repo_cls.return_value = mock_links_repo
 
+    mock_tx_repo = MagicMock()
+    mock_tx_repo.get_by_payment_intent_id.return_value = None
+    mock_tx_repo_cls.return_value = mock_tx_repo
+
     data = _payment_intent_succeeded_event(user_id="u1", link_id="link-1", amount=1000, currency="gbp")
     result = handle_payment_succeeded("payment_intent.succeeded", data, account_id=None)
 
@@ -89,7 +94,7 @@ def test_handle_payment_succeeded_updates_payment_link_and_stripe_account_earnin
     earnings = call_args[1]
     total_amount = call_args[2]
     assert total_amount == 1000
-    assert earnings == 1000 - 55  # amount - service_fee
+    assert earnings == 1000 - 55 - settings.fixed_fee  # total_paid - service_fee - fixed_fee
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
     acc_call = mock_account_repo_cls.return_value.add_earnings.call_args[0]
@@ -111,6 +116,10 @@ def test_handle_payment_succeeded_connect_account_still_updates_earnings(
     mock_links_repo.get.return_value = {"link_id": "link-2", "service_fee": 0}
     mock_links_repo_cls.return_value = mock_links_repo
 
+    mock_tx_repo = MagicMock()
+    mock_tx_repo.get_by_payment_intent_id.return_value = None
+    mock_tx_repo_cls.return_value = mock_tx_repo
+
     data = _payment_intent_succeeded_event(
         user_id="u2", link_id="link-2", amount=5000, currency="usd", application_fee_amount=100
     )
@@ -122,12 +131,12 @@ def test_handle_payment_succeeded_connect_account_still_updates_earnings(
     assert call_args[0] == "link-2"
     assert call_args[2] == 5000
     earnings = call_args[1]
-    assert earnings == 4900  # 5000 - 100 application fee
+    assert earnings == 5000 - 100 - settings.fixed_fee  # total_paid - application_fee - fixed_fee
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
     acc_call = mock_account_repo_cls.return_value.add_earnings.call_args[0]
     assert acc_call[0] == "u2"
-    assert acc_call[1] == 4900
+    assert acc_call[1] == earnings
     assert acc_call[2] == "usd"
 
 
@@ -144,6 +153,10 @@ def test_handle_invoice_paid_updates_subscription_link_and_stripe_account_earnin
     mock_subs_repo.get.return_value = {"subscription_id": "sub-1", "service_fee": 100}
     mock_subs_repo_cls.return_value = mock_subs_repo
 
+    mock_tx_repo = MagicMock()
+    mock_tx_repo.get_by_payment_intent_id.return_value = None
+    mock_tx_repo_cls.return_value = mock_tx_repo
+
     data = _invoice_paid_event(user_id="u3", link_id="sub-1", amount=3000, currency="gbp")
     result = handle_invoice_paid("invoice.paid", data, account_id=None)
 
@@ -154,12 +167,12 @@ def test_handle_invoice_paid_updates_subscription_link_and_stripe_account_earnin
     earnings = call_args[1]
     total_amount = call_args[2]
     assert total_amount == 3000
-    assert earnings == 2900  # 3000 - 100
+    assert earnings == 3000 - 100 - settings.fixed_fee
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
     acc_call = mock_account_repo_cls.return_value.add_earnings.call_args[0]
     assert acc_call[0] == "u3"
-    assert acc_call[1] == 2900
+    assert acc_call[1] == earnings
     assert acc_call[2] == "gbp"
 
 
@@ -176,12 +189,16 @@ def test_handle_invoice_paid_zero_earnings_does_not_call_add_earnings(
     mock_subs_repo.get.return_value = {"subscription_id": "sub-1", "service_fee": 500}
     mock_subs_repo_cls.return_value = mock_subs_repo
 
+    mock_tx_repo = MagicMock()
+    mock_tx_repo.get_by_payment_intent_id.return_value = None
+    mock_tx_repo_cls.return_value = mock_tx_repo
+
     data = _invoice_paid_event(user_id="u4", link_id="sub-1", amount=500, currency="usd")
     result = handle_invoice_paid("invoice.paid", data, account_id=None)
 
     assert result is True
     mock_subs_repo.add_payment_result.assert_called_once()
-    # earnings = 500 - 500 = 0
+    # earnings = 500 - 500 - fixed_fee < 0 -> 0
     mock_account_repo_cls.return_value.add_earnings.assert_not_called()
 
 

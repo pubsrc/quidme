@@ -1,45 +1,28 @@
-# Cloudflare DNS Management (Prod)
+# Cloudflare Registrar / Route 53 DNS (Prod)
 
-We no longer manage Cloudflare DNS records with the Terraform Cloudflare provider.
+Prod DNS is managed in Route 53. Cloudflare is treated as the registrar only.
 
 ## Why
 
-- Cloudflare provider state schema drift can break Terraform runs (state decode errors).
-- DNS changes are better handled as an explicit, manual/controlled action.
+- Avoid Cloudflare provider state/schema drift.
+- Keep DNS + ACM validation fully automated in AWS.
 
 ## What Terraform Manages Now
 
 - **AWS resources** (API Gateway, Lambda, Cognito, DynamoDB, CloudFront, S3, ACM).
-- **ACM certificates** are still created in Terraform (when you don't provide an existing ARN), but
-  **DNS validation records are not created automatically**.
-  Terraform outputs the required ACM DNS validation records for you to create in Cloudflare.
+- **Route 53 hosted zone + records (prod only)**: apex + www -> CloudFront, api -> API Gateway, and ACM DNS validation.
 
-## How To Update Cloudflare (Prod)
+## Cloudflare Setup (One-Time)
 
-Run the script manually:
-
-- `/Users/bilal/projects/ai/payme/scripts/update-cloudflare-prod.sh`
-
-It can upsert:
-
-- `quidme.uk` CNAME → CloudFront distribution domain
-- `api.quidme.uk` CNAME → API Gateway custom domain target
-- ACM DNS validation records for:
-  - `quidme.uk` (CloudFront/ACM in `us-east-1`)
-  - `api.quidme.uk` (ACM in `eu-west-2`)
-
-Example (from `terraform/environments/prod`):
+After a successful `terraform apply` in `terraform/environments/prod`, update your domain's
+nameservers at Cloudflare (registrar) to the Route 53 values:
 
 ```bash
-export CLOUDFLARE_API_TOKEN="..."
-
-export FRONTEND_CNAME_TARGET="$(terraform output -raw frontend_cloudfront_domain_name)"
-export API_CNAME_TARGET="$(terraform output -raw api_custom_domain_target)"
-export FRONTEND_ACM_VALIDATION_RECORDS_JSON="$(terraform output -json frontend_acm_validation_records)"
-export API_ACM_VALIDATION_RECORDS_JSON="$(terraform output -json api_acm_validation_records)"
-
-../../scripts/update-cloudflare-prod.sh
+cd terraform/environments/prod
+terraform output -raw route53_zone_name_servers
 ```
+
+DNS propagation depends on the registrar and can take time.
 
 ## One-Time State Migration
 

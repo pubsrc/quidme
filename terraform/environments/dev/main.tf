@@ -7,16 +7,23 @@ locals {
     Project     = var.project_name
   }
 
+  # Dev intentionally uses default AWS endpoints (no custom domains) unless you
+  # explicitly configure them. This avoids DNS/provider drift during iteration.
+  #
+  # If you later add `frontend_domain_aliases`, you must also provide
+  # `frontend_acm_certificate_arn` for a certificate that is already validated.
+  computed_payme_base_url = length(var.frontend_domain_aliases) > 0 ? "https://${var.frontend_domain_aliases[0]}" : module.frontend_hosting.frontend_url
+
+  payme_base_url_value      = var.payme_base_url_default != "https://example.com" ? var.payme_base_url_default : local.computed_payme_base_url
+  account_refresh_url_value = var.account_refresh_url_default != "https://example.com/refresh" ? var.account_refresh_url_default : "${local.payme_base_url_value}/app/profile"
+  account_return_url_value  = var.account_return_url_default != "https://example.com/return" ? var.account_return_url_default : "${local.payme_base_url_value}/app/profile"
+
   callback_urls_value = length(var.callback_urls_default) > 0 ? var.callback_urls_default : [
-    var.payme_base_url_default,
+    "${local.payme_base_url_value}/callback",
   ]
   logout_urls_value = length(var.logout_urls_default) > 0 ? var.logout_urls_default : [
-    var.payme_base_url_default,
+    local.payme_base_url_value,
   ]
-
-  # Dev is not public; custom domains/certs are not managed here.
-  frontend_certificate_arn = var.frontend_acm_certificate_arn
-  api_certificate_arn      = var.api_acm_certificate_arn
 }
 
 data "archive_file" "lambda_zip" {
@@ -54,13 +61,13 @@ module "ssm" {
   service_fee_fixed_value = var.service_fee_fixed_default
 
   payme_base_url_name  = "${var.parameter_prefix}/payme_base_url"
-  payme_base_url_value = var.payme_base_url_default
+  payme_base_url_value = local.payme_base_url_value
 
   account_refresh_url_name  = "${var.parameter_prefix}/account_refresh_url"
-  account_refresh_url_value = var.account_refresh_url_default
+  account_refresh_url_value = local.account_refresh_url_value
 
   account_return_url_name  = "${var.parameter_prefix}/account_return_url"
-  account_return_url_value = var.account_return_url_default
+  account_return_url_value = local.account_return_url_value
 
   cognito_domain_prefix_name  = "${var.parameter_prefix}/cognito_domain_prefix"
   cognito_domain_prefix_value = var.cognito_domain_prefix_default
@@ -76,6 +83,27 @@ module "ssm" {
 
   cors_allowed_origins_name  = "${var.parameter_prefix}/cors_allowed_origins"
   cors_allowed_origins_value = var.cors_allowed_origins_default
+
+  vite_api_base_url_name  = "${var.parameter_prefix}/vite_api_base_url"
+  vite_api_base_url_value = trimspace(var.api_domain_name) != "" ? "https://${var.api_domain_name}" : local.payme_base_url_value
+
+  vite_cognito_user_pool_id_name  = "${var.parameter_prefix}/vite_cognito_user_pool_id"
+  vite_cognito_user_pool_id_value = var.vite_cognito_user_pool_id_default
+
+  vite_cognito_user_pool_client_id_name  = "${var.parameter_prefix}/vite_cognito_user_pool_client_id"
+  vite_cognito_user_pool_client_id_value = var.vite_cognito_user_pool_client_id_default
+
+  vite_cognito_region_name  = "${var.parameter_prefix}/vite_cognito_region"
+  vite_cognito_region_value = var.aws_region
+
+  vite_cognito_oauth_domain_name  = "${var.parameter_prefix}/vite_cognito_oauth_domain"
+  vite_cognito_oauth_domain_value = "${var.cognito_domain_prefix_default}.auth.${var.aws_region}.amazoncognito.com"
+
+  vite_oauth_redirect_sign_in_name  = "${var.parameter_prefix}/vite_oauth_redirect_sign_in"
+  vite_oauth_redirect_sign_in_value = local.callback_urls_value[0]
+
+  vite_oauth_redirect_sign_out_name  = "${var.parameter_prefix}/vite_oauth_redirect_sign_out"
+  vite_oauth_redirect_sign_out_value = local.logout_urls_value[0]
 
   tags = local.tags
 }
@@ -120,11 +148,6 @@ data "aws_ssm_parameter" "account_return_url" {
   depends_on = [module.ssm]
 }
 
-data "aws_ssm_parameter" "cognito_domain_prefix" {
-  name       = module.ssm.cognito_domain_prefix_name
-  depends_on = [module.ssm]
-}
-
 data "aws_ssm_parameter" "callback_urls" {
   name       = module.ssm.callback_urls_name
   depends_on = [module.ssm]
@@ -149,7 +172,7 @@ module "cognito" {
   source               = "../../modules/cognito"
   user_pool_name       = "${var.project_name}-users"
   app_client_name      = "${var.project_name}-app"
-  domain_prefix        = data.aws_ssm_parameter.cognito_domain_prefix.value
+  domain_prefix        = var.cognito_domain_prefix_default
   google_client_id     = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_id
   google_client_secret = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_secret
   callback_urls        = split(",", data.aws_ssm_parameter.callback_urls.value)
@@ -251,12 +274,6 @@ module "frontend_hosting" {
   project_name        = var.project_name
   environment         = "dev"
   domain_aliases      = var.frontend_domain_aliases
-  acm_certificate_arn = local.frontend_certificate_arn
+  acm_certificate_arn = var.frontend_acm_certificate_arn
   tags                = local.tags
 }
-
-#
-# Dev is intentionally not public. We use the default AWS endpoints:
-# - Frontend uses the CloudFront distribution domain.
-# - API uses the API Gateway default endpoint.
-#

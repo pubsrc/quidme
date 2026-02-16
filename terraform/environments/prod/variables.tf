@@ -78,6 +78,22 @@ variable "cors_allowed_origins_default" {
   default = ["*"]
 }
 
+variable "dns_zone_name" {
+  description = "Route 53 hosted zone name (root domain), e.g. quidme.uk."
+  type        = string
+  default     = "quidme.uk"
+}
+
+variable "vite_cognito_user_pool_id_default" {
+  type    = string
+  default = "eu-west-2_placeholder"
+}
+
+variable "vite_cognito_user_pool_client_id_default" {
+  type    = string
+  default = "placeholder"
+}
+
 variable "lambda_source_dir" {
   type    = string
   default = "../../../build/lambda"
@@ -106,10 +122,4 @@ variable "api_domain_name" {
 variable "api_acm_certificate_arn" {
   type    = string
   default = ""
-}
-
-variable "dns_zone_name" {
-  description = "Deprecated. Kept only for backward compatibility with older tfvars files."
-  type        = string
-  default     = ""
 }
