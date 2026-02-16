@@ -1,0 +1,27 @@
+# Non-sensitive defaults for prod
+project_name                  = "payme"
+aws_region                    = "eu-west-2"
+parameter_prefix              = "/payme/prod"
+service_fee_bps_default       = 500
+payme_base_url_default        = "https://quidme.uk"
+account_refresh_url_default   = "https://quidme.uk/app/profile"
+account_return_url_default    = "https://quidme.uk/app/profile"
+cognito_domain_prefix_default = "payme"
+callback_urls_default         = ["https://quidme.uk/callback"]
+logout_urls_default           = ["https://quidme.uk"]
+frontend_domain_aliases       = ["quidme.uk", "*.quidme.uk"]
+api_domain_name               = "api.quidme.uk"
+cors_allowed_origins_default  = ["https://quidme.uk"]
+dns_zone_name                 = "quidme.uk"
+
+# Optional: provide existing cert ARNs.
+# CloudFront frontend cert must be in us-east-1 and include quidme.uk.
+# API Gateway regional custom domain cert must be in eu-west-2.
+# frontend_acm_certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+# api_acm_certificate_arn      = "arn:aws:acm:eu-west-2:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# Optional: override placeholder secrets for first apply
+# stripe_secret_placeholder         = "sk_live_..."
+# stripe_webhook_secret_placeholder = "whsec_..."
+# google_client_id_placeholder      = "..."
+# google_client_secret_placeholder  = "..."
