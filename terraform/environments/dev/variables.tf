@@ -78,6 +78,16 @@ variable "cors_allowed_origins_default" {
   default = ["*"]
 }
 
+variable "vite_cognito_user_pool_id_default" {
+  type    = string
+  default = "eu-west-2_placeholder"
+}
+
+variable "vite_cognito_user_pool_client_id_default" {
+  type    = string
+  default = "placeholder"
+}
+
 variable "lambda_source_dir" {
   type    = string
   default = "../../../build/lambda"

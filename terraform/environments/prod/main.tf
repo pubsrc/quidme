@@ -89,6 +89,27 @@ module "ssm" {
   cors_allowed_origins_name  = "${var.parameter_prefix}/cors_allowed_origins"
   cors_allowed_origins_value = var.cors_allowed_origins_default
 
+  vite_api_base_url_name  = "${var.parameter_prefix}/vite_api_base_url"
+  vite_api_base_url_value = trimspace(var.api_domain_name) != "" ? "https://${var.api_domain_name}" : local.payme_base_url_value
+
+  vite_cognito_user_pool_id_name  = "${var.parameter_prefix}/vite_cognito_user_pool_id"
+  vite_cognito_user_pool_id_value = var.vite_cognito_user_pool_id_default
+
+  vite_cognito_user_pool_client_id_name  = "${var.parameter_prefix}/vite_cognito_user_pool_client_id"
+  vite_cognito_user_pool_client_id_value = var.vite_cognito_user_pool_client_id_default
+
+  vite_cognito_region_name  = "${var.parameter_prefix}/vite_cognito_region"
+  vite_cognito_region_value = var.aws_region
+
+  vite_cognito_oauth_domain_name  = "${var.parameter_prefix}/vite_cognito_oauth_domain"
+  vite_cognito_oauth_domain_value = "${var.cognito_domain_prefix_default}.auth.${var.aws_region}.amazoncognito.com"
+
+  vite_oauth_redirect_sign_in_name  = "${var.parameter_prefix}/vite_oauth_redirect_sign_in"
+  vite_oauth_redirect_sign_in_value = local.callback_urls_value[0]
+
+  vite_oauth_redirect_sign_out_name  = "${var.parameter_prefix}/vite_oauth_redirect_sign_out"
+  vite_oauth_redirect_sign_out_value = local.logout_urls_value[0]
+
   tags = local.tags
 }
 

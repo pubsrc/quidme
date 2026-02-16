@@ -37,3 +37,31 @@ output "expiry_schedule_name" {
 output "cors_allowed_origins_name" {
   value = aws_ssm_parameter.cors_allowed_origins.name
 }
+
+output "vite_api_base_url_name" {
+  value = aws_ssm_parameter.vite_api_base_url.name
+}
+
+output "vite_cognito_user_pool_id_name" {
+  value = aws_ssm_parameter.vite_cognito_user_pool_id.name
+}
+
+output "vite_cognito_user_pool_client_id_name" {
+  value = aws_ssm_parameter.vite_cognito_user_pool_client_id.name
+}
+
+output "vite_cognito_region_name" {
+  value = aws_ssm_parameter.vite_cognito_region.name
+}
+
+output "vite_cognito_oauth_domain_name" {
+  value = aws_ssm_parameter.vite_cognito_oauth_domain.name
+}
+
+output "vite_oauth_redirect_sign_in_name" {
+  value = aws_ssm_parameter.vite_oauth_redirect_sign_in.name
+}
+
+output "vite_oauth_redirect_sign_out_name" {
+  value = aws_ssm_parameter.vite_oauth_redirect_sign_out.name
+}

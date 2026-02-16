@@ -28,6 +28,27 @@ variable "expiry_schedule_value" { type = string }
 variable "cors_allowed_origins_name" { type = string }
 variable "cors_allowed_origins_value" { type = list(string) }
 
+variable "vite_api_base_url_name" { type = string }
+variable "vite_api_base_url_value" { type = string }
+
+variable "vite_cognito_user_pool_id_name" { type = string }
+variable "vite_cognito_user_pool_id_value" { type = string }
+
+variable "vite_cognito_user_pool_client_id_name" { type = string }
+variable "vite_cognito_user_pool_client_id_value" { type = string }
+
+variable "vite_cognito_region_name" { type = string }
+variable "vite_cognito_region_value" { type = string }
+
+variable "vite_cognito_oauth_domain_name" { type = string }
+variable "vite_cognito_oauth_domain_value" { type = string }
+
+variable "vite_oauth_redirect_sign_in_name" { type = string }
+variable "vite_oauth_redirect_sign_in_value" { type = string }
+
+variable "vite_oauth_redirect_sign_out_name" { type = string }
+variable "vite_oauth_redirect_sign_out_value" { type = string }
+
 variable "tags" {
   type    = map(string)
   default = {}
