@@ -18,11 +18,21 @@ if [[ ! -f "$ENV_FILE" ]]; then
   echo "Env file not found: $ENV_FILE" >&2
   exit 1
 fi
+FRONTEND_ENV_FILE="$ROOT_DIR/frontend/.env.$ENV_NAME"
 
 # shellcheck disable=SC1090
 set -a
 source "$ENV_FILE"
 set +a
+
+# If frontend env exists, load VITE_* values from there too so frontend
+# runtime config can be synced to SSM by a single command.
+if [[ -f "$FRONTEND_ENV_FILE" ]]; then
+  # shellcheck disable=SC1090
+  set -a
+  source "$FRONTEND_ENV_FILE"
+  set +a
+fi
 
 PREFIX="/payme/$ENV_NAME"
 PROJECT="payme"
@@ -131,4 +141,4 @@ put_ssm "vite_cognito_oauth_domain" "$VITE_COGNITO_OAUTH_DOMAIN"
 put_ssm "vite_oauth_redirect_sign_in" "$VITE_OAUTH_REDIRECT_SIGN_IN"
 put_ssm "vite_oauth_redirect_sign_out" "$VITE_OAUTH_REDIRECT_SIGN_OUT"
 
-echo "Updated secrets and SSM parameters for $ENV_NAME in $REGION using $ENV_FILE"
+echo "Updated secrets and SSM parameters for $ENV_NAME in $REGION using $ENV_FILE (and $FRONTEND_ENV_FILE when present)"
