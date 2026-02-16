@@ -255,6 +255,18 @@ module "frontend_hosting" {
   tags                = local.tags
 }
 
+# Cloudflare DNS (prod) for frontend + API custom domain + ACM validation.
+data "cloudflare_zone" "zone" {
+  count = trimspace(var.cloudflare_zone_name) != "" ? 1 : 0
+  filter {
+    name = var.cloudflare_zone_name
+  }
+}
+
+locals {
+  cloudflare_zone_id = trimspace(var.cloudflare_zone_name) != "" ? data.cloudflare_zone.zone[0].id : ""
+}
+
 resource "aws_acm_certificate" "api" {
   count             = local.api_manage_certificate ? 1 : 0
   domain_name       = var.api_domain_name
@@ -269,10 +281,11 @@ resource "aws_acm_certificate_validation" "api" {
   count           = local.api_manage_certificate ? 1 : 0
   certificate_arn = aws_acm_certificate.api[0].arn
 
-  # DNS records must exist (for example, in Cloudflare) for this to complete.
   validation_record_fqdns = [
     for dvo in aws_acm_certificate.api[0].domain_validation_options : dvo.resource_record_name
   ]
+
+  depends_on = [cloudflare_dns_record.api_cert_validation]
 }
 
 resource "aws_apigatewayv2_domain_name" "api" {
@@ -308,8 +321,72 @@ resource "aws_acm_certificate_validation" "frontend" {
   provider        = aws.us_east_1
   certificate_arn = aws_acm_certificate.frontend[0].arn
 
-  # DNS records must exist (for example, in Cloudflare) for this to complete.
   validation_record_fqdns = [
     for dvo in aws_acm_certificate.frontend[0].domain_validation_options : dvo.resource_record_name
   ]
+
+  depends_on = [cloudflare_dns_record.frontend_cert_validation]
+}
+
+module "dns_cloudflare" {
+  count   = trimspace(var.cloudflare_zone_name) != "" ? 1 : 0
+  source  = "../../modules/dns_cloudflare"
+  zone_id = local.cloudflare_zone_id
+  records = merge(
+    length(var.frontend_domain_aliases) > 0 ? {
+      frontend_root = {
+        type    = "CNAME"
+        name    = var.frontend_domain_aliases[0]
+        content = module.frontend_hosting.cloudfront_domain_name
+        proxied = false
+        ttl     = 1
+      }
+    } : {},
+    length(var.frontend_domain_aliases) > 1 ? {
+      frontend_www = {
+        type    = "CNAME"
+        name    = var.frontend_domain_aliases[1]
+        content = var.frontend_domain_aliases[0]
+        proxied = false
+        ttl     = 1
+      }
+    } : {},
+    trimspace(var.api_domain_name) != "" ? {
+      api_root = {
+        type    = "CNAME"
+        name    = var.api_domain_name
+        content = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].target_domain_name
+        proxied = false
+        ttl     = 1
+      }
+    } : {},
+  )
+}
+
+resource "cloudflare_dns_record" "api_cert_validation" {
+  for_each = trimspace(var.cloudflare_zone_name) != "" && local.api_manage_certificate ? {
+    for dvo in aws_acm_certificate.api[0].domain_validation_options :
+    dvo.resource_record_name => dvo
+  } : {}
+
+  zone_id = local.cloudflare_zone_id
+  type    = each.value.resource_record_type
+  name    = trimsuffix(each.value.resource_record_name, ".")
+  content = each.value.resource_record_value
+  ttl     = 1
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "frontend_cert_validation" {
+  for_each = trimspace(var.cloudflare_zone_name) != "" && local.frontend_manage_certificate ? {
+    for dvo in aws_acm_certificate.frontend[0].domain_validation_options :
+    dvo.resource_record_name => dvo
+  } : {}
+
+  zone_id = local.cloudflare_zone_id
+  type    = each.value.resource_record_type
+  name    = trimsuffix(each.value.resource_record_name, ".")
+  content = each.value.resource_record_value
+  ttl     = 1
+  proxied = false
 }
