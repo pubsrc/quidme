@@ -1,5 +1,5 @@
 output "api_endpoint" {
-  value = module.api_gateway.api_endpoint
+  value = "https://${var.api_domain_name}"
 }
 
 output "api_base_url" {
@@ -53,6 +53,11 @@ output "frontend_url" {
 
 output "frontend_domain_aliases" {
   value = module.frontend_hosting.domain_aliases
+}
+
+output "route53_zone_name_servers" {
+  description = "Name servers for the Route 53 hosted zone. Update your registrar (Cloudflare) to use these."
+  value       = aws_route53_zone.primary.name_servers
 }
 
 output "frontend_acm_validation_records" {

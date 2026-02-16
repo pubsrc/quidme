@@ -78,6 +78,12 @@ variable "cors_allowed_origins_default" {
   default = ["*"]
 }
 
+variable "dns_zone_name" {
+  description = "Route 53 hosted zone name (root domain), e.g. quidme.uk."
+  type        = string
+  default     = "quidme.uk"
+}
+
 variable "lambda_source_dir" {
   type    = string
   default = "../../../build/lambda"

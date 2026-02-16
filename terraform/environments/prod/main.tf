@@ -7,16 +7,22 @@ locals {
     Project     = var.project_name
   }
 
+  computed_payme_base_url = length(var.frontend_domain_aliases) > 0 ? "https://${var.frontend_domain_aliases[0]}" : module.frontend_hosting.frontend_url
+
+  payme_base_url_value      = var.payme_base_url_default != "https://example.com" ? var.payme_base_url_default : local.computed_payme_base_url
+  account_refresh_url_value = var.account_refresh_url_default != "https://example.com/refresh" ? var.account_refresh_url_default : "${local.payme_base_url_value}/app/profile"
+  account_return_url_value  = var.account_return_url_default != "https://example.com/return" ? var.account_return_url_default : "${local.payme_base_url_value}/app/profile"
+
   callback_urls_value = length(var.callback_urls_default) > 0 ? var.callback_urls_default : [
-    var.payme_base_url_default,
+    "${local.payme_base_url_value}/callback",
   ]
   logout_urls_value = length(var.logout_urls_default) > 0 ? var.logout_urls_default : [
-    var.payme_base_url_default,
+    local.payme_base_url_value,
   ]
 
   frontend_manage_certificate = length(var.frontend_domain_aliases) > 0 && trimspace(var.frontend_acm_certificate_arn) == ""
   frontend_certificate_arn    = local.frontend_manage_certificate ? aws_acm_certificate_validation.frontend[0].certificate_arn : var.frontend_acm_certificate_arn
-  api_manage_certificate      = trimspace(var.api_acm_certificate_arn) == ""
+  api_manage_certificate      = trimspace(var.api_domain_name) != "" && trimspace(var.api_acm_certificate_arn) == ""
   api_certificate_arn         = local.api_manage_certificate ? aws_acm_certificate_validation.api[0].certificate_arn : var.api_acm_certificate_arn
 }
 
@@ -55,13 +61,13 @@ module "ssm" {
   service_fee_fixed_value = var.service_fee_fixed_default
 
   payme_base_url_name  = "${var.parameter_prefix}/payme_base_url"
-  payme_base_url_value = var.payme_base_url_default
+  payme_base_url_value = local.payme_base_url_value
 
   account_refresh_url_name  = "${var.parameter_prefix}/account_refresh_url"
-  account_refresh_url_value = var.account_refresh_url_default
+  account_refresh_url_value = local.account_refresh_url_value
 
   account_return_url_name  = "${var.parameter_prefix}/account_return_url"
-  account_return_url_value = var.account_return_url_default
+  account_return_url_value = local.account_return_url_value
 
   cognito_domain_prefix_name  = "${var.parameter_prefix}/cognito_domain_prefix"
   cognito_domain_prefix_value = var.cognito_domain_prefix_default
@@ -83,6 +89,11 @@ module "ssm" {
 
 data "aws_secretsmanager_secret_version" "stripe" {
   secret_id  = module.secrets.stripe_secret_name
+  depends_on = [module.secrets]
+}
+
+data "aws_secretsmanager_secret_version" "stripe_webhook" {
+  secret_id  = module.secrets.stripe_webhook_secret_name
   depends_on = [module.secrets]
 }
 
@@ -173,6 +184,7 @@ module "iam_lambda" {
 locals {
   common_env = {
     STRIPE_SECRET                = data.aws_secretsmanager_secret_version.stripe.secret_string
+    STRIPE_WEBHOOK_SECRET        = data.aws_secretsmanager_secret_version.stripe_webhook.secret_string
     SERVICE_FEE_BPS              = data.aws_ssm_parameter.service_fee_bps.value
     SERVICE_FEE_FIXED            = data.aws_ssm_parameter.service_fee_fixed.value
     COGNITO_REGION               = var.aws_region
@@ -249,6 +261,11 @@ module "frontend_hosting" {
   tags                = local.tags
 }
 
+resource "aws_route53_zone" "primary" {
+  name = var.dns_zone_name
+  tags = local.tags
+}
+
 resource "aws_acm_certificate" "api" {
   count             = local.api_manage_certificate ? 1 : 0
   domain_name       = var.api_domain_name
@@ -263,10 +280,7 @@ resource "aws_acm_certificate_validation" "api" {
   count           = local.api_manage_certificate ? 1 : 0
   certificate_arn = aws_acm_certificate.api[0].arn
 
-  # DNS records must exist (for example, in Cloudflare) for this to complete.
-  validation_record_fqdns = [
-    for dvo in aws_acm_certificate.api[0].domain_validation_options : dvo.resource_record_name
-  ]
+  validation_record_fqdns = [for rec in aws_route53_record.api_cert_validation : rec.fqdn]
 }
 
 resource "aws_apigatewayv2_domain_name" "api" {
@@ -302,8 +316,91 @@ resource "aws_acm_certificate_validation" "frontend" {
   provider        = aws.us_east_1
   certificate_arn = aws_acm_certificate.frontend[0].arn
 
-  # DNS records must exist (for example, in Cloudflare) for this to complete.
-  validation_record_fqdns = [
-    for dvo in aws_acm_certificate.frontend[0].domain_validation_options : dvo.resource_record_name
-  ]
+  validation_record_fqdns = [for rec in aws_route53_record.frontend_cert_validation : rec.fqdn]
+}
+
+resource "aws_route53_record" "api_cert_validation" {
+  for_each = local.api_manage_certificate ? {
+    for dvo in aws_acm_certificate.api[0].domain_validation_options :
+    dvo.resource_record_name => dvo
+  } : {}
+
+  zone_id         = aws_route53_zone.primary.zone_id
+  allow_overwrite = true
+  name            = trimsuffix(each.value.resource_record_name, ".")
+  type            = each.value.resource_record_type
+  ttl             = 60
+  records         = [each.value.resource_record_value]
+}
+
+resource "aws_route53_record" "frontend_cert_validation" {
+  for_each = local.frontend_manage_certificate ? {
+    for dvo in aws_acm_certificate.frontend[0].domain_validation_options :
+    dvo.resource_record_name => dvo
+  } : {}
+
+  zone_id         = aws_route53_zone.primary.zone_id
+  allow_overwrite = true
+  name            = trimsuffix(each.value.resource_record_name, ".")
+  type            = each.value.resource_record_type
+  ttl             = 60
+  records         = [each.value.resource_record_value]
+}
+
+resource "aws_route53_record" "frontend_root_a" {
+  zone_id = aws_route53_zone.primary.zone_id
+  name    = var.dns_zone_name
+  type    = "A"
+
+  alias {
+    name                   = module.frontend_hosting.cloudfront_domain_name
+    zone_id                = module.frontend_hosting.cloudfront_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "frontend_root_aaaa" {
+  zone_id = aws_route53_zone.primary.zone_id
+  name    = var.dns_zone_name
+  type    = "AAAA"
+
+  alias {
+    name                   = module.frontend_hosting.cloudfront_domain_name
+    zone_id                = module.frontend_hosting.cloudfront_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "frontend_www_a" {
+  count   = length(var.frontend_domain_aliases) > 1 ? 1 : 0
+  zone_id = aws_route53_zone.primary.zone_id
+  name    = "www"
+  type    = "A"
+
+  alias {
+    name                   = module.frontend_hosting.cloudfront_domain_name
+    zone_id                = module.frontend_hosting.cloudfront_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "frontend_www_aaaa" {
+  count   = length(var.frontend_domain_aliases) > 1 ? 1 : 0
+  zone_id = aws_route53_zone.primary.zone_id
+  name    = "www"
+  type    = "AAAA"
+
+  alias {
+    name                   = module.frontend_hosting.cloudfront_domain_name
+    zone_id                = module.frontend_hosting.cloudfront_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "api_cname" {
+  zone_id = aws_route53_zone.primary.zone_id
+  name    = "api"
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_apigatewayv2_domain_name.api.domain_name_configuration[0].target_domain_name]
 }

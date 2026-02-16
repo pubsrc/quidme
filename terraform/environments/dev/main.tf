@@ -7,16 +7,23 @@ locals {
     Project     = var.project_name
   }
 
+  # Dev intentionally uses default AWS endpoints (no custom domains) unless you
+  # explicitly configure them. This avoids DNS/provider drift during iteration.
+  #
+  # If you later add `frontend_domain_aliases`, you must also provide
+  # `frontend_acm_certificate_arn` for a certificate that is already validated.
+  computed_payme_base_url = length(var.frontend_domain_aliases) > 0 ? "https://${var.frontend_domain_aliases[0]}" : module.frontend_hosting.frontend_url
+
+  payme_base_url_value      = var.payme_base_url_default != "https://example.com" ? var.payme_base_url_default : local.computed_payme_base_url
+  account_refresh_url_value = var.account_refresh_url_default != "https://example.com/refresh" ? var.account_refresh_url_default : "${local.payme_base_url_value}/app/profile"
+  account_return_url_value  = var.account_return_url_default != "https://example.com/return" ? var.account_return_url_default : "${local.payme_base_url_value}/app/profile"
+
   callback_urls_value = length(var.callback_urls_default) > 0 ? var.callback_urls_default : [
-    var.payme_base_url_default,
+    "${local.payme_base_url_value}/callback",
   ]
   logout_urls_value = length(var.logout_urls_default) > 0 ? var.logout_urls_default : [
-    var.payme_base_url_default,
+    local.payme_base_url_value,
   ]
-
-  # Dev is not public; custom domains/certs are not managed here.
-  frontend_certificate_arn = var.frontend_acm_certificate_arn
-  api_certificate_arn      = var.api_acm_certificate_arn
 }
 
 data "archive_file" "lambda_zip" {
@@ -54,13 +61,13 @@ module "ssm" {
   service_fee_fixed_value = var.service_fee_fixed_default
 
   payme_base_url_name  = "${var.parameter_prefix}/payme_base_url"
-  payme_base_url_value = var.payme_base_url_default
+  payme_base_url_value = local.payme_base_url_value
 
   account_refresh_url_name  = "${var.parameter_prefix}/account_refresh_url"
-  account_refresh_url_value = var.account_refresh_url_default
+  account_refresh_url_value = local.account_refresh_url_value
 
   account_return_url_name  = "${var.parameter_prefix}/account_return_url"
-  account_return_url_value = var.account_return_url_default
+  account_return_url_value = local.account_return_url_value
 
   cognito_domain_prefix_name  = "${var.parameter_prefix}/cognito_domain_prefix"
   cognito_domain_prefix_value = var.cognito_domain_prefix_default
@@ -82,6 +89,11 @@ module "ssm" {
 
 data "aws_secretsmanager_secret_version" "stripe" {
   secret_id  = module.secrets.stripe_secret_name
+  depends_on = [module.secrets]
+}
+
+data "aws_secretsmanager_secret_version" "stripe_webhook" {
+  secret_id  = module.secrets.stripe_webhook_secret_name
   depends_on = [module.secrets]
 }
 
@@ -173,6 +185,7 @@ module "iam_lambda" {
 locals {
   common_env = {
     STRIPE_SECRET                = data.aws_secretsmanager_secret_version.stripe.secret_string
+    STRIPE_WEBHOOK_SECRET        = data.aws_secretsmanager_secret_version.stripe_webhook.secret_string
     SERVICE_FEE_BPS              = data.aws_ssm_parameter.service_fee_bps.value
     SERVICE_FEE_FIXED            = data.aws_ssm_parameter.service_fee_fixed.value
     COGNITO_REGION               = var.aws_region
@@ -245,12 +258,6 @@ module "frontend_hosting" {
   project_name        = var.project_name
   environment         = "dev"
   domain_aliases      = var.frontend_domain_aliases
-  acm_certificate_arn = local.frontend_certificate_arn
+  acm_certificate_arn = var.frontend_acm_certificate_arn
   tags                = local.tags
 }
-
-#
-# Dev is intentionally not public. We use the default AWS endpoints:
-# - Frontend uses the CloudFront distribution domain.
-# - API uses the API Gateway default endpoint.
-#
