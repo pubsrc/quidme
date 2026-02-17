@@ -51,6 +51,33 @@ module "secrets" {
   tags                              = local.tags
 }
 
+data "aws_secretsmanager_secret_version" "stripe" {
+  secret_id  = module.secrets.stripe_secret_name
+  depends_on = [module.secrets]
+}
+
+data "aws_secretsmanager_secret_version" "stripe_webhook" {
+  secret_id  = module.secrets.stripe_webhook_secret_name
+  depends_on = [module.secrets]
+}
+
+data "aws_secretsmanager_secret_version" "google_oauth" {
+  secret_id  = module.secrets.google_oauth_secret_name
+  depends_on = [module.secrets]
+}
+
+module "cognito" {
+  source               = "../../modules/cognito"
+  user_pool_name       = "${var.project_name}-users"
+  app_client_name      = "${var.project_name}-app"
+  domain_prefix        = var.cognito_domain_prefix_default
+  google_client_id     = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_id
+  google_client_secret = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_secret
+  callback_urls        = local.callback_urls_value
+  logout_urls          = local.logout_urls_value
+  tags                 = local.tags
+}
+
 module "ssm" {
   source = "../../modules/ssm_parameters"
 
@@ -85,19 +112,19 @@ module "ssm" {
   cors_allowed_origins_value = var.cors_allowed_origins_default
 
   vite_api_base_url_name  = "${var.parameter_prefix}/vite_api_base_url"
-  vite_api_base_url_value = trimspace(var.api_domain_name) != "" ? "https://${var.api_domain_name}" : local.payme_base_url_value
+  vite_api_base_url_value = trimspace(var.api_domain_name) != "" ? "https://${var.api_domain_name}" : module.api_gateway.api_endpoint
 
   vite_cognito_user_pool_id_name  = "${var.parameter_prefix}/vite_cognito_user_pool_id"
-  vite_cognito_user_pool_id_value = var.vite_cognito_user_pool_id_default
+  vite_cognito_user_pool_id_value = module.cognito.user_pool_id
 
   vite_cognito_user_pool_client_id_name  = "${var.parameter_prefix}/vite_cognito_user_pool_client_id"
-  vite_cognito_user_pool_client_id_value = var.vite_cognito_user_pool_client_id_default
+  vite_cognito_user_pool_client_id_value = module.cognito.app_client_id
 
   vite_cognito_region_name  = "${var.parameter_prefix}/vite_cognito_region"
   vite_cognito_region_value = var.aws_region
 
   vite_cognito_oauth_domain_name  = "${var.parameter_prefix}/vite_cognito_oauth_domain"
-  vite_cognito_oauth_domain_value = "${var.cognito_domain_prefix_default}.auth.${var.aws_region}.amazoncognito.com"
+  vite_cognito_oauth_domain_value = "${module.cognito.domain}.auth.${var.aws_region}.amazoncognito.com"
 
   vite_oauth_redirect_sign_in_name  = "${var.parameter_prefix}/vite_oauth_redirect_sign_in"
   vite_oauth_redirect_sign_in_value = local.callback_urls_value[0]
@@ -106,78 +133,6 @@ module "ssm" {
   vite_oauth_redirect_sign_out_value = local.logout_urls_value[0]
 
   tags = local.tags
-}
-
-data "aws_secretsmanager_secret_version" "stripe" {
-  secret_id  = module.secrets.stripe_secret_name
-  depends_on = [module.secrets]
-}
-
-data "aws_secretsmanager_secret_version" "stripe_webhook" {
-  secret_id  = module.secrets.stripe_webhook_secret_name
-  depends_on = [module.secrets]
-}
-
-data "aws_secretsmanager_secret_version" "google_oauth" {
-  secret_id  = module.secrets.google_oauth_secret_name
-  depends_on = [module.secrets]
-}
-
-data "aws_ssm_parameter" "service_fee_bps" {
-  name       = module.ssm.service_fee_bps_name
-  depends_on = [module.ssm]
-}
-
-data "aws_ssm_parameter" "service_fee_fixed" {
-  name       = module.ssm.service_fee_fixed_name
-  depends_on = [module.ssm]
-}
-
-data "aws_ssm_parameter" "payme_base_url" {
-  name       = module.ssm.payme_base_url_name
-  depends_on = [module.ssm]
-}
-
-data "aws_ssm_parameter" "account_refresh_url" {
-  name       = module.ssm.account_refresh_url_name
-  depends_on = [module.ssm]
-}
-
-data "aws_ssm_parameter" "account_return_url" {
-  name       = module.ssm.account_return_url_name
-  depends_on = [module.ssm]
-}
-
-data "aws_ssm_parameter" "callback_urls" {
-  name       = module.ssm.callback_urls_name
-  depends_on = [module.ssm]
-}
-
-data "aws_ssm_parameter" "logout_urls" {
-  name       = module.ssm.logout_urls_name
-  depends_on = [module.ssm]
-}
-
-data "aws_ssm_parameter" "expiry_schedule" {
-  name       = module.ssm.expiry_schedule_name
-  depends_on = [module.ssm]
-}
-
-data "aws_ssm_parameter" "cors_allowed_origins" {
-  name       = module.ssm.cors_allowed_origins_name
-  depends_on = [module.ssm]
-}
-
-module "cognito" {
-  source               = "../../modules/cognito"
-  user_pool_name       = "${var.project_name}-users"
-  app_client_name      = "${var.project_name}-app"
-  domain_prefix        = var.cognito_domain_prefix_default
-  google_client_id     = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_id
-  google_client_secret = jsondecode(data.aws_secretsmanager_secret_version.google_oauth.secret_string).client_secret
-  callback_urls        = split(",", data.aws_ssm_parameter.callback_urls.value)
-  logout_urls          = split(",", data.aws_ssm_parameter.logout_urls.value)
-  tags                 = local.tags
 }
 
 module "iam_lambda" {
@@ -200,17 +155,20 @@ module "iam_lambda" {
 }
 
 locals {
+  frontend_vite_api_base_url = trimspace(var.api_domain_name) != "" ? "https://${var.api_domain_name}" : module.api_gateway.api_endpoint
+  frontend_vite_oauth_domain = "${module.cognito.domain}.auth.${var.aws_region}.amazoncognito.com"
+
   common_env = {
     STRIPE_SECRET                = data.aws_secretsmanager_secret_version.stripe.secret_string
     STRIPE_WEBHOOK_SECRET        = data.aws_secretsmanager_secret_version.stripe_webhook.secret_string
-    SERVICE_FEE_BPS              = data.aws_ssm_parameter.service_fee_bps.value
-    SERVICE_FEE_FIXED            = data.aws_ssm_parameter.service_fee_fixed.value
+    SERVICE_FEE_BPS              = tostring(var.service_fee_bps_default)
+    SERVICE_FEE_FIXED            = tostring(var.service_fee_fixed_default)
     COGNITO_REGION               = var.aws_region
     COGNITO_USER_POOL_ID         = module.cognito.user_pool_id
     COGNITO_APP_CLIENT_ID        = module.cognito.app_client_id
-    PAYME_BASE_URL               = data.aws_ssm_parameter.payme_base_url.value
-    PAYME_ACCOUNT_REFRESH_URL    = data.aws_ssm_parameter.account_refresh_url.value
-    PAYME_ACCOUNT_RETURN_URL     = data.aws_ssm_parameter.account_return_url.value
+    PAYME_BASE_URL               = local.payme_base_url_value
+    PAYME_ACCOUNT_REFRESH_URL    = local.account_refresh_url_value
+    PAYME_ACCOUNT_RETURN_URL     = local.account_return_url_value
     DEFAULT_COUNTRY              = "GB"
     DDB_TABLE_USERS              = module.dynamodb.users_table_name
     DDB_TABLE_USER_IDENTITIES    = module.dynamodb.user_identities_table_name
@@ -219,7 +177,7 @@ locals {
     DDB_TABLE_SUBSCRIPTION_LINKS = module.dynamodb.subscription_links_table_name
     DDB_TABLE_TRANSACTIONS       = module.dynamodb.transactions_table_name
     PAYME_ENV                    = "dev"
-    CORS_ALLOWED_ORIGINS         = data.aws_ssm_parameter.cors_allowed_origins.value
+    CORS_ALLOWED_ORIGINS         = join(",", var.cors_allowed_origins_default)
   }
 }
 
@@ -264,7 +222,7 @@ module "api_gateway" {
 module "expire_schedule" {
   source               = "../../modules/eventbridge"
   rule_name            = "${var.project_name}-expire-links"
-  schedule_expression  = data.aws_ssm_parameter.expiry_schedule.value
+  schedule_expression  = var.expiry_schedule_default
   lambda_arn           = module.expire_lambda.lambda_function_arn
   lambda_function_name = module.expire_lambda.lambda_function_name
   tags                 = local.tags

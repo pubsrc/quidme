@@ -3,10 +3,6 @@ resource "aws_ssm_parameter" "service_fee_bps" {
   type  = "String"
   value = tostring(var.service_fee_bps_value)
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "service_fee_fixed" {
@@ -14,10 +10,6 @@ resource "aws_ssm_parameter" "service_fee_fixed" {
   type  = "String"
   value = tostring(var.service_fee_fixed_value)
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "payme_base_url" {
@@ -25,10 +17,6 @@ resource "aws_ssm_parameter" "payme_base_url" {
   type  = "String"
   value = var.payme_base_url_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "account_refresh_url" {
@@ -36,10 +24,6 @@ resource "aws_ssm_parameter" "account_refresh_url" {
   type  = "String"
   value = var.account_refresh_url_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "account_return_url" {
@@ -47,10 +31,6 @@ resource "aws_ssm_parameter" "account_return_url" {
   type  = "String"
   value = var.account_return_url_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "cognito_domain_prefix" {
@@ -65,10 +45,6 @@ resource "aws_ssm_parameter" "callback_urls" {
   type  = "StringList"
   value = join(",", var.callback_urls_value)
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "logout_urls" {
@@ -76,10 +52,6 @@ resource "aws_ssm_parameter" "logout_urls" {
   type  = "StringList"
   value = join(",", var.logout_urls_value)
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "expiry_schedule" {
@@ -87,10 +59,6 @@ resource "aws_ssm_parameter" "expiry_schedule" {
   type  = "String"
   value = var.expiry_schedule_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "cors_allowed_origins" {
@@ -98,10 +66,6 @@ resource "aws_ssm_parameter" "cors_allowed_origins" {
   type  = "StringList"
   value = join(",", var.cors_allowed_origins_value)
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "vite_api_base_url" {
@@ -109,10 +73,6 @@ resource "aws_ssm_parameter" "vite_api_base_url" {
   type  = "String"
   value = var.vite_api_base_url_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "vite_cognito_user_pool_id" {
@@ -120,10 +80,6 @@ resource "aws_ssm_parameter" "vite_cognito_user_pool_id" {
   type  = "String"
   value = var.vite_cognito_user_pool_id_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "vite_cognito_user_pool_client_id" {
@@ -131,10 +87,6 @@ resource "aws_ssm_parameter" "vite_cognito_user_pool_client_id" {
   type  = "String"
   value = var.vite_cognito_user_pool_client_id_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "vite_cognito_region" {
@@ -142,10 +94,6 @@ resource "aws_ssm_parameter" "vite_cognito_region" {
   type  = "String"
   value = var.vite_cognito_region_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "vite_cognito_oauth_domain" {
@@ -153,10 +101,6 @@ resource "aws_ssm_parameter" "vite_cognito_oauth_domain" {
   type  = "String"
   value = var.vite_cognito_oauth_domain_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "vite_oauth_redirect_sign_in" {
@@ -164,10 +108,6 @@ resource "aws_ssm_parameter" "vite_oauth_redirect_sign_in" {
   type  = "String"
   value = var.vite_oauth_redirect_sign_in_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
 
 resource "aws_ssm_parameter" "vite_oauth_redirect_sign_out" {
@@ -175,8 +115,4 @@ resource "aws_ssm_parameter" "vite_oauth_redirect_sign_out" {
   type  = "String"
   value = var.vite_oauth_redirect_sign_out_value
   tags  = var.tags
-
-  lifecycle {
-    ignore_changes = [value]
-  }
 }
