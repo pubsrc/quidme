@@ -79,13 +79,15 @@ variable "cors_allowed_origins_default" {
 }
 
 variable "vite_cognito_user_pool_id_default" {
-  type    = string
-  default = "eu-west-2_placeholder"
+  description = "Deprecated. Frontend Cognito values are now derived from Terraform resources."
+  type        = string
+  default     = "eu-west-2_placeholder"
 }
 
 variable "vite_cognito_user_pool_client_id_default" {
-  type    = string
-  default = "placeholder"
+  description = "Deprecated. Frontend Cognito values are now derived from Terraform resources."
+  type        = string
+  default     = "placeholder"
 }
 
 variable "lambda_source_dir" {
@@ -94,8 +96,9 @@ variable "lambda_source_dir" {
 }
 
 variable "parameter_prefix" {
-  type    = string
-  default = "/payme/dev"
+  description = "Deprecated. SSM parameter sync is no longer used for runtime/frontend config."
+  type        = string
+  default     = "/payme/dev"
 }
 
 variable "frontend_domain_aliases" {

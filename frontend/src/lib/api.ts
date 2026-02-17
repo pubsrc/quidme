@@ -58,7 +58,6 @@ async function authFetch(input: string, init?: RequestInit): Promise<Response> {
     const body = await res.clone().json().catch(() => ({}));
     if (body && (body as { error_code?: string }).error_code === STRIPE_ACCOUNT_REQUIRED_ERROR_CODE) {
       window.location.href = "/app/start";
-      throw new Error(STRIPE_ACCOUNT_REQUIRED_ERROR_CODE);
     }
   }
   return res;

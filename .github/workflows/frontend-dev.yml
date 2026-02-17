@@ -11,7 +11,6 @@ on:
 env:
   TF_ROOT: terraform/environments/dev
   AWS_REGION: eu-west-2
-  PARAM_PREFIX: /payme/dev
 
 concurrency:
   group: frontend-dev
@@ -44,16 +43,13 @@ jobs:
       - name: Load frontend env and deploy targets
         working-directory: ${{ env.TF_ROOT }}
         run: |
-          get_ssm() {
-            aws ssm get-parameter --name "${PARAM_PREFIX}/$1" --query 'Parameter.Value' --output text
-          }
-          echo "VITE_API_BASE_URL=$(get_ssm vite_api_base_url)" >> "$GITHUB_ENV"
-          echo "VITE_COGNITO_USER_POOL_ID=$(get_ssm vite_cognito_user_pool_id)" >> "$GITHUB_ENV"
-          echo "VITE_COGNITO_USER_POOL_CLIENT_ID=$(get_ssm vite_cognito_user_pool_client_id)" >> "$GITHUB_ENV"
-          echo "VITE_COGNITO_REGION=$(get_ssm vite_cognito_region)" >> "$GITHUB_ENV"
-          echo "VITE_COGNITO_OAUTH_DOMAIN=$(get_ssm vite_cognito_oauth_domain)" >> "$GITHUB_ENV"
-          echo "VITE_OAUTH_REDIRECT_SIGN_IN=$(get_ssm vite_oauth_redirect_sign_in)" >> "$GITHUB_ENV"
-          echo "VITE_OAUTH_REDIRECT_SIGN_OUT=$(get_ssm vite_oauth_redirect_sign_out)" >> "$GITHUB_ENV"
+          echo "VITE_API_BASE_URL=$(terraform output -raw frontend_vite_api_base_url)" >> "$GITHUB_ENV"
+          echo "VITE_COGNITO_USER_POOL_ID=$(terraform output -raw frontend_vite_cognito_user_pool_id)" >> "$GITHUB_ENV"
+          echo "VITE_COGNITO_USER_POOL_CLIENT_ID=$(terraform output -raw frontend_vite_cognito_user_pool_client_id)" >> "$GITHUB_ENV"
+          echo "VITE_COGNITO_REGION=$(terraform output -raw frontend_vite_cognito_region)" >> "$GITHUB_ENV"
+          echo "VITE_COGNITO_OAUTH_DOMAIN=$(terraform output -raw frontend_vite_cognito_oauth_domain)" >> "$GITHUB_ENV"
+          echo "VITE_OAUTH_REDIRECT_SIGN_IN=$(terraform output -raw frontend_vite_oauth_redirect_sign_in)" >> "$GITHUB_ENV"
+          echo "VITE_OAUTH_REDIRECT_SIGN_OUT=$(terraform output -raw frontend_vite_oauth_redirect_sign_out)" >> "$GITHUB_ENV"
           echo "FRONTEND_BUCKET_NAME=$(terraform output -raw frontend_bucket_name)" >> "$GITHUB_ENV"
           echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output -raw frontend_cloudfront_distribution_id)" >> "$GITHUB_ENV"
 

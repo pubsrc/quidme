@@ -42,3 +42,31 @@ output "frontend_domain_aliases" {
 output "stripe_webhook_secret_name" {
   value = module.secrets.stripe_webhook_secret_name
 }
+
+output "frontend_vite_api_base_url" {
+  value = local.frontend_vite_api_base_url
+}
+
+output "frontend_vite_cognito_user_pool_id" {
+  value = module.cognito.user_pool_id
+}
+
+output "frontend_vite_cognito_user_pool_client_id" {
+  value = module.cognito.app_client_id
+}
+
+output "frontend_vite_cognito_region" {
+  value = var.aws_region
+}
+
+output "frontend_vite_cognito_oauth_domain" {
+  value = local.frontend_vite_oauth_domain
+}
+
+output "frontend_vite_oauth_redirect_sign_in" {
+  value = local.callback_urls_value[0]
+}
+
+output "frontend_vite_oauth_redirect_sign_out" {
+  value = local.logout_urls_value[0]
+}

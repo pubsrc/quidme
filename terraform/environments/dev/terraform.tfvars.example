@@ -1,7 +1,8 @@
 # Non-sensitive defaults for dev
 project_name                  = "payme"
 aws_region                    = "eu-west-2"
-parameter_prefix              = "/payme/dev"
+# Deprecated: kept for backward compatibility. Runtime/frontend config is now derived in Terraform.
+# parameter_prefix              = "/payme/dev"
 service_fee_bps_default       = 500
 payme_base_url_default        = "https://dev.quidme.uk"
 account_refresh_url_default   = "https://dev.quidme.uk/app/profile"
