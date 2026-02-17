@@ -48,13 +48,25 @@ resource "aws_apigatewayv2_route" "proxy" {
   authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
 }
 
-## NOTE:
-## We *must* explicitly allow unauthenticated OPTIONS requests because the
-## authenticated "ANY /{proxy+}" route also matches OPTIONS. Browsers treat a
-## non-2xx preflight (e.g. 401 from JWT authorizer) as a CORS failure.
+## OPTIONS preflight must bypass JWT auth. Otherwise ANY /{proxy+} returns 401
+## and browsers surface it as a CORS failure.
 resource "aws_apigatewayv2_route" "cors_preflight" {
   api_id             = aws_apigatewayv2_api.api.id
   route_key          = "OPTIONS /{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+  authorization_type = "NONE"
+}
+
+resource "aws_apigatewayv2_route" "cors_preflight_api_v1" {
+  api_id             = aws_apigatewayv2_api.api.id
+  route_key          = "OPTIONS /api/v1/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+  authorization_type = "NONE"
+}
+
+resource "aws_apigatewayv2_route" "cors_preflight_health" {
+  api_id             = aws_apigatewayv2_api.api.id
+  route_key          = "OPTIONS /api/v1/health"
   target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
   authorization_type = "NONE"
 }
