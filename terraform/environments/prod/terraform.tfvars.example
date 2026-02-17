@@ -13,7 +13,7 @@ logout_urls_default           = ["https://quidme.uk"]
 frontend_domain_aliases       = ["quidme.uk", "*.quidme.uk"]
 api_domain_name               = "api.quidme.uk"
 cors_allowed_origins_default  = ["https://quidme.uk"]
-dns_zone_name                 = "quidme.uk"
+cloudflare_zone_name          = "quidme.uk"
 
 # Optional: provide existing cert ARNs.
 # CloudFront frontend cert must be in us-east-1 and include quidme.uk.

@@ -1,38 +1,35 @@
-# Cloudflare Registrar / Route 53 DNS (Prod)
+# Cloudflare DNS (Prod)
 
-Prod DNS is managed in Route 53. Cloudflare is treated as the registrar only.
+Prod DNS is managed in Cloudflare. Terraform creates and updates Cloudflare DNS records directly.
 
-## Why
-
-- Avoid Cloudflare provider state/schema drift.
-- Keep DNS + ACM validation fully automated in AWS.
-
-## What Terraform Manages Now
+## What Terraform Manages
 
 - **AWS resources** (API Gateway, Lambda, Cognito, DynamoDB, CloudFront, S3, ACM).
-- **Route 53 hosted zone + records (prod only)**: apex + www -> CloudFront, api -> API Gateway, and ACM DNS validation.
+- **Cloudflare DNS records (prod only)**:
+  - `@` and wildcard frontend aliases -> CloudFront
+  - `api` -> API Gateway custom domain target
+  - ACM DNS validation records for API and frontend certificates (when Terraform manages cert issuance)
 
-## Cloudflare Setup (One-Time)
+## Required CI/CD Secret
 
-After a successful `terraform apply` in `terraform/environments/prod`, update your domain's
-nameservers at Cloudflare (registrar) to the Route 53 values:
+Set Cloudflare token in your deployment environment:
 
-```bash
-cd terraform/environments/prod
-terraform output -raw route53_zone_name_servers
+- `TF_VAR_cloudflare_api_token`
+
+Token scope should be limited to:
+
+- Zone: Read
+- DNS: Edit
+
+## Required Prod Variable
+
+In `terraform/environments/prod/terraform.tfvars`:
+
+```hcl
+cloudflare_zone_name = "quidme.uk"
 ```
 
-DNS propagation depends on the registrar and can take time.
+## Cloudflare Dashboard Settings
 
-## One-Time State Migration
-
-If older state still contains `cloudflare_*` resources, Terraform runs can fail while decoding state.
-Run this **once per environment** (dev/prod) from that environment directory:
-
-```bash
-terraform init -upgrade
-terraform state list | grep -E '^cloudflare_' || true
-terraform state rm <each cloudflare_* address shown above>
-```
-
-`terraform state rm` edits Terraform state only; it does not delete real DNS records.
+- Keep `quidme.uk`, `www.quidme.uk`, `api.quidme.uk` as **DNS only** (not proxied) unless you intentionally want Cloudflare proxy in front of CloudFront/API Gateway.
+- Keep nameservers managed in Cloudflare for this setup.

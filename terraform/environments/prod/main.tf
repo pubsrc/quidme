@@ -25,10 +25,36 @@ locals {
   api_manage_certificate      = trimspace(var.api_domain_name) != "" && trimspace(var.api_acm_certificate_arn) == ""
   api_certificate_arn         = local.api_manage_certificate ? aws_acm_certificate_validation.api[0].certificate_arn : var.api_acm_certificate_arn
 
-  frontend_additional_alias_record_names = length(var.frontend_domain_aliases) > 1 ? [
-    for alias in slice(var.frontend_domain_aliases, 1, length(var.frontend_domain_aliases)) :
-    trimsuffix(alias, ".${var.dns_zone_name}")
-  ] : []
+  cloudflare_zone_name_normalized = trimsuffix(trimspace(var.cloudflare_zone_name), ".")
+  frontend_record_names = [
+    for alias in var.frontend_domain_aliases :
+    alias == local.cloudflare_zone_name_normalized ? "@" : trimsuffix(alias, ".${local.cloudflare_zone_name_normalized}")
+  ]
+  api_record_name = trimspace(var.api_domain_name) == "" ? "" : (
+    var.api_domain_name == local.cloudflare_zone_name_normalized ? "@" : trimsuffix(var.api_domain_name, ".${local.cloudflare_zone_name_normalized}")
+  )
+  cloudflare_frontend_records = {
+    for name in toset(local.frontend_record_names) :
+    "frontend_${replace(name, "*", "wildcard")}" => {
+      type    = "CNAME"
+      name    = name
+      content = module.frontend_hosting.cloudfront_domain_name
+      proxied = false
+    }
+  }
+  cloudflare_api_records = trimspace(var.api_domain_name) != "" ? {
+    api = {
+      type    = "CNAME"
+      name    = local.api_record_name
+      content = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].target_domain_name
+      proxied = false
+    }
+  } : {}
+  cloudflare_dns_records = merge(local.cloudflare_frontend_records, local.cloudflare_api_records)
+}
+
+data "cloudflare_zone" "primary" {
+  name = local.cloudflare_zone_name_normalized
 }
 
 data "archive_file" "lambda_zip" {
@@ -242,9 +268,10 @@ module "frontend_hosting" {
   tags                = local.tags
 }
 
-resource "aws_route53_zone" "primary" {
-  name = var.dns_zone_name
-  tags = local.tags
+module "dns_cloudflare" {
+  source  = "../../modules/dns_cloudflare"
+  zone_id = data.cloudflare_zone.primary.zone_id
+  records = local.cloudflare_dns_records
 }
 
 resource "aws_acm_certificate" "api" {
@@ -261,7 +288,7 @@ resource "aws_acm_certificate_validation" "api" {
   count           = local.api_manage_certificate ? 1 : 0
   certificate_arn = aws_acm_certificate.api[0].arn
 
-  validation_record_fqdns = [for rec in aws_route53_record.api_cert_validation : rec.fqdn]
+  validation_record_fqdns = [for rec in cloudflare_dns_record.api_cert_validation : rec.name]
 }
 
 resource "aws_apigatewayv2_domain_name" "api" {
@@ -297,91 +324,33 @@ resource "aws_acm_certificate_validation" "frontend" {
   provider        = aws.us_east_1
   certificate_arn = aws_acm_certificate.frontend[0].arn
 
-  validation_record_fqdns = [for rec in aws_route53_record.frontend_cert_validation : rec.fqdn]
+  validation_record_fqdns = [for rec in cloudflare_dns_record.frontend_cert_validation : rec.name]
 }
 
-resource "aws_route53_record" "api_cert_validation" {
+resource "cloudflare_dns_record" "api_cert_validation" {
   for_each = local.api_manage_certificate ? {
     for dvo in aws_acm_certificate.api[0].domain_validation_options :
     dvo.domain_name => dvo
   } : {}
 
-  zone_id         = aws_route53_zone.primary.zone_id
-  allow_overwrite = true
-  name            = trimsuffix(each.value.resource_record_name, ".")
-  type            = each.value.resource_record_type
-  ttl             = 60
-  records         = [each.value.resource_record_value]
+  zone_id = data.cloudflare_zone.primary.zone_id
+  name    = trimsuffix(each.value.resource_record_name, ".")
+  type    = each.value.resource_record_type
+  content = trimsuffix(each.value.resource_record_value, ".")
+  ttl     = 60
+  proxied = false
 }
 
-resource "aws_route53_record" "frontend_cert_validation" {
+resource "cloudflare_dns_record" "frontend_cert_validation" {
   for_each = local.frontend_manage_certificate ? {
     for dvo in aws_acm_certificate.frontend[0].domain_validation_options :
     dvo.domain_name => dvo
   } : {}
 
-  zone_id         = aws_route53_zone.primary.zone_id
-  allow_overwrite = true
-  name            = trimsuffix(each.value.resource_record_name, ".")
-  type            = each.value.resource_record_type
-  ttl             = 60
-  records         = [each.value.resource_record_value]
-}
-
-resource "aws_route53_record" "frontend_root_a" {
-  zone_id = aws_route53_zone.primary.zone_id
-  name    = var.dns_zone_name
-  type    = "A"
-
-  alias {
-    name                   = module.frontend_hosting.cloudfront_domain_name
-    zone_id                = module.frontend_hosting.cloudfront_hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
-resource "aws_route53_record" "frontend_root_aaaa" {
-  zone_id = aws_route53_zone.primary.zone_id
-  name    = var.dns_zone_name
-  type    = "AAAA"
-
-  alias {
-    name                   = module.frontend_hosting.cloudfront_domain_name
-    zone_id                = module.frontend_hosting.cloudfront_hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
-resource "aws_route53_record" "frontend_aliases_a" {
-  for_each = toset(local.frontend_additional_alias_record_names)
-  zone_id  = aws_route53_zone.primary.zone_id
-  name     = each.value
-  type     = "A"
-
-  alias {
-    name                   = module.frontend_hosting.cloudfront_domain_name
-    zone_id                = module.frontend_hosting.cloudfront_hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
-resource "aws_route53_record" "frontend_aliases_aaaa" {
-  for_each = toset(local.frontend_additional_alias_record_names)
-  zone_id  = aws_route53_zone.primary.zone_id
-  name     = each.value
-  type     = "AAAA"
-
-  alias {
-    name                   = module.frontend_hosting.cloudfront_domain_name
-    zone_id                = module.frontend_hosting.cloudfront_hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
-resource "aws_route53_record" "api_cname" {
-  zone_id = aws_route53_zone.primary.zone_id
-  name    = "api"
-  type    = "CNAME"
-  ttl     = 300
-  records = [aws_apigatewayv2_domain_name.api.domain_name_configuration[0].target_domain_name]
+  zone_id = data.cloudflare_zone.primary.zone_id
+  name    = trimsuffix(each.value.resource_record_name, ".")
+  type    = each.value.resource_record_type
+  content = trimsuffix(each.value.resource_record_value, ".")
+  ttl     = 60
+  proxied = false
 }
