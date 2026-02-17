@@ -78,17 +78,16 @@ variable "cors_allowed_origins_default" {
   default = ["*"]
 }
 
-variable "cloudflare_zone_name" {
-  description = "Cloudflare zone name (e.g. quidme.uk)."
-  type        = string
-  default     = ""
+variable "api_acm_validation_record_fqdns" {
+  description = "FQDNs of DNS validation records for the API ACM certificate when Terraform creates the cert."
+  type        = list(string)
+  default     = []
 }
 
-variable "cloudflare_api_token" {
-  description = "Cloudflare API token with DNS edit permissions for the zone."
-  type        = string
-  sensitive   = true
-  default     = ""
+variable "frontend_acm_validation_record_fqdns" {
+  description = "FQDNs of DNS validation records for the frontend ACM certificate when Terraform creates the cert."
+  type        = list(string)
+  default     = []
 }
 
 variable "vite_cognito_user_pool_id_default" {
