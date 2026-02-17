@@ -55,11 +55,6 @@ output "frontend_domain_aliases" {
   value = module.frontend_hosting.domain_aliases
 }
 
-output "route53_zone_name_servers" {
-  description = "Name servers for the Route 53 hosted zone. Update your registrar (Cloudflare) to use these."
-  value       = aws_route53_zone.primary.name_servers
-}
-
 output "frontend_acm_validation_records" {
   description = "ACM DNS validation records for the frontend custom domains (create these in your DNS provider)."
   value = local.frontend_manage_certificate ? [

@@ -78,10 +78,17 @@ variable "cors_allowed_origins_default" {
   default = ["*"]
 }
 
-variable "dns_zone_name" {
-  description = "Route 53 hosted zone name (root domain), e.g. quidme.uk."
+variable "cloudflare_zone_name" {
+  description = "Cloudflare zone name (e.g. quidme.uk)."
   type        = string
-  default     = "quidme.uk"
+  default     = ""
+}
+
+variable "cloudflare_api_token" {
+  description = "Cloudflare API token with DNS edit permissions for the zone."
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 variable "vite_cognito_user_pool_id_default" {
