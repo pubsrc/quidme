@@ -15,7 +15,6 @@ on:
 env:
   TF_ROOT: terraform/environments/prod
   AWS_REGION: eu-west-2
-  TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CLOUDFLAIRE_API_TOKEN }}
 
 concurrency:
   group: terraform-prod

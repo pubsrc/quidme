@@ -1,33 +1,23 @@
 # Cloudflare DNS (Prod)
 
-Prod DNS is managed in Cloudflare. Terraform creates and updates Cloudflare DNS records directly.
+Prod DNS is managed manually in Cloudflare. Terraform does not create or update DNS records.
 
 ## What Terraform Manages
 
 - **AWS resources** (API Gateway, Lambda, Cognito, DynamoDB, CloudFront, S3, ACM).
-- **Cloudflare DNS records (prod only)**:
-  - `@` and wildcard frontend aliases -> CloudFront
-  - `api` -> API Gateway custom domain target
-  - ACM DNS validation records for API and frontend certificates (when Terraform manages cert issuance)
+- **ACM validation record outputs** to help you create DNS records manually in Cloudflare.
 
-## Required CI/CD Secret
+## Manual Cloudflare Records
 
-Set Cloudflare token in your deployment environment:
+Create and keep these DNS records in Cloudflare:
 
-- `TF_VAR_cloudflare_api_token`
+- `quidme.uk` / `www.quidme.uk` / `*.quidme.uk` -> CloudFront distribution domain
+- `api.quidme.uk` -> API Gateway custom domain target
 
-Token scope should be limited to:
+For certificate issuance (if Terraform-managed certs are used), create ACM validation CNAME records using:
 
-- Zone: Read
-- DNS: Edit
-
-## Required Prod Variable
-
-In `terraform/environments/prod/terraform.tfvars`:
-
-```hcl
-cloudflare_zone_name = "quidme.uk"
-```
+- `terraform output frontend_acm_validation_records`
+- `terraform output api_acm_validation_records`
 
 ## Cloudflare Dashboard Settings
 
