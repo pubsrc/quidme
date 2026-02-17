@@ -17,6 +17,7 @@ import SettingsPage from "../pages/SettingsPage";
 import { RequireAuth } from "../components/RequireAuth";
 import { RequireGuest } from "../components/RequireGuest";
 import { RequireNoStripeAccount } from "../components/RequireNoStripeAccount";
+import { RequireStripeAccount } from "../components/RequireStripeAccount";
 
 const App = () => {
   return (
@@ -63,23 +64,27 @@ const App = () => {
       />
       <Route path="/callback" element={<CallbackPage />} />
       <Route
+        path="/start"
+        element={
+          <RequireAuth>
+            <RequireNoStripeAccount>
+              <StartPage />
+            </RequireNoStripeAccount>
+          </RequireAuth>
+        }
+      />
+      <Route
         path="/app"
         element={
           <RequireAuth>
-            <DashboardLayout />
+            <RequireStripeAccount>
+              <DashboardLayout />
+            </RequireStripeAccount>
           </RequireAuth>
         }
       >
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
-        <Route
-          path="start"
-          element={
-            <RequireNoStripeAccount>
-              <StartPage />
-            </RequireNoStripeAccount>
-          }
-        />
         <Route path="payment-links" element={<PaymentLinksPage />} />
         <Route path="payment-links/:id" element={<PaymentLinkDetailsPage />} />
         <Route path="subscriptions" element={<Navigate to="/app/payment-links" replace />} />

@@ -52,7 +52,7 @@ const ProfilePage = () => {
             <div className="text-sm text-slate-500">{t("pages.account.status")}</div>
             <div className="text-lg font-semibold">{t("pages.account.connected_required")}</div>
             <button
-              onClick={() => navigate("/app/start")}
+              onClick={() => navigate("/start")}
               className="mt-4 rounded-full bg-brand-sky px-5 py-2 text-sm font-semibold text-white"
             >
               {t("pages.account.start_onboarding")}
