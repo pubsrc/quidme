@@ -54,7 +54,9 @@ locals {
 }
 
 data "cloudflare_zone" "primary" {
-  name = local.cloudflare_zone_name_normalized
+  filter = {
+    name = local.cloudflare_zone_name_normalized
+  }
 }
 
 data "archive_file" "lambda_zip" {
