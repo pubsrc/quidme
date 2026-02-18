@@ -29,17 +29,18 @@ class StripePlatformAccountLinkService(StripePaymentLinkService):
         title: str,
         description: str | None,
         amount: int,
+        base_amount: int,
         currency: str,
         require_fields: list[str],
         *,
         service_fee: int = 0,
     ) -> dict[str, Any]:
-        print("Using platform account link service")
         metadata = {
             "user_id": self._principal.user_id,
             "user_email": self._principal.email or "",
             "link_id": link_id,
             "link_type": "one_time",
+            "base_amount": str(base_amount),
         }
         product_data: dict[str, Any] = {"name": product_name(title, "one_time")}
         if description:
@@ -69,6 +70,7 @@ class StripePlatformAccountLinkService(StripePaymentLinkService):
         title: str,
         description: str | None,
         amount: int,
+        base_amount: int,
         currency: str,
         interval: str,
         require_fields: list[str],
@@ -80,6 +82,7 @@ class StripePlatformAccountLinkService(StripePaymentLinkService):
             "user_email": self._principal.email or "",
             "link_id": link_id,
             "link_type": "subscription",
+            "base_amount": str(base_amount),
         }
         product_data: dict[str, Any] = {"name": product_name(title, "subscription")}
         if description:

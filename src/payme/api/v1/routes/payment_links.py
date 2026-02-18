@@ -65,6 +65,7 @@ def create_payment_link(
             title=payload.title or "Payment",
             description=payload.description,
             amount=total_amount,
+            base_amount=payload.amount,
             currency=payload.currency.value,
             require_fields=payload.require_fields,
             service_fee=service_fee_cents,
