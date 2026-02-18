@@ -10,7 +10,7 @@ account_return_url_default    = "https://dev.quidme.uk/app/profile"
 cognito_domain_prefix_default = "payme-dev"
 callback_urls_default         = ["https://dev.quidme.uk/callback"]
 logout_urls_default           = ["https://dev.quidme.uk"]
-frontend_domain_aliases       = ["dev.quidme.uk"]
+# frontend_domain_aliases is managed in constants.tf
 api_domain_name               = "api.dev.quidme.uk"
 cors_allowed_origins_default  = ["https://dev.quidme.uk"]
 

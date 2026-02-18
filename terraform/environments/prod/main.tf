@@ -7,7 +7,7 @@ locals {
     Project     = var.project_name
   }
 
-  computed_payme_base_url = length(var.frontend_domain_aliases) > 0 ? "https://${var.frontend_domain_aliases[0]}" : module.frontend_hosting.frontend_url
+  computed_payme_base_url = length(local.frontend_domain_aliases) > 0 ? "https://${local.frontend_domain_aliases[0]}" : module.frontend_hosting.frontend_url
 
   payme_base_url_value      = var.payme_base_url_default != "https://example.com" ? var.payme_base_url_default : local.computed_payme_base_url
   account_refresh_url_value = var.account_refresh_url_default != "https://example.com/refresh" ? var.account_refresh_url_default : "${local.payme_base_url_value}/app/profile"
@@ -20,7 +20,7 @@ locals {
     local.payme_base_url_value,
   ]
 
-  frontend_manage_certificate = length(var.frontend_domain_aliases) > 0 && trimspace(var.frontend_acm_certificate_arn) == ""
+  frontend_manage_certificate = length(local.frontend_domain_aliases) > 0 && trimspace(var.frontend_acm_certificate_arn) == ""
   frontend_certificate_arn    = local.frontend_manage_certificate ? aws_acm_certificate_validation.frontend[0].certificate_arn : var.frontend_acm_certificate_arn
   api_manage_certificate      = trimspace(var.api_domain_name) != "" && trimspace(var.api_acm_certificate_arn) == ""
   api_certificate_arn         = local.api_manage_certificate ? aws_acm_certificate_validation.api[0].certificate_arn : var.api_acm_certificate_arn
@@ -232,7 +232,7 @@ module "frontend_hosting" {
   source              = "../../modules/frontend_hosting"
   project_name        = var.project_name
   environment         = "prod"
-  domain_aliases      = var.frontend_domain_aliases
+  domain_aliases      = local.frontend_domain_aliases
   acm_certificate_arn = local.frontend_certificate_arn
   tags                = local.tags
 }
@@ -273,8 +273,8 @@ resource "aws_apigatewayv2_api_mapping" "api" {
 resource "aws_acm_certificate" "frontend" {
   count                     = local.frontend_manage_certificate ? 1 : 0
   provider                  = aws.us_east_1
-  domain_name               = var.frontend_domain_aliases[0]
-  subject_alternative_names = slice(var.frontend_domain_aliases, 1, length(var.frontend_domain_aliases))
+  domain_name               = local.frontend_domain_aliases[0]
+  subject_alternative_names = slice(local.frontend_domain_aliases, 1, length(local.frontend_domain_aliases))
   validation_method         = "DNS"
 
   lifecycle {
