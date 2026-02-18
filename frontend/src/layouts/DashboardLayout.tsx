@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { signOutWithCognito } from "../lib/auth";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
+import { replaceLocaleInPathname } from "../lib/localeRouting";
 
 const navItems = [
   {
@@ -57,6 +58,7 @@ const DashboardLayout = () => {
   const setLanguage = async (lang: "en" | "tr") => {
     await i18n.changeLanguage(lang);
     localStorage.setItem(LOCALE_STORAGE_KEY, lang);
+    navigate(replaceLocaleInPathname(location.pathname, lang), { replace: true });
   };
 
   useEffect(() => {
