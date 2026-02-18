@@ -37,7 +37,7 @@ def _multiplier(service_fee_percent: float, stripe_fee_percent: float) -> float:
     return 1 / (1 - combined_pct / 100)
 
 
-def subtract_fees(amount: int, fee_cents: int) -> int:
+def subtract_fees(amount: float, fee_cents: float) -> float:
     """Earnings after subtracting a fee."""
     if amount < 0:
         raise ValueError("amount must be non-negative")
@@ -183,6 +183,6 @@ def earnings_from_payment(
 # -------------------------------------------------------------------------
 
 
-def subtract_service_fee(amount: int, service_fee: int) -> int:
+def subtract_service_fee(amount: float, service_fee: float) -> float:
     """Prefer subtract_fees for new code."""
     return subtract_fees(amount, service_fee)

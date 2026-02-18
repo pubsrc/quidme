@@ -171,7 +171,7 @@ class StripeAccountRepository:
             ExpressionAttributeValues={":sid": stripe_account_id.strip(), ":s": StripeAccountStatus.RESTRICTED},
         )
 
-    def add_pending_earnings(self, user_id: str, amount_cents: int, currency: str) -> None:
+    def add_pending_earnings(self, user_id: str, amount_cents: float, currency: str) -> None:
         """Add to pending earnings (platform-held payments) for this user. Currency e.g. 'gbp', 'usd'."""
         c = currency.lower()
         # Two-step update: ensure map exists, then update key (avoids path overlap / moto compatibility).
@@ -185,10 +185,10 @@ class StripeAccountRepository:
             Key={"user_id": user_id},
             UpdateExpression="SET #pe.#c = if_not_exists(#pe.#c, :zero) + :amt",
             ExpressionAttributeNames={"#pe": "pending_earnings", "#c": c},
-            ExpressionAttributeValues={":zero": 0, ":amt": amount_cents},
+            ExpressionAttributeValues={":zero": Decimal("0"), ":amt": Decimal(str(amount_cents))},
         )
 
-    def add_earnings(self, user_id: str, amount_cents: int, currency: str) -> None:
+    def add_earnings(self, user_id: str, amount_cents: float, currency: str) -> None:
         """Add to total earnings (all-time) for this user's Stripe account. Currency e.g. 'gbp', 'usd'."""
         c = currency.lower()
         # Two-step update: ensure map exists, then update key (avoids path overlap / moto compatibility).
@@ -202,11 +202,11 @@ class StripeAccountRepository:
             Key={"user_id": user_id},
             UpdateExpression="SET #earnings.#c = if_not_exists(#earnings.#c, :zero) + :amt",
             ExpressionAttributeNames={"#earnings": "earnings", "#c": c},
-            ExpressionAttributeValues={":zero": 0, ":amt": amount_cents},
+            ExpressionAttributeValues={":zero": Decimal("0"), ":amt": Decimal(str(amount_cents))},
         )
 
-    def get_earnings(self, user_id: str) -> dict[str, int]:
-        """Return total earnings per currency from stripe_accounts table, e.g. {'gbp': 1000, 'usd': 500}."""
+    def get_earnings(self, user_id: str) -> dict[str, float]:
+        """Return total earnings per currency from stripe_accounts table, e.g. {'gbp': 1000.0, 'usd': 500.0}."""
         resp = self._table.get_item(Key={"user_id": user_id})
         item = resp.get("Item")
         if not item:
@@ -214,10 +214,10 @@ class StripeAccountRepository:
         earnings = item.get("earnings")
         if not isinstance(earnings, dict):
             return {}
-        return {k: int(v) for k, v in earnings.items() if isinstance(v, (int, float, Decimal)) and int(v) > 0}
+        return {k: float(v) for k, v in earnings.items() if isinstance(v, (int, float, Decimal)) and float(v) > 0}
 
-    def get_pending_earnings(self, user_id: str) -> dict[str, int]:
-        """Return pending earnings per currency (platform-held), e.g. {'gbp': 1000, 'usd': 500}."""
+    def get_pending_earnings(self, user_id: str) -> dict[str, float]:
+        """Return pending earnings per currency (platform-held), e.g. {'gbp': 1000.0, 'usd': 500.0}."""
         resp = self._table.get_item(Key={"user_id": user_id})
         item = resp.get("Item")
         if not item:
@@ -225,7 +225,7 @@ class StripeAccountRepository:
         pe = item.get("pending_earnings")
         if not isinstance(pe, dict):
             return {}
-        return {k: int(v) for k, v in pe.items() if isinstance(v, (int, float, Decimal)) and int(v) > 0}
+        return {k: float(v) for k, v in pe.items() if isinstance(v, (int, float, Decimal)) and float(v) > 0}
 
     def clear_pending_earnings(self, user_id: str, only_currencies: list[str] | None = None) -> None:
         """Zero out pending earnings after transfer. If only_currencies is set, only those keys are removed."""
@@ -263,7 +263,7 @@ class PaymentLinksRepository:
         user_id: str,
         title: str | None,
         description: str | None,
-        amount: int,
+        amount: float,
         currency: str,
         expires_at: datetime | None,
         link_type: str,
@@ -276,7 +276,7 @@ class PaymentLinksRepository:
             "user_id": user_id,
             "title": title,
             "description": description,
-            "amount": amount,
+            "amount": Decimal(str(amount)),
             "currency": currency,
             "status": "ACTIVE",
             "link_type": link_type,
@@ -318,7 +318,7 @@ class PaymentLinksRepository:
         url: str,
         title: str,
         description: str | None,
-        amount: int,
+        amount: float,
         service_fee: int,
         currency: str,
         expires_at: datetime | None,
@@ -334,7 +334,7 @@ class PaymentLinksRepository:
             "url": url,
             "title": title,
             "description": description,
-            "amount": amount,
+            "amount": Decimal(str(amount)),
             "service_fee": service_fee,
             "currency": currency,
             "status": "ACTIVE",
@@ -384,14 +384,18 @@ class PaymentLinksRepository:
         )
         return resp.get("Items", [])
 
-    def add_payment_result(self, link_id: str, earnings_amount: int, total_amount: int) -> None:
+    def add_payment_result(self, link_id: str, earnings_amount: float, total_amount: float) -> None:
         """Atomically add earnings and total paid to the payment link (after a successful payment)."""
         if earnings_amount < 0 or total_amount < 0:
             raise ValueError("amounts must be non-negative")
         self._table.update_item(
             Key={"link_id": link_id},
             UpdateExpression="SET earnings_amount = if_not_exists(earnings_amount, :z) + :earn, total_amount_paid = if_not_exists(total_amount_paid, :z) + :tot",
-            ExpressionAttributeValues={":z": 0, ":earn": earnings_amount, ":tot": total_amount},
+            ExpressionAttributeValues={
+                ":z": Decimal("0"),
+                ":earn": Decimal(str(earnings_amount)),
+                ":tot": Decimal(str(total_amount)),
+            },
         )
 
     def delete_all_for_user(self, user_id: str) -> None:
@@ -421,7 +425,7 @@ class TransactionsRepository:
         date_transaction_id: str,
         payment_intent_id: str,
         link_id: str,
-        amount: int,
+        amount: float,
         currency: str,
         status: str,
         customer_email: str | None = None,
@@ -439,7 +443,7 @@ class TransactionsRepository:
             "date_transaction_id": date_transaction_id,
             "payment_intent_id": payment_intent_id,
             "link_id": link_id,
-            "amount": amount,
+            "amount": Decimal(str(amount)),
             "currency": currency,
             "status": status,
             "created_at": now,
@@ -549,7 +553,7 @@ class SubscriptionsRepository:
         user_id: str,
         title: str | None,
         description: str | None,
-        amount: int,
+        amount: float,
         currency: str,
         interval: str,
         expires_at: datetime | None,
@@ -562,7 +566,7 @@ class SubscriptionsRepository:
             "user_id": user_id,
             "title": title,
             "description": description,
-            "amount": amount,
+            "amount": Decimal(str(amount)),
             "currency": currency,
             "interval": interval,
             "status": "ACTIVE",
@@ -604,7 +608,7 @@ class SubscriptionsRepository:
         url: str,
         title: str,
         description: str | None,
-        amount: int,
+        amount: float,
         service_fee: int,
         currency: str,
         interval: str,
@@ -620,7 +624,7 @@ class SubscriptionsRepository:
             "url": url,
             "title": title,
             "description": description,
-            "amount": amount,
+            "amount": Decimal(str(amount)),
             "service_fee": service_fee,
             "currency": currency,
             "interval": interval,
@@ -684,7 +688,7 @@ class SubscriptionsRepository:
         return items[0] if items else None
 
     def add_payment_result(
-        self, subscription_id: str, earnings_amount: int, total_amount: int
+        self, subscription_id: str, earnings_amount: float, total_amount: float
     ) -> None:
         """Atomically add earnings and total paid to the subscription link (after a successful invoice payment)."""
         if earnings_amount < 0 or total_amount < 0:
@@ -692,7 +696,11 @@ class SubscriptionsRepository:
         self._table.update_item(
             Key={"subscription_id": subscription_id},
             UpdateExpression="SET earnings_amount = if_not_exists(earnings_amount, :z) + :earn, total_amount_paid = if_not_exists(total_amount_paid, :z) + :tot",
-            ExpressionAttributeValues={":z": 0, ":earn": earnings_amount, ":tot": total_amount},
+            ExpressionAttributeValues={
+                ":z": Decimal("0"),
+                ":earn": Decimal(str(earnings_amount)),
+                ":tot": Decimal(str(total_amount)),
+            },
         )
 
     def delete_all_for_user(self, user_id: str) -> None:
