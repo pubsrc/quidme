@@ -12,7 +12,7 @@ const CallbackPage = () => {
       try {
         const session = await fetchAuthSession();
         if (session.tokens?.idToken) {
-          navigate("/app/offerings", { replace: true });
+          navigate("/app/dashboard", { replace: true });
         } else {
           navigate("/login", { replace: true });
         }

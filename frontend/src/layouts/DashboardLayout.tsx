@@ -72,14 +72,14 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="min-h-svh bg-[#f5f7fb]">
-      <div className="min-h-svh md:flex">
-        <aside className="hidden min-h-svh w-[92px] flex-col items-center border-r border-slate-200 bg-[#f8fafc] py-5 md:flex">
+    <div className="h-svh overflow-hidden bg-[#f5f7fb]">
+      <div className="h-full md:flex">
+        <aside className="hidden h-full w-[92px] shrink-0 flex-col items-center border-r border-slate-200 bg-[#f8fafc] py-5 md:flex">
           <div className="mb-7 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 ring-1 ring-amber-300">
             <img src="/quidme-logo.svg" alt={t("layouts.dashboard.logo_alt")} className="h-9 w-9" />
           </div>
 
-          <nav className="flex flex-1 flex-col items-center gap-3">
+          <nav className="flex min-h-0 flex-1 flex-col items-center gap-3 overflow-y-auto">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -216,7 +216,7 @@ const DashboardLayout = () => {
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10">
+        <main className="min-h-0 flex-1 overflow-y-auto p-4 md:p-8 lg:p-10">
           <div className="mb-4 md:hidden">
             <button
               type="button"
