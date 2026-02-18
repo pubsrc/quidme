@@ -40,6 +40,7 @@ class StripePlatformAccountLinkService(StripePaymentLinkService):
             "user_email": self._principal.email or "",
             "link_id": link_id,
             "link_type": "one_time",
+            "account_type": "platform",
             "base_amount": str(base_amount),
         }
         product_data: dict[str, Any] = {"name": product_name(title, "one_time")}
@@ -82,6 +83,7 @@ class StripePlatformAccountLinkService(StripePaymentLinkService):
             "user_email": self._principal.email or "",
             "link_id": link_id,
             "link_type": "subscription",
+            "account_type": "platform",
             "base_amount": str(base_amount),
         }
         product_data: dict[str, Any] = {"name": product_name(title, "subscription")}

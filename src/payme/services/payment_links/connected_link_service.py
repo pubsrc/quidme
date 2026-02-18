@@ -70,6 +70,7 @@ class StripeConnectedAccountLinkService(StripePaymentLinkService):
             "user_email": principal.email or "",
             "link_id": link_id,
             "link_type": "one_time",
+            "account_type": "connected_account",
             "base_amount": str(base_amount),
         }
         product_data: dict[str, Any] = {"name": product_name(title, "one_time")}
@@ -114,6 +115,7 @@ class StripeConnectedAccountLinkService(StripePaymentLinkService):
             "user_email": principal.email or "",
             "link_id": link_id,
             "link_type": "subscription",
+            "account_type": "connected_account",
             "base_amount": str(base_amount),
         }
         product_data: dict[str, Any] = {"name": product_name(title, "subscription")}
