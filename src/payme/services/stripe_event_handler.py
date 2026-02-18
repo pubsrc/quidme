@@ -20,6 +20,7 @@ from payme.db.repositories import (
     SubscriptionsRepository,
     TransactionsRepository,
 )
+from payme.services.stripe_platform_account_service import StripePlatformAccountService
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,30 @@ def _to_dict(obj: Any) -> dict[str, Any]:
 def _earnings_from_base_amount(extracted: dict[str, Any]) -> int:
     """Use base_amount metadata as the single source of truth for earnings."""
     return int(extracted["base_amount"])
+
+
+def _transfer_to_connected_account(user_id: str, amount: int, currency: str) -> None:
+    """
+    Transfer amount from platform balance to the user's connected Stripe account.
+    Best-effort: failures are logged and do not fail the webhook flow.
+    """
+    account = StripeAccountRepository().get_primary_for_user(user_id)
+    stripe_account_id = account.stripe_account_id if account else ""
+    try:
+        StripePlatformAccountService.create_transfer(
+            amount=amount,
+            currency=currency,
+            destination=stripe_account_id,
+        )
+    except Exception as e:
+        logger.exception(
+            "Failed to transfer to connected account user_id=%s stripe_account_id=%s currency=%s amount=%s: %s",
+            user_id,
+            stripe_account_id,
+            currency,
+            amount,
+            e,
+        )
 
 
 def _extract_from_payment_intent(obj: dict[str, Any] | Any) -> dict[str, Any] | None:
@@ -406,6 +431,11 @@ def handle_payment_succeeded(
             StripeAccountRepository().add_pending_earnings(
                 user_id, earnings, extracted["currency"]
             )
+            _transfer_to_connected_account(
+                user_id=user_id,
+                amount=earnings,
+                currency=extracted["currency"],
+            )
         if earnings > 0:
             StripeAccountRepository().add_earnings(
                 user_id, earnings, extracted["currency"]
@@ -743,6 +773,11 @@ def handle_invoice_paid(data: dict[str, Any], account_id: str | None = None) -> 
         if account_id is None and earnings > 0:
             StripeAccountRepository().add_pending_earnings(
                 user_id, earnings, extracted["currency"]
+            )
+            _transfer_to_connected_account(
+                user_id=user_id,
+                amount=earnings,
+                currency=extracted["currency"],
             )
         if earnings > 0:
             StripeAccountRepository().add_earnings(
