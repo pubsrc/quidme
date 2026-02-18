@@ -50,7 +50,7 @@ def _earnings_from_base_amount(extracted: dict[str, Any]) -> float:
 
 def _extract_from_payment_intent(obj: dict[str, Any] | Any) -> dict[str, Any] | None:
     """
-    Extract user_id, link_id, amount, application_fee_amount, payment_intent_id, created, customer fields.
+    Extract user_id, link_id, amount, payment_intent_id, created, customer fields.
     Returns None if metadata missing user_id or link_id.
     """
     obj = _to_dict(obj)
@@ -65,9 +65,6 @@ def _extract_from_payment_intent(obj: dict[str, Any] | Any) -> dict[str, Any] | 
         return None
     payment_intent_id = obj.get("id") or ""
     created = obj.get("created")
-    application_fee_amount = obj.get("application_fee_amount")
-    if application_fee_amount is None and "application_fee_amount" in obj:
-        application_fee_amount = obj["application_fee_amount"]
 
     customer_email = None
     customer_name = None
@@ -100,7 +97,6 @@ def _extract_from_payment_intent(obj: dict[str, Any] | Any) -> dict[str, Any] | 
         "base_amount": base_amount,
         "amount": amount,
         "currency": (obj.get("currency") or "usd").lower(),
-        "application_fee_amount": application_fee_amount,
         "payment_intent_id": payment_intent_id,
         "created": created,
         "customer_email": customer_email,
@@ -126,7 +122,6 @@ def _extract_from_charge(obj: dict[str, Any] | Any) -> dict[str, Any] | None:
     if isinstance(payment_intent_id, dict):
         payment_intent_id = payment_intent_id.get("id") or ""
     created = obj.get("created")
-    application_fee_amount = obj.get("application_fee_amount")
 
     bd = obj.get("billing_details") or {}
     customer_email = bd.get("email") or obj.get("receipt_email")
@@ -150,7 +145,6 @@ def _extract_from_charge(obj: dict[str, Any] | Any) -> dict[str, Any] | None:
         "base_amount": base_amount,
         "amount": amount,
         "currency": (obj.get("currency") or "usd").lower(),
-        "application_fee_amount": application_fee_amount,
         "payment_intent_id": payment_intent_id,
         "created": created,
         "customer_email": customer_email,
@@ -680,9 +674,7 @@ def _extract_from_invoice(
     }
 
 
-def handle_invoice_paid(
-    event_type: str, data: dict[str, Any], account_id: str | None = None
-) -> bool:
+def handle_invoice_paid(data: dict[str, Any], account_id: str | None = None) -> bool:
     """
     Handle invoice.paid for subscription payment links: store transaction and add earnings to subscription link.
     If account_id is None (platform), add to user's pending_earnings for later transfer.
