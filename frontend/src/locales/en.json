@@ -250,7 +250,7 @@
       "subtitle": "Manage your account and selling settings.",
       "profile": "Profile",
       "email": "Email",
-      "danger_zone": "Danger Zone",
+      "account_management": "Account Management",
       "delete_account": "Delete Account",
       "delete_description": "Permanently delete your account and all associated data. This action cannot be undone.",
       "delete_modal_title": "Delete account",

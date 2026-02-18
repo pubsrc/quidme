@@ -250,7 +250,7 @@
       "subtitle": "Hesabınızı ve satış ayarlarınızı yönetin.",
       "profile": "Profil",
       "email": "E-posta",
-      "danger_zone": "Tehlikeli Bölge",
+      "account_management": "Hesap Yönetimi",
       "delete_account": "Hesabı Sil",
       "delete_description": "Hesabınızı ve ilişkili tüm verileri kalıcı olarak silin. Bu işlem geri alınamaz.",
       "delete_modal_title": "Hesabı sil",
