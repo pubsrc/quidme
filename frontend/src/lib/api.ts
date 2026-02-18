@@ -146,6 +146,7 @@ export type TransferResponse = {
   stripe_account_id: string;
   transferred: Record<string, number>;
   failed: Record<string, string>;
+  payout_ids?: Record<string, string>;
   message?: string;
 };
 
@@ -259,12 +260,12 @@ export const api = {
     if (!res.ok) throw new Error(await errorMessageFromResponse(res, "Failed to disable subscription link"));
     return res.json();
   },
-  transferPendingEarnings: async (): Promise<TransferResponse> => {
+  createPayouts: async (): Promise<TransferResponse> => {
     const res = await authFetch(
-      `${base}/transfers/transfer`,
+      `${base}/transfers/payouts`,
       await withAuth({ method: "POST" })
     );
-    if (!res.ok) throw new Error(await errorMessageFromResponse(res, "Failed to transfer funds"));
+    if (!res.ok) throw new Error(await errorMessageFromResponse(res, "Failed to payout funds"));
     return res.json();
   },
   listTransactions: async (params: { date_start?: string; date_end?: string; limit?: number }) => {

@@ -82,7 +82,7 @@ const DashboardPage = () => {
     setTransferError(null);
     setTransferLoading(true);
     try {
-      await api.transferPendingEarnings();
+      await api.createPayouts();
       await refresh();
     } catch (err) {
       setTransferError(err instanceof Error ? err.message : t("pages.dashboard.transfer_failed"));
