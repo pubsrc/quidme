@@ -193,6 +193,37 @@ def test_platform_create_payouts_from_available_balance(monkeypatch):
     assert result["payout_ids"] == {"gbp": "po_gbp_1100", "usd": "po_usd_500"}
 
 
+def test_platform_update_payout_schedule(monkeypatch):
+    captured = {}
+
+    def fake_modify(account_id, **kwargs):
+        captured["account_id"] = account_id
+        captured.update(kwargs)
+        return {
+            "settings": {
+                "payouts": {
+                    "schedule": {
+                        "interval": "weekly",
+                        "weekly_anchor": "monday",
+                    }
+                }
+            }
+        }
+
+    monkeypatch.setattr(platform_module.stripe.Account, "modify", staticmethod(fake_modify))
+
+    schedule = StripePlatformAccountService.update_payout_schedule(
+        stripe_account_id=_TEST_ACCOUNT_ID,
+        interval="weekly",
+        weekly_anchor="monday",
+    )
+
+    assert captured["account_id"] == _TEST_ACCOUNT_ID
+    assert captured["settings"]["payouts"]["schedule"]["interval"] == "weekly"
+    assert captured["settings"]["payouts"]["schedule"]["weekly_anchor"] == "monday"
+    assert schedule == {"interval": "weekly", "weekly_anchor": "monday"}
+
+
 def test_connected_account_disable_payment_link(monkeypatch):
     captured = {}
 

@@ -157,3 +157,30 @@ class StripePlatformAccountService:
             "failed": failed,
             "payout_ids": payout_ids,
         }
+
+    @staticmethod
+    def update_payout_schedule(
+        stripe_account_id: str,
+        interval: str,
+        *,
+        weekly_anchor: str | None = None,
+        monthly_anchor: int | None = None,
+    ) -> dict[str, Any]:
+        """
+        Configure connected account payout schedule.
+        Supported intervals: daily, weekly, monthly, manual.
+        """
+        stripe.api_key = settings.stripe_secret
+        schedule: dict[str, Any] = {"interval": interval}
+        if interval == "weekly" and weekly_anchor:
+            schedule["weekly_anchor"] = weekly_anchor
+        if interval == "monthly" and monthly_anchor is not None:
+            schedule["monthly_anchor"] = monthly_anchor
+
+        account = stripe.Account.modify(
+            stripe_account_id,
+            settings={"payouts": {"schedule": schedule}},
+        )
+        account_settings = account.get("settings", {}) if isinstance(account, dict) else {}
+        payouts_settings = account_settings.get("payouts", {}) if isinstance(account_settings, dict) else {}
+        return payouts_settings.get("schedule", schedule)

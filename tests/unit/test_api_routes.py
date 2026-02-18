@@ -929,6 +929,67 @@ def test_create_payouts_failure_returns_502() -> None:
     assert "gbp" in body["failed"]
 
 
+def test_create_payout_schedule_success_weekly() -> None:
+    from payme.api import dependencies as deps
+
+    class FakePlatformService:
+        @staticmethod
+        def update_payout_schedule(
+            stripe_account_id: str,
+            interval: str,
+            weekly_anchor: str | None = None,
+            monthly_anchor: int | None = None,
+        ) -> dict[str, Any]:
+            assert stripe_account_id == "acct_123"
+            assert interval == "weekly"
+            assert weekly_anchor == "monday"
+            assert monthly_anchor is None
+            return {"interval": "weekly", "weekly_anchor": "monday"}
+
+    app.dependency_overrides[deps.get_resolved_principal] = override_get_resolved_principal
+    app.dependency_overrides[deps.get_stripe_platform_account_service] = lambda: FakePlatformService
+
+    client = TestClient(app)
+    r = client.post(
+        "/api/v1/transfers/schedules",
+        headers={"Authorization": "Bearer x"},
+        json={"interval": "weekly", "weekly_anchor": "monday"},
+    )
+    app.dependency_overrides.clear()
+
+    assert r.status_code == 200, r.json()
+    body = r.json()
+    assert body["stripe_account_id"] == "acct_123"
+    assert body["schedule"] == {"interval": "weekly", "weekly_anchor": "monday"}
+
+
+def test_create_payout_schedule_requires_anchor_for_weekly() -> None:
+    from payme.api import dependencies as deps
+
+    class FakePlatformService:
+        @staticmethod
+        def update_payout_schedule(
+            stripe_account_id: str,
+            interval: str,
+            weekly_anchor: str | None = None,
+            monthly_anchor: int | None = None,
+        ) -> dict[str, Any]:
+            return {"interval": interval}
+
+    app.dependency_overrides[deps.get_resolved_principal] = override_get_resolved_principal
+    app.dependency_overrides[deps.get_stripe_platform_account_service] = lambda: FakePlatformService
+
+    client = TestClient(app)
+    r = client.post(
+        "/api/v1/transfers/schedules",
+        headers={"Authorization": "Bearer x"},
+        json={"interval": "weekly"},
+    )
+    app.dependency_overrides.clear()
+
+    assert r.status_code == 422
+
+
 # ---------------------------------------------------------------------------
 # Exception handlers (on main app)
 # ---------------------------------------------------------------------------
