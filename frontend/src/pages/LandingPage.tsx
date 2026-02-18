@@ -52,9 +52,9 @@ const LandingPage = () => {
               transition={{ duration: 0.55 }}
               className="text-4xl font-bold leading-tight text-[#472700] md:text-6xl"
             >
-              {t("app.hero_title")}
+              {t("pages.landing.tagline")}
             </motion.h1>
-            <p className="mt-5 text-lg font-medium text-[#6e4311] md:text-xl">{t("pages.landing.tagline")}</p>
+            <p className="mt-5 text-lg font-medium text-[#6e4311] md:text-xl">{t("app.hero_title")}</p>
             <p className="mt-3 max-w-xl text-base text-[#7f5420] md:text-lg">{t("app.hero_subtitle")}</p>
 
             <div className="mt-8 flex flex-wrap gap-3">
