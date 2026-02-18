@@ -1,7 +1,7 @@
 {
   "app": {
-    "hero_title": "Quidme ile ürünlerinizi daha hızlı satın",
-    "hero_subtitle": "Tek seferlik ürün ödeme bağlantıları oluşturun, abonelikleri yönetin, satışları takip edin ve iade işlemlerini tek yerden yapın.",
+    "hero_title": "Quidme ile tekliflerinizi daha hızlı satın",
+    "hero_subtitle": "Tek seferlik ve abonelik teklifleri oluşturun, satışları takip edin ve iadeleri tek yerden yönetin.",
     "get_started": "Başlayın",
     "login": "Giriş Yap",
     "signup": "Kayıt Ol"
@@ -12,11 +12,11 @@
     },
     "landing": {
       "brand": "Quidme",
-      "brand_subtitle": "Ürün Satışı",
+      "brand_subtitle": "Teklifler",
       "tagline": "Küçük işletmeler için küçük bir uygulama",
       "sign_in": "Giriş yap",
       "snapshot_title": "Quidme Özeti",
-      "snapshot_footer_title": "Ürünler, abonelikler ve iadeler tek yerde.",
+      "snapshot_footer_title": "Teklifler, abonelikler ve iadeler tek yerde.",
       "snapshot_footer_subtitle": "Bağımsız satıcılar ve küçük işletmeler için tasarlandı.",
       "ideas": {
         "piano": "Çocuklar için piyano dersleri",
@@ -122,7 +122,7 @@
     },
     "dashboard": {
       "title": "Panel",
-      "subtitle": "Ürün satış faaliyetinizin hızlı özeti.",
+      "subtitle": "Teklif satış faaliyetinizin hızlı özeti.",
       "total_earnings": "Toplam Kazanç",
       "pending_earnings": "Bekleyen Kazanç",
       "account_status": "Hesap Durumu",
@@ -154,22 +154,22 @@
       "no_transactions": "Henüz işlem yok."
     },
     "products": {
-      "title": "Ürünler",
-      "subtitle": "Tek seferlik ve tekrarlayan ürün ödeme bağlantıları oluşturun ve yönetin.",
-      "add_product": "Ürün Ekle",
+      "title": "Teklifler",
+      "subtitle": "Tek seferlik ve tekrarlayan teklifleri oluşturun ve yönetin.",
+      "add_product": "Teklif Ekle",
       "load_failed": "Bağlantılar yüklenemedi.",
       "disable_failed": "Bağlantı devre dışı bırakılamadı.",
       "loading": "Yükleniyor...",
-      "empty": "Henüz ürün yok. İlk ürün ödeme bağlantınızı oluşturun.",
-      "default_subscription_product": "Abonelik Ürünü",
-      "default_product": "Ürün"
+      "empty": "Henüz teklif yok. İlk teklifinizi oluşturun.",
+      "default_subscription_product": "Abonelik Teklifi",
+      "default_product": "Teklif"
     },
     "product_details": {
-      "open_from_list": "Bu sayfayı ürünler listesinden açın.",
-      "loading": "Ürün ödeme bağlantısı yükleniyor...",
-      "back": "Ürünlere dön",
-      "not_found": "Ürün ödeme bağlantısı bulunamadı.",
-      "default_title": "Ürün",
+      "open_from_list": "Bu sayfayı teklifler listesinden açın.",
+      "loading": "Teklif yükleniyor...",
+      "back": "Tekliflere dön",
+      "not_found": "Teklif bulunamadı.",
+      "default_title": "Teklif",
       "amount": "Tutar",
       "earnings": "Kazanç",
       "expires": "Bitiş",
@@ -212,7 +212,7 @@
     },
     "customer_subscriptions": {
       "title": "Müşteri abonelikleri",
-      "subtitle": "Ürün ödeme bağlantılarınızdan oluşturulan abonelikler.",
+      "subtitle": "Tekliflerinizden oluşturulan abonelikler.",
       "limit": "Limit",
       "load_failed": "Müşteri abonelikleri yüklenemedi.",
       "load_more_failed": "Daha fazla abonelik yüklenemedi.",
@@ -255,7 +255,7 @@
       "delete_description": "Hesabınızı ve ilişkili tüm verileri kalıcı olarak silin. Bu işlem geri alınamaz.",
       "delete_modal_title": "Hesabı sil",
       "delete_modal_intro": "Bu işlem hesabınızı ve ilgili tüm verileri kalıcı olarak siler:",
-      "delete_item_links": "Ürün ödeme bağlantıları ve abonelik ödemeleri",
+      "delete_item_links": "Teklifler ve abonelik ödemeleri",
       "delete_item_transactions": "İşlem geçmişi",
       "delete_item_stripe": "Stripe Connect hesabı",
       "delete_item_login": "Giriş hesabınız (çıkış yapılacak)",
@@ -273,12 +273,12 @@
       "retry": "Tekrar dene"
     },
     "create_link_dialog": {
-      "cta_one_time": "Ürün ödemesi oluştur",
-      "cta_subscription": "Abonelik ödemesi oluştur",
+      "cta_one_time": "Teklif oluştur",
+      "cta_subscription": "Abonelik teklifi oluştur",
       "errors": {
         "title_required": "Lütfen bir başlık girin.",
         "invalid_amount": "Geçerli bir tutar girin (en fazla 2 ondalık).",
-        "create_failed": "Bağlantı oluşturulamadı."
+        "create_failed": "Teklif oluşturulamadı."
       },
       "amount_placeholder": "10.00",
       "one_time": "Tek sefer",
@@ -315,7 +315,7 @@
       }
     },
     "link_card": {
-      "default_title": "Ürün",
+      "default_title": "Teklif",
       "recurring": "Tekrarlı",
       "disabled": "Devre dışı",
       "disable": "Devre dışı bırak",
@@ -331,11 +331,11 @@
       "show_qr": "QR kodunu göster",
       "share_link": "Bağlantıyı paylaş",
       "qr_code": "QR kod",
-      "qr_title": "Ürün ödeme QR",
+      "qr_title": "Teklif QR",
       "close": "Kapat",
       "generating": "QR kod oluşturuluyor...",
       "copy_qr": "QR görselini kopyala",
-      "qr_alt": "Ürün ödeme QR kodu"
+      "qr_alt": "Teklif QR kodu"
     },
     "require": {
       "checking_session": "Oturum kontrol ediliyor..."
@@ -345,7 +345,7 @@
     "dashboard": {
       "nav": {
         "dashboard": "Panel",
-        "products": "Ürünler",
+        "products": "Teklifler",
         "transactions": "İşlemler",
         "account": "Hesap",
         "settings": "Ayarlar"

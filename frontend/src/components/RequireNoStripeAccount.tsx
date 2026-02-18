@@ -33,7 +33,7 @@ export const RequireNoStripeAccount = ({ children }: { children: React.ReactNode
   }
 
   if (status.has_connected_account) {
-    return <Navigate to="/app/payment-links" replace />;
+    return <Navigate to="/app/offerings" replace />;
   }
 
   return <>{children}</>;

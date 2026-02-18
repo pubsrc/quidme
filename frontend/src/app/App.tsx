@@ -85,9 +85,9 @@ const App = () => {
       >
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="payment-links" element={<PaymentLinksPage />} />
-        <Route path="payment-links/:id" element={<PaymentLinkDetailsPage />} />
-        <Route path="subscriptions" element={<Navigate to="/app/payment-links" replace />} />
+        <Route path="offerings" element={<PaymentLinksPage />} />
+        <Route path="offerings/:id" element={<PaymentLinkDetailsPage />} />
+        <Route path="subscriptions" element={<Navigate to="/app/offerings" replace />} />
         <Route path="customer-subscriptions" element={<CustomerSubscriptionsPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="profile" element={<ProfilePage />} />

@@ -114,7 +114,7 @@ const PaymentLinksPage = () => {
             key={link.id}
             link={link}
             onDisable={link.__kind === "subscription" ? disableSubscriptionLink : disablePaymentLink}
-            onOpen={link.__kind === "one_time" ? (id) => navigate(`/app/payment-links/${id}`) : undefined}
+            onOpen={link.__kind === "one_time" ? (id) => navigate(`/app/offerings/${id}`) : undefined}
             loading={isBusy}
             showInterval={link.__kind === "subscription"}
             showEarnings={false}
