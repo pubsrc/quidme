@@ -1,4 +1,6 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { Routes, Route, Navigate, Outlet, useLocation, useParams } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
@@ -18,82 +20,119 @@ import { RequireAuth } from "../components/RequireAuth";
 import { RequireGuest } from "../components/RequireGuest";
 import { RequireNoStripeAccount } from "../components/RequireNoStripeAccount";
 import { RequireStripeAccount } from "../components/RequireStripeAccount";
+import { LOCALE_STORAGE_KEY } from "./i18n";
+import { replaceLocaleInPathname, resolveLocale } from "../lib/localeRouting";
+
+const LocaleShell = () => {
+  const { i18n } = useTranslation();
+  const { locale } = useParams<{ locale: string }>();
+  const location = useLocation();
+  const normalized = resolveLocale(locale);
+
+  useEffect(() => {
+    if (!normalized) return;
+    if (i18n.resolvedLanguage !== normalized) {
+      void i18n.changeLanguage(normalized);
+    }
+    localStorage.setItem(LOCALE_STORAGE_KEY, normalized);
+  }, [i18n, normalized]);
+
+  if (!normalized) {
+    const [, , ...remaining] = location.pathname.split("/");
+    const normalizedPath = remaining.length > 0 ? `/${remaining.join("/")}` : "";
+    return <Navigate to={`/en${normalizedPath}${location.search}`} replace />;
+  }
+
+  return <Outlet />;
+};
+
+const RedirectToPreferredLocale = () => {
+  const { i18n } = useTranslation();
+  const location = useLocation();
+  const current = resolveLocale(i18n.resolvedLanguage) ?? "en";
+  const targetPath = replaceLocaleInPathname(location.pathname, current);
+  const target = `${targetPath}${location.search}`;
+  return <Navigate to={target} replace />;
+};
 
 const App = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <RequireGuest>
-            <LandingPage />
-          </RequireGuest>
-        }
-      />
-      <Route
-        path="/login"
-        element={
-          <RequireGuest>
-            <LoginPage />
-          </RequireGuest>
-        }
-      />
-      <Route
-        path="/signup"
-        element={
-          <RequireGuest>
-            <SignupPage />
-          </RequireGuest>
-        }
-      />
-      <Route
-        path="/verify-email"
-        element={
-          <RequireGuest>
-            <VerifyEmailPage />
-          </RequireGuest>
-        }
-      />
-      <Route
-        path="/forgot-password"
-        element={
-          <RequireGuest>
-            <ForgotPasswordPage />
-          </RequireGuest>
-        }
-      />
-      <Route path="/callback" element={<CallbackPage />} />
-      <Route
-        path="/start"
-        element={
-          <RequireAuth>
-            <RequireNoStripeAccount>
-              <StartPage />
-            </RequireNoStripeAccount>
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/app"
-        element={
-          <RequireAuth>
-            <RequireStripeAccount>
-              <DashboardLayout />
-            </RequireStripeAccount>
-          </RequireAuth>
-        }
-      >
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="offerings" element={<PaymentLinksPage />} />
-        <Route path="offerings/:id" element={<PaymentLinkDetailsPage />} />
-        <Route path="subscriptions" element={<Navigate to="/app/offerings" replace />} />
-        <Route path="customer-subscriptions" element={<CustomerSubscriptionsPage />} />
-        <Route path="transactions" element={<TransactionsPage />} />
-        <Route path="profile" element={<ProfilePage />} />
-        <Route path="settings" element={<SettingsPage />} />
+      <Route path="/:locale" element={<LocaleShell />}>
+        <Route
+          index
+          element={
+            <RequireGuest>
+              <LandingPage />
+            </RequireGuest>
+          }
+        />
+        <Route
+          path="login"
+          element={
+            <RequireGuest>
+              <LoginPage />
+            </RequireGuest>
+          }
+        />
+        <Route
+          path="signup"
+          element={
+            <RequireGuest>
+              <SignupPage />
+            </RequireGuest>
+          }
+        />
+        <Route
+          path="verify-email"
+          element={
+            <RequireGuest>
+              <VerifyEmailPage />
+            </RequireGuest>
+          }
+        />
+        <Route
+          path="forgot-password"
+          element={
+            <RequireGuest>
+              <ForgotPasswordPage />
+            </RequireGuest>
+          }
+        />
+        <Route path="callback" element={<CallbackPage />} />
+        <Route
+          path="start"
+          element={
+            <RequireAuth>
+              <RequireNoStripeAccount>
+                <StartPage />
+              </RequireNoStripeAccount>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="app"
+          element={
+            <RequireAuth>
+              <RequireStripeAccount>
+                <DashboardLayout />
+              </RequireStripeAccount>
+            </RequireAuth>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="offerings" element={<PaymentLinksPage />} />
+          <Route path="offerings/:id" element={<PaymentLinkDetailsPage />} />
+          <Route path="subscriptions" element={<Navigate to="../offerings" replace />} />
+          <Route path="customer-subscriptions" element={<CustomerSubscriptionsPage />} />
+          <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to=".." replace />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<RedirectToPreferredLocale />} />
     </Routes>
   );
 };

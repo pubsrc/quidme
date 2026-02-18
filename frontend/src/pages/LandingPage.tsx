@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
+import { replaceLocaleInPathname } from "../lib/localeRouting";
 
 const snapshotIdeas = [
   { titleKey: "pages.landing.ideas.piano", image: "/landing-piano.svg" },
@@ -12,11 +13,14 @@ const snapshotIdeas = [
 
 const LandingPage = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const currentLanguage = (i18n.resolvedLanguage || "en").startsWith("tr") ? "tr" : "en";
 
   const setLanguage = async (lang: "en" | "tr") => {
     await i18n.changeLanguage(lang);
     localStorage.setItem(LOCALE_STORAGE_KEY, lang);
+    navigate(replaceLocaleInPathname(location.pathname, lang), { replace: true });
   };
 
   return (
@@ -30,7 +34,6 @@ const LandingPage = () => {
           <img src="/quidme-logo.svg" alt={t("layouts.dashboard.logo_alt")} className="h-11 w-11 rounded-full" />
           <div>
             <div className="text-xl font-semibold tracking-tight text-[#5a3000]">{t("pages.landing.brand")}</div>
-            <div className="text-xs font-medium uppercase tracking-[0.16em] text-[#8c5a1a]">{t("pages.landing.brand_subtitle")}</div>
           </div>
         </div>
 
@@ -67,13 +70,13 @@ const LandingPage = () => {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to="/signup"
+                to="signup"
                 className="rounded-full bg-[#ee9a0d] px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(190,105,0,0.35)]"
               >
                 {t("app.get_started")}
               </Link>
               <Link
-                to="/login"
+                to="login"
                 className="rounded-full border border-[#cd9033] bg-white/70 px-6 py-3 text-sm font-semibold text-[#653300]"
               >
                 {t("pages.landing.sign_in")}
