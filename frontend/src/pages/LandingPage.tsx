@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { LOCALE_STORAGE_KEY } from "../app/i18n";
 
 const snapshotIdeas = [
   { titleKey: "pages.landing.ideas.piano", image: "/landing-piano.svg" },
@@ -10,7 +11,13 @@ const snapshotIdeas = [
 ];
 
 const LandingPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLanguage = (i18n.resolvedLanguage || "en").startsWith("tr") ? "tr" : "en";
+
+  const setLanguage = async (lang: "en" | "tr") => {
+    await i18n.changeLanguage(lang);
+    localStorage.setItem(LOCALE_STORAGE_KEY, lang);
+  };
 
   return (
     <div className="quidme-landing min-h-screen">
@@ -27,19 +34,20 @@ const LandingPage = () => {
           </div>
         </div>
 
-        <div className="space-x-3">
-          <Link
-            to="/login"
-            className="rounded-full border border-[#d89c35] bg-white/65 px-5 py-2 text-sm font-semibold text-[#603400] backdrop-blur hover:bg-white"
+        <div>
+          <label htmlFor="landing-language" className="sr-only">
+            {t("layouts.dashboard.language.label")}
+          </label>
+          <select
+            id="landing-language"
+            value={currentLanguage}
+            onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
+            aria-label={t("layouts.dashboard.language.label")}
+            className="h-10 rounded-full border border-[#d89c35] bg-white/80 px-4 text-sm font-semibold text-[#603400] backdrop-blur outline-none transition hover:bg-white"
           >
-            {t("app.login")}
-          </Link>
-          <Link
-            to="/signup"
-            className="rounded-full bg-[#ef9f1c] px-5 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(203,118,0,0.35)] hover:bg-[#e58f00]"
-          >
-            {t("app.get_started")}
-          </Link>
+            <option value="en">🇬🇧 English</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+          </select>
         </div>
       </header>
 
