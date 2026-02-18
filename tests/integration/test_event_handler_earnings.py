@@ -18,7 +18,6 @@ from payme.db.repositories import (
     TransactionsRepository,
     UsersRepository,
 )
-from payme.core.settings import settings
 from payme.services.stripe_event_handler import handle_invoice_paid, handle_payment_succeeded
 
 
@@ -126,7 +125,12 @@ def _payment_intent_event(user_id: str, link_id: str, amount: int = 1000, curren
             "amount": amount,
             "currency": currency,
             "created": int(datetime.now(timezone.utc).timestamp()),
-            "metadata": {"user_id": user_id, "link_id": link_id},
+            "metadata": {
+                "user_id": user_id,
+                "link_id": link_id,
+                "base_amount": str(float(amount)),
+                "account_type": "platform",
+            },
             "charges": {"data": []},
         }
     }
@@ -144,7 +148,7 @@ def _invoice_paid_event(
             "customer_email": "cust@example.com",
             "payment_intent": {"id": payment_intent_id},
             "subscription": "sub_stripe_1",
-            "lines": {"data": [{"metadata": {"user_id": user_id, "link_id": link_id}}]},
+            "lines": {"data": [{"metadata": {"user_id": user_id, "link_id": link_id, "base_amount": str(float(amount))}}]},
         }
     }
 
@@ -165,7 +169,7 @@ def test_handle_payment_succeeded_earnings_in_payment_link_and_stripe_account() 
     link_id = "link-earn-1"
     amount = 1000
     service_fee = 55
-    expected_earnings = amount - service_fee - settings.fixed_fee
+    expected_earnings = float(amount)
     links_repo.create(
         link_id=link_id,
         user_id=user_id,
@@ -221,7 +225,7 @@ def test_handle_invoice_paid_earnings_in_subscription_link_and_stripe_account() 
     link_id = "sub-earn-1"
     amount = 3000
     service_fee = 150
-    expected_earnings = amount - service_fee - settings.fixed_fee
+    expected_earnings = float(amount)
     subs_repo.create(
         subscription_id=link_id,
         user_id=user_id,
@@ -238,7 +242,7 @@ def test_handle_invoice_paid_earnings_in_subscription_link_and_stripe_account() 
     )
 
     data = _invoice_paid_event(user_id=user_id, link_id=link_id, amount=amount, currency="gbp")
-    result = handle_invoice_paid("invoice.paid", data, account_id=None)
+    result = handle_invoice_paid(data, account_id=None)
 
     assert result is True
 

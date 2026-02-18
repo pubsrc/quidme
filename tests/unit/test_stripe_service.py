@@ -115,6 +115,7 @@ def test_connected_account_create_payment_link_one_time_with_fee(monkeypatch):
         title="Pay",
         description=None,
         amount=100,
+        base_amount=100,
         currency="gbp",
         require_fields=[],
         service_fee=10,
@@ -123,6 +124,27 @@ def test_connected_account_create_payment_link_one_time_with_fee(monkeypatch):
     assert captured.get("stripe_account") == _TEST_ACCOUNT_ID
     assert captured.get("application_fee_amount") == 10
     assert captured["metadata"]["user_id"] == _TEST_USER_ID
+
+
+def test_platform_create_transfer(monkeypatch):
+    captured = {}
+
+    def fake_create(**kwargs):
+        captured.update(kwargs)
+        return SimpleNamespace(id="tr_1")
+
+    monkeypatch.setattr(platform_module.stripe.Transfer, "create", staticmethod(fake_create))
+
+    transfer_id = StripePlatformAccountService.create_transfer(
+        amount=1050,
+        currency="gbp",
+        destination=_TEST_ACCOUNT_ID,
+    )
+
+    assert transfer_id == "tr_1"
+    assert captured["amount"] == 1050
+    assert captured["currency"] == "gbp"
+    assert captured["destination"] == _TEST_ACCOUNT_ID
 
 
 def test_connected_account_disable_payment_link(monkeypatch):
