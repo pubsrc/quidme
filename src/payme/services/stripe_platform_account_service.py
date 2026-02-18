@@ -99,3 +99,14 @@ class StripePlatformAccountService:
         """
         stripe.api_key = settings.stripe_secret
         stripe.Account.delete(stripe_account_id)
+
+    @staticmethod
+    def create_transfer(amount: int, currency: str, destination: str) -> str:
+        """Create a Stripe transfer from platform balance to a connected account."""
+        stripe.api_key = settings.stripe_secret
+        transfer = stripe.Transfer.create(
+            amount=amount,
+            currency=currency,
+            destination=destination,
+        )
+        return transfer.id

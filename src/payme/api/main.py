@@ -9,7 +9,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from payme.api.dependencies import STRIPE_ACCOUNT_REQUIRED_ERROR_CODE
-from payme.api.v1.routes import accounts, health, payment_links, platform, refunds, subscriptions, transactions, webhooks
+from payme.api.v1.routes import (
+    accounts,
+    health,
+    payment_links,
+    platform,
+    refunds,
+    subscriptions,
+    transactions,
+    transfers,
+    webhooks,
+)
 from payme.core.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -36,6 +46,7 @@ app.include_router(platform.router, prefix=API_V1_PREFIX)
 app.include_router(payment_links.router, prefix=API_V1_PREFIX)
 app.include_router(subscriptions.router, prefix=API_V1_PREFIX)
 app.include_router(transactions.router, prefix=API_V1_PREFIX)
+app.include_router(transfers.router, prefix=API_V1_PREFIX)
 app.include_router(refunds.router, prefix=API_V1_PREFIX)
 # Webhooks stay at /webhooks/stripe (no version prefix) for stable Stripe callback URL
 app.include_router(webhooks.router)
