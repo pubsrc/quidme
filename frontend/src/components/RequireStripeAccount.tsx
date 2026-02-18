@@ -1,17 +1,14 @@
 import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAccountStatus } from "../lib/useAccountStatus";
+import SessionLoader from "./SessionLoader";
 
 export const RequireStripeAccount = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation();
   const { status, isLoading, error, refresh, accountKnown } = useAccountStatus();
 
   if (isLoading || !accountKnown) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-slate-500">{t("components.require.checking_session")}</div>
-      </div>
-    );
+    return <SessionLoader />;
   }
 
   if (error) {
