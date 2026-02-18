@@ -114,8 +114,9 @@ variable "parameter_prefix" {
 }
 
 variable "frontend_domain_aliases" {
-  type    = list(string)
-  default = []
+  description = "Deprecated: frontend aliases are managed in constants.tf."
+  type        = list(string)
+  default     = []
 }
 
 variable "frontend_acm_certificate_arn" {

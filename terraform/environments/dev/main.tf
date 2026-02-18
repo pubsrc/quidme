@@ -10,9 +10,9 @@ locals {
   # Dev intentionally uses default AWS endpoints (no custom domains) unless you
   # explicitly configure them. This avoids DNS/provider drift during iteration.
   #
-  # If you later add `frontend_domain_aliases`, you must also provide
+  # If you later add aliases in constants.tf, you must also provide
   # `frontend_acm_certificate_arn` for a certificate that is already validated.
-  computed_payme_base_url = length(var.frontend_domain_aliases) > 0 ? "https://${var.frontend_domain_aliases[0]}" : module.frontend_hosting.frontend_url
+  computed_payme_base_url = length(local.frontend_domain_aliases) > 0 ? "https://${local.frontend_domain_aliases[0]}" : module.frontend_hosting.frontend_url
 
   payme_base_url_value      = var.payme_base_url_default != "https://example.com" ? var.payme_base_url_default : local.computed_payme_base_url
   account_refresh_url_value = var.account_refresh_url_default != "https://example.com/refresh" ? var.account_refresh_url_default : "${local.payme_base_url_value}/app/profile"
@@ -232,7 +232,7 @@ module "frontend_hosting" {
   source              = "../../modules/frontend_hosting"
   project_name        = var.project_name
   environment         = "dev"
-  domain_aliases      = var.frontend_domain_aliases
+  domain_aliases      = local.frontend_domain_aliases
   acm_certificate_arn = var.frontend_acm_certificate_arn
   tags                = local.tags
 }
