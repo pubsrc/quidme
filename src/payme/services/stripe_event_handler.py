@@ -94,6 +94,7 @@ def _extract_from_payment_intent(obj: dict[str, Any] | Any) -> dict[str, Any] | 
     return {
         "user_id": user_id,
         "link_id": link_id,
+        "account_type": metadata.get("account_type"),
         "base_amount": base_amount,
         "amount": amount,
         "currency": (obj.get("currency") or "usd").lower(),
@@ -142,6 +143,7 @@ def _extract_from_charge(obj: dict[str, Any] | Any) -> dict[str, Any] | None:
     return {
         "user_id": user_id,
         "link_id": link_id,
+        "account_type": metadata.get("account_type"),
         "base_amount": base_amount,
         "amount": amount,
         "currency": (obj.get("currency") or "usd").lower(),
@@ -374,6 +376,7 @@ def handle_payment_succeeded(
                 extracted[key] = details[key]
 
     earnings = _earnings_from_base_amount(extracted)
+    account_type = extracted.get("account_type")
 
     date_sk = _date_transaction_id(extracted.get("created"), payment_intent_id)
     created_at = None
@@ -399,7 +402,7 @@ def handle_payment_succeeded(
         )
         links_repo = PaymentLinksRepository()
         links_repo.add_payment_result(link_id, earnings, amount)
-        if account_id is None and earnings > 0:
+        if account_type == "platform" and earnings > 0:
             StripeAccountRepository().add_pending_earnings(
                 user_id, earnings, extracted["currency"]
             )
@@ -414,12 +417,12 @@ def handle_payment_succeeded(
         return False
 
     logger.info(
-        "Payment event: stored transaction user_id=%s link_id=%s amount=%s earnings=%s platform_held=%s",
+        "Payment event: stored transaction user_id=%s link_id=%s amount=%s earnings=%s account_type=%s",
         user_id,
         link_id,
         amount,
         earnings,
-        account_id is None,
+        account_type,
     )
     return True
 
