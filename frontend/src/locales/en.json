@@ -155,7 +155,6 @@
     },
     "products": {
       "title": "Offerings",
-      "subtitle": "Create and manage one-time and recurring offerings.",
       "add_product": "Add Offering",
       "load_failed": "Unable to load links.",
       "disable_failed": "Unable to disable link.",

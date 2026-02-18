@@ -84,7 +84,6 @@ const PaymentLinksPage = () => {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">{t("pages.products.title")}</h2>
-          <p className="mt-2 text-base text-slate-500 md:text-lg">{t("pages.products.subtitle")}</p>
         </div>
         <button
           type="button"
