@@ -20,7 +20,7 @@ from payme.db.repositories import (
     SubscriptionsRepository,
     TransactionsRepository,
 )
-from payme.services.fees import earnings_from_payment
+from payme.services.stripe_platform_account_service import StripePlatformAccountService
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +44,38 @@ def _to_dict(obj: Any) -> dict[str, Any]:
     return {}
 
 
+def _earnings_from_base_amount(extracted: dict[str, Any]) -> int:
+    """Use base_amount metadata as the single source of truth for earnings."""
+    return int(extracted["base_amount"])
+
+
+def _transfer_to_connected_account(user_id: str, amount: int, currency: str) -> None:
+    """
+    Transfer amount from platform balance to the user's connected Stripe account.
+    Best-effort: failures are logged and do not fail the webhook flow.
+    """
+    account = StripeAccountRepository().get_primary_for_user(user_id)
+    stripe_account_id = account.stripe_account_id if account else ""
+    try:
+        StripePlatformAccountService.create_transfer(
+            amount=amount,
+            currency=currency,
+            destination=stripe_account_id,
+        )
+    except Exception as e:
+        logger.exception(
+            "Failed to transfer to connected account user_id=%s stripe_account_id=%s currency=%s amount=%s: %s",
+            user_id,
+            stripe_account_id,
+            currency,
+            amount,
+            e,
+        )
+
+
 def _extract_from_payment_intent(obj: dict[str, Any] | Any) -> dict[str, Any] | None:
     """
-    Extract user_id, link_id, amount, application_fee_amount, payment_intent_id, created, customer fields.
+    Extract user_id, link_id, amount, payment_intent_id, created, customer fields.
     Returns None if metadata missing user_id or link_id.
     """
     obj = _to_dict(obj)
@@ -55,14 +84,12 @@ def _extract_from_payment_intent(obj: dict[str, Any] | Any) -> dict[str, Any] | 
     link_id = metadata.get("link_id")
     if not user_id or not link_id:
         return None
+    base_amount = metadata.get("base_amount")
     amount = obj.get("amount_received") or obj.get("amount") or 0
     if amount <= 0:
         return None
     payment_intent_id = obj.get("id") or ""
     created = obj.get("created")
-    application_fee_amount = obj.get("application_fee_amount")
-    if application_fee_amount is None and "application_fee_amount" in obj:
-        application_fee_amount = obj["application_fee_amount"]
 
     customer_email = None
     customer_name = None
@@ -92,9 +119,10 @@ def _extract_from_payment_intent(obj: dict[str, Any] | Any) -> dict[str, Any] | 
     return {
         "user_id": user_id,
         "link_id": link_id,
+        "account_type": metadata.get("account_type"),
+        "base_amount": base_amount,
         "amount": amount,
         "currency": (obj.get("currency") or "usd").lower(),
-        "application_fee_amount": application_fee_amount,
         "payment_intent_id": payment_intent_id,
         "created": created,
         "customer_email": customer_email,
@@ -112,6 +140,7 @@ def _extract_from_charge(obj: dict[str, Any] | Any) -> dict[str, Any] | None:
     link_id = metadata.get("link_id")
     if not user_id or not link_id:
         return None
+    base_amount = metadata.get("base_amount")
     amount = obj.get("amount") or 0
     if amount <= 0:
         return None
@@ -119,7 +148,6 @@ def _extract_from_charge(obj: dict[str, Any] | Any) -> dict[str, Any] | None:
     if isinstance(payment_intent_id, dict):
         payment_intent_id = payment_intent_id.get("id") or ""
     created = obj.get("created")
-    application_fee_amount = obj.get("application_fee_amount")
 
     bd = obj.get("billing_details") or {}
     customer_email = bd.get("email") or obj.get("receipt_email")
@@ -140,9 +168,10 @@ def _extract_from_charge(obj: dict[str, Any] | Any) -> dict[str, Any] | None:
     return {
         "user_id": user_id,
         "link_id": link_id,
+        "account_type": metadata.get("account_type"),
+        "base_amount": base_amount,
         "amount": amount,
         "currency": (obj.get("currency") or "usd").lower(),
-        "application_fee_amount": application_fee_amount,
         "payment_intent_id": payment_intent_id,
         "created": created,
         "customer_email": customer_email,
@@ -316,29 +345,13 @@ def _fetch_payment_intent_customer_details(
     return out
 
 
-def _compute_earnings(
-    amount: int,
-    application_fee_amount: int | None,
-    link_service_fee: int | None,
-) -> int:
-    """
-    Seller earnings after fee.
-    Prefer Stripe application_fee_amount if present; else link's stored service_fee; else compute from settings.
-    """
-    if application_fee_amount is not None and application_fee_amount >= 0:
-        return earnings_from_payment(amount, known_service_fee_cents=application_fee_amount)
-    if link_service_fee is not None and link_service_fee >= 0:
-        return earnings_from_payment(amount, known_service_fee_cents=link_service_fee)
-    return earnings_from_payment(amount)
-
-
 def handle_payment_succeeded(
     event_type: str, data: dict[str, Any], account_id: str | None = None
 ) -> bool:
     """
     Handle payment_intent.succeeded or charge.succeeded for payment-link payments.
 
-    Extracts metadata (user_id, link_id, amount, customer info), subtracts service fee to get
+    Extracts metadata (user_id, link_id, amount, customer info), uses base_amount metadata as
     earnings, adds earnings to the payment link, and stores the transaction in the transactions
     table. If account_id is None (platform-held payment), also adds to user's pending_earnings
     for later transfer when the account is verified.
@@ -387,14 +400,8 @@ def handle_payment_succeeded(
             if extracted.get(key) is None and details.get(key):
                 extracted[key] = details[key]
 
-    link = PaymentLinksRepository().get(link_id)
-    link_service_fee = link.get("service_fee") if link else None
-
-    earnings = _compute_earnings(
-        amount,
-        extracted.get("application_fee_amount"),
-        link_service_fee,
-    )
+    earnings = _earnings_from_base_amount(extracted)
+    account_type = extracted.get("account_type")
 
     date_sk = _date_transaction_id(extracted.get("created"), payment_intent_id)
     created_at = None
@@ -420,9 +427,14 @@ def handle_payment_succeeded(
         )
         links_repo = PaymentLinksRepository()
         links_repo.add_payment_result(link_id, earnings, amount)
-        if account_id is None and earnings > 0:
+        if account_type == "platform" and earnings > 0:
             StripeAccountRepository().add_pending_earnings(
                 user_id, earnings, extracted["currency"]
+            )
+            _transfer_to_connected_account(
+                user_id=user_id,
+                amount=earnings,
+                currency=extracted["currency"],
             )
         if earnings > 0:
             StripeAccountRepository().add_earnings(
@@ -435,12 +447,12 @@ def handle_payment_succeeded(
         return False
 
     logger.info(
-        "Payment event: stored transaction user_id=%s link_id=%s amount=%s earnings=%s platform_held=%s",
+        "Payment event: stored transaction user_id=%s link_id=%s amount=%s earnings=%s account_type=%s",
         user_id,
         link_id,
         amount,
         earnings,
-        account_id is None,
+        account_type,
     )
     return True
 
@@ -547,19 +559,19 @@ def handle_payment_failed(
 def _metadata_from_invoice_payment_intent(
     invoice_obj: dict[str, Any],
     account_id: str | None,
-) -> tuple[str | None, str | None]:
+) -> tuple[str | None, str | None, Any | None]:
     """
     Fallback: get user_id and link_id from the invoice's PaymentIntent metadata.
     Payment Links may not copy subscription_data.metadata onto the Subscription; the
     PaymentIntent for the invoice payment sometimes has the same metadata.
-    Returns (user_id, link_id) or (None, None).
+    Returns (user_id, link_id, base_amount) or (None, None, None).
     """
     pi_ref = invoice_obj.get("payment_intent")
     if not pi_ref:
-        return (None, None)
+        return (None, None, None)
     pi_id = pi_ref.get("id") if isinstance(pi_ref, dict) else pi_ref
     if not pi_id or not isinstance(pi_id, str):
-        return (None, None)
+        return (None, None, None)
     stripe.api_key = settings.stripe_secret
     try:
         if account_id:
@@ -568,10 +580,11 @@ def _metadata_from_invoice_payment_intent(
             pi = stripe.PaymentIntent.retrieve(pi_id)
     except stripe.StripeError as e:
         logger.debug("Could not retrieve invoice payment_intent %s: %s", pi_id, e)
-        return (None, None)
+        return (None, None, None)
     pi = _to_dict(pi)
     meta = _to_dict(pi.get("metadata") or {})
-    return (meta.get("user_id"), meta.get("link_id"))
+    base_amount = meta.get("base_amount")
+    return (meta.get("user_id"), meta.get("link_id"), base_amount)
 
 
 def _extract_from_invoice(
@@ -607,12 +620,14 @@ def _extract_from_invoice(
     # Prefer user_id/link_id from invoice payload (parent.subscription_details.metadata or first line)
     user_id = None
     link_id = None
+    base_amount: Any | None = None
     parent = _to_dict(obj.get("parent") or {})
     sub_details = _to_dict(parent.get("subscription_details") or {})
     meta = _to_dict(sub_details.get("metadata") or {})
     if meta.get("user_id") and meta.get("link_id"):
         user_id = meta.get("user_id")
         link_id = meta.get("link_id")
+        base_amount = meta.get("base_amount")
     if not user_id or not link_id:
         lines = obj.get("lines") or {}
         line_list = lines.get("data") if isinstance(lines, dict) else []
@@ -621,6 +636,7 @@ def _extract_from_invoice(
             if line_meta.get("user_id") and line_meta.get("link_id"):
                 user_id = line_meta.get("user_id")
                 link_id = line_meta.get("link_id")
+                base_amount = line_meta.get("base_amount")
 
     # Fall back to Subscription object then PaymentIntent
     if not user_id or not link_id:
@@ -640,9 +656,10 @@ def _extract_from_invoice(
         metadata = _to_dict(sub.get("metadata") or {})
         user_id = metadata.get("user_id")
         link_id = metadata.get("link_id")
+        base_amount = metadata.get("base_amount")
 
     if not user_id or not link_id:
-        user_id, link_id = _metadata_from_invoice_payment_intent(obj, account_id)
+        user_id, link_id, base_amount = _metadata_from_invoice_payment_intent(obj, account_id)
         if user_id and link_id:
             logger.info(
                 "Subscription %s: using user_id/link_id from invoice payment_intent",
@@ -654,12 +671,12 @@ def _extract_from_invoice(
                     stripe.Subscription.modify(
                         subscription_id_stripe,
                         stripe_account=account_id,
-                        metadata={"user_id": user_id, "link_id": link_id},
+                        metadata={"user_id": user_id, "link_id": link_id, "base_amount": str(base_amount) if base_amount is not None else ""},
                     )
                 else:
                     stripe.Subscription.modify(
                         subscription_id_stripe,
-                        metadata={"user_id": user_id, "link_id": link_id},
+                        metadata={"user_id": user_id, "link_id": link_id, "base_amount": str(base_amount) if base_amount is not None else ""},
                     )
             except stripe.StripeError as e:
                 logger.warning("Could not set metadata on subscription %s: %s", subscription_id_stripe, e)
@@ -678,6 +695,7 @@ def _extract_from_invoice(
     return {
         "user_id": user_id,
         "link_id": link_id,
+        "base_amount": base_amount,
         "amount": amount,
         "currency": currency,
         "invoice_id": invoice_id,
@@ -689,9 +707,7 @@ def _extract_from_invoice(
     }
 
 
-def handle_invoice_paid(
-    event_type: str, data: dict[str, Any], account_id: str | None = None
-) -> bool:
+def handle_invoice_paid(data: dict[str, Any], account_id: str | None = None) -> bool:
     """
     Handle invoice.paid for subscription payment links: store transaction and add earnings to subscription link.
     If account_id is None (platform), add to user's pending_earnings for later transfer.
@@ -726,10 +742,7 @@ def handle_invoice_paid(
         logger.debug("Invoice paid: transaction already exists id=%s, skipping", payment_intent_id)
         return True
 
-    link = SubscriptionsRepository().get(link_id)
-    link_service_fee = link.get("service_fee") if link else None
-    application_fee_amount = None
-    earnings = _compute_earnings(amount, application_fee_amount, link_service_fee)
+    earnings = _earnings_from_base_amount(extracted)
 
     # Use payment_intent_id for sort key so subscription and one-time transactions interleave
     # (invoice_id would give "in_xxx" which sorts before "pi_xxx", hiding subscriptions in list)
@@ -760,6 +773,11 @@ def handle_invoice_paid(
         if account_id is None and earnings > 0:
             StripeAccountRepository().add_pending_earnings(
                 user_id, earnings, extracted["currency"]
+            )
+            _transfer_to_connected_account(
+                user_id=user_id,
+                amount=earnings,
+                currency=extracted["currency"],
             )
         if earnings > 0:
             StripeAccountRepository().add_earnings(
@@ -839,6 +857,7 @@ def handle_subscription_created(
     meta = _to_dict(pi.get("metadata") or {})
     user_id = meta.get("user_id")
     link_id = meta.get("link_id")
+    base_amount = meta.get("base_amount")
     if not user_id or not link_id:
         return True
     try:
@@ -846,12 +865,12 @@ def handle_subscription_created(
             stripe.Subscription.modify(
                 sub_id,
                 stripe_account=account_id,
-                metadata={"user_id": user_id, "link_id": link_id},
+                metadata={"user_id": user_id, "link_id": link_id, "base_amount": str(base_amount) if base_amount is not None else ""},
             )
         else:
             stripe.Subscription.modify(
                 sub_id,
-                metadata={"user_id": user_id, "link_id": link_id},
+                metadata={"user_id": user_id, "link_id": link_id, "base_amount": str(base_amount) if base_amount is not None else ""},
             )
         logger.info(
             "Subscription %s: set metadata from payment_intent (user_id=%s link_id=%s)",
@@ -909,6 +928,7 @@ def handle_checkout_session_completed(
 
     user_id = link.get("user_id")
     link_id = link.get("subscription_id")
+    base_amount = link.get("amount")
     if not user_id or not link_id:
         return True
 
@@ -918,12 +938,12 @@ def handle_checkout_session_completed(
             stripe.Subscription.modify(
                 stripe_subscription_id,
                 stripe_account=account_id,
-                metadata={"user_id": user_id, "link_id": link_id},
+                metadata={"user_id": user_id, "link_id": link_id, "base_amount": str(base_amount) if base_amount is not None else ""},
             )
         else:
             stripe.Subscription.modify(
                 stripe_subscription_id,
-                metadata={"user_id": user_id, "link_id": link_id},
+                metadata={"user_id": user_id, "link_id": link_id, "base_amount": str(base_amount) if base_amount is not None else ""},
             )
         logger.info(
             "Checkout session completed: set subscription %s metadata (user_id=%s link_id=%s)",

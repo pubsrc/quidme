@@ -22,7 +22,7 @@ const LoginPage = () => {
 
     try {
       await signInWithCognito(email, password);
-      navigate("/app/offerings", { replace: true });
+      navigate("/app/dashboard", { replace: true });
     } catch (err: any) {
       if (err?.code === "USER_NOT_CONFIRMED") {
         navigate(`/verify-email?email=${encodeURIComponent(email)}`, { replace: true });

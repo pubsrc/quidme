@@ -66,7 +66,7 @@ async def stripe_webhook(request: Request) -> Response:
         elif event_type in PAYMENT_FAILED_EVENTS:
             handle_payment_failed(event_type, data, account_id=account_id)
         elif event_type in INVOICE_PAID_EVENTS:
-            handle_invoice_paid(event_type, data, account_id=account_id)
+            handle_invoice_paid(data, account_id=account_id)
         elif event_type == SUBSCRIPTION_CREATED_EVENT:
             handle_subscription_created(data, account_id=account_id)
         elif event_type == CHECKOUT_SESSION_COMPLETED_EVENT:

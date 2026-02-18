@@ -33,9 +33,12 @@ const formatTimeAgo = (isoDate: string, t: (key: string, options?: Record<string
 const DashboardPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { account, status } = useAccountStatus();
+  const { account, status, refresh } = useAccountStatus();
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [transferLoading, setTransferLoading] = useState(false);
+  const [transferError, setTransferError] = useState<string | null>(null);
+  const [showOnboardingDialog, setShowOnboardingDialog] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -53,17 +56,40 @@ const DashboardPage = () => {
   }, []);
 
   const totals = useMemo(() => {
-    const succeeded = transactions.filter((tx) => tx.status?.toLowerCase() === "succeeded");
-    const totalEarnings = succeeded.reduce((acc, tx) => acc + tx.amount, 0);
+    const totalEarningsMinor =
+      account?.earnings
+        ? Object.values(account.earnings).reduce((acc, amount) => acc + amount, 0)
+        : 0;
     const pendingEarningsMinor =
       account?.pending_earnings
         ? Object.values(account.pending_earnings).reduce((acc, amount) => acc + amount, 0)
         : 0;
-    const mainCurrency = account?.pending_earnings ? Object.keys(account.pending_earnings)[0] : "gbp";
-    return { totalEarnings, pendingEarningsMinor, mainCurrency };
-  }, [transactions, account]);
+    const mainCurrency = account?.pending_earnings
+      ? Object.keys(account.pending_earnings)[0]
+      : account?.earnings
+      ? Object.keys(account.earnings)[0]
+      : "gbp";
+    return { totalEarningsMinor, pendingEarningsMinor, mainCurrency };
+  }, [account]);
 
   const recentRows = useMemo(() => transactions.slice(0, 4), [transactions]);
+
+  const handleTransfer = async () => {
+    if (!status.payouts_enabled) {
+      setShowOnboardingDialog(true);
+      return;
+    }
+    setTransferError(null);
+    setTransferLoading(true);
+    try {
+      await api.createPayouts();
+      await refresh();
+    } catch (err) {
+      setTransferError(err instanceof Error ? err.message : t("pages.dashboard.transfer_failed"));
+    } finally {
+      setTransferLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -75,13 +101,22 @@ const DashboardPage = () => {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 md:rounded-3xl md:px-6 md:py-5">
           <div className="text-base text-slate-600 md:text-xl">{t("pages.dashboard.total_earnings")}</div>
-          <div className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">{formatMoney(totals.totalEarnings, totals.mainCurrency)}</div>
+          <div className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">{formatMoney(totals.totalEarningsMinor, totals.mainCurrency)}</div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 md:rounded-3xl md:px-6 md:py-5">
           <div className="text-base text-slate-600 md:text-xl">{t("pages.dashboard.pending_earnings")}</div>
           <div className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">
             {formatMoney(totals.pendingEarningsMinor, totals.mainCurrency)}
           </div>
+          <button
+            type="button"
+            onClick={handleTransfer}
+            disabled={transferLoading || totals.pendingEarningsMinor <= 0}
+            className="mt-4 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 md:rounded-2xl md:px-5 md:py-2.5 md:text-base"
+          >
+            {transferLoading ? t("pages.dashboard.transferring") : t("pages.dashboard.transfer_to_account")}
+          </button>
+          {transferError && <div className="mt-2 text-sm font-medium text-red-600">{transferError}</div>}
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 md:rounded-3xl md:px-6 md:py-5 md:col-span-2 xl:col-span-1">
           <div className="text-base text-slate-600 md:text-xl">{t("pages.dashboard.account_status")}</div>
@@ -178,6 +213,51 @@ const DashboardPage = () => {
           </table>
         </div>
       </div>
+
+      {showOnboardingDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/55"
+            onClick={() => setShowOnboardingDialog(false)}
+          />
+          <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl md:rounded-3xl">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="h-9 w-9 text-emerald-600"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 3l2.1 2.2 3-.4.9 2.8 2.8.9-.4 3L22 12l-1.6 1.5.4 3-2.8.9-.9 2.8-3-.4L12 21l-2.1-2.2-3 .4-.9-2.8-2.8-.9.4-3L2 12l1.6-1.5-.4-3 2.8-.9.9-2.8 3 .4L12 3z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M8.5 12.5l2.2 2.2 4.8-4.8"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <p className="text-center text-base font-medium text-slate-800 md:text-lg">
+              {t("pages.dashboard.transfer_onboarding_required")}
+            </p>
+            <button
+              type="button"
+              className="mt-5 w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 md:text-base"
+              onClick={() => {
+                setShowOnboardingDialog(false);
+                navigate("/app/profile");
+              }}
+            >
+              {t("pages.dashboard.okay")}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

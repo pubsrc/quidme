@@ -7,10 +7,6 @@ stripe_accounts table (DynamoDB).
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
-
-import pytest
-
-from payme.core.settings import settings
 from payme.services.stripe_event_handler import (
     handle_invoice_paid,
     handle_payment_succeeded,
@@ -23,9 +19,12 @@ def _payment_intent_succeeded_event(
     amount: int = 1000,
     currency: str = "gbp",
     payment_intent_id: str = "pi_xxx",
-    application_fee_amount: int | None = None,
+    base_amount: int | None = None,
+    account_type: str = "platform",
 ) -> dict:
     """Minimal payment_intent.succeeded event payload."""
+    if base_amount is None:
+        base_amount = amount
     return {
         "object": {
             "id": payment_intent_id,
@@ -33,8 +32,12 @@ def _payment_intent_succeeded_event(
             "amount": amount,
             "currency": currency,
             "created": 1700000000,
-            "application_fee_amount": application_fee_amount,
-            "metadata": {"user_id": user_id, "link_id": link_id},
+            "metadata": {
+                "user_id": user_id,
+                "link_id": link_id,
+                "base_amount": str(base_amount),
+                "account_type": account_type,
+            },
             "charges": {"data": []},
         }
     }
@@ -47,8 +50,11 @@ def _invoice_paid_event(
     currency: str = "usd",
     invoice_id: str = "in_yyy",
     payment_intent_id: str = "pi_zzz",
+    base_amount: int | None = None,
 ) -> dict:
     """Minimal invoice.paid event payload (subscription). Uses lines.data[0].metadata for user_id/link_id so extraction does not call Stripe."""
+    if base_amount is None:
+        base_amount = amount
     return {
         "object": {
             "id": invoice_id,
@@ -60,7 +66,7 @@ def _invoice_paid_event(
             "subscription": "sub_stripe_1",
             "lines": {
                 "data": [
-                    {"metadata": {"user_id": user_id, "link_id": link_id}},
+                    {"metadata": {"user_id": user_id, "link_id": link_id, "base_amount": str(base_amount)}},
                 ]
             },
         }
@@ -77,7 +83,6 @@ def test_handle_payment_succeeded_updates_payment_link_and_stripe_account_earnin
 ) -> None:
     """Payment intent succeeded: earnings added to payment link and to stripe_accounts (DynamoDB)."""
     mock_links_repo = MagicMock()
-    mock_links_repo.get.return_value = {"link_id": "link-1", "service_fee": 55}
     mock_links_repo_cls.return_value = mock_links_repo
 
     mock_tx_repo = MagicMock()
@@ -94,7 +99,7 @@ def test_handle_payment_succeeded_updates_payment_link_and_stripe_account_earnin
     earnings = call_args[1]
     total_amount = call_args[2]
     assert total_amount == 1000
-    assert earnings == 1000 - 55 - settings.fixed_fee  # total_paid - service_fee - fixed_fee
+    assert earnings == 1000
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
     acc_call = mock_account_repo_cls.return_value.add_earnings.call_args[0]
@@ -121,7 +126,7 @@ def test_handle_payment_succeeded_connect_account_still_updates_earnings(
     mock_tx_repo_cls.return_value = mock_tx_repo
 
     data = _payment_intent_succeeded_event(
-        user_id="u2", link_id="link-2", amount=5000, currency="usd", application_fee_amount=100
+        user_id="u2", link_id="link-2", amount=5000, currency="usd", base_amount=5000, account_type="connected_account"
     )
     result = handle_payment_succeeded("payment_intent.succeeded", data, account_id="acct_connected")
 
@@ -131,7 +136,8 @@ def test_handle_payment_succeeded_connect_account_still_updates_earnings(
     assert call_args[0] == "link-2"
     assert call_args[2] == 5000
     earnings = call_args[1]
-    assert earnings == 5000 - 100 - settings.fixed_fee  # total_paid - application_fee - fixed_fee
+    assert earnings == 5000
+    mock_account_repo_cls.return_value.add_pending_earnings.assert_not_called()
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
     acc_call = mock_account_repo_cls.return_value.add_earnings.call_args[0]
@@ -150,7 +156,6 @@ def test_handle_invoice_paid_updates_subscription_link_and_stripe_account_earnin
 ) -> None:
     """Invoice paid: earnings added to subscription link and to stripe_accounts (DynamoDB)."""
     mock_subs_repo = MagicMock()
-    mock_subs_repo.get.return_value = {"subscription_id": "sub-1", "service_fee": 100}
     mock_subs_repo_cls.return_value = mock_subs_repo
 
     mock_tx_repo = MagicMock()
@@ -158,7 +163,7 @@ def test_handle_invoice_paid_updates_subscription_link_and_stripe_account_earnin
     mock_tx_repo_cls.return_value = mock_tx_repo
 
     data = _invoice_paid_event(user_id="u3", link_id="sub-1", amount=3000, currency="gbp")
-    result = handle_invoice_paid("invoice.paid", data, account_id=None)
+    result = handle_invoice_paid(data, account_id=None)
 
     assert result is True
     mock_subs_repo.add_payment_result.assert_called_once()
@@ -167,7 +172,7 @@ def test_handle_invoice_paid_updates_subscription_link_and_stripe_account_earnin
     earnings = call_args[1]
     total_amount = call_args[2]
     assert total_amount == 3000
-    assert earnings == 3000 - 100 - settings.fixed_fee
+    assert earnings == 3000
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
     acc_call = mock_account_repo_cls.return_value.add_earnings.call_args[0]
@@ -186,19 +191,17 @@ def test_handle_invoice_paid_zero_earnings_does_not_call_add_earnings(
 ) -> None:
     """When earnings are 0 (e.g. full fee), add_earnings is not called on stripe account."""
     mock_subs_repo = MagicMock()
-    mock_subs_repo.get.return_value = {"subscription_id": "sub-1", "service_fee": 500}
     mock_subs_repo_cls.return_value = mock_subs_repo
 
     mock_tx_repo = MagicMock()
     mock_tx_repo.get_by_payment_intent_id.return_value = None
     mock_tx_repo_cls.return_value = mock_tx_repo
 
-    data = _invoice_paid_event(user_id="u4", link_id="sub-1", amount=500, currency="usd")
-    result = handle_invoice_paid("invoice.paid", data, account_id=None)
+    data = _invoice_paid_event(user_id="u4", link_id="sub-1", amount=500, currency="usd", base_amount=0)
+    result = handle_invoice_paid(data, account_id=None)
 
     assert result is True
     mock_subs_repo.add_payment_result.assert_called_once()
-    # earnings = 500 - 500 - fixed_fee < 0 -> 0
     mock_account_repo_cls.return_value.add_earnings.assert_not_called()
 
 

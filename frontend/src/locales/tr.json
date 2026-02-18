@@ -151,7 +151,12 @@
       "status_unknown": "bilinmiyor",
       "status_pending": "beklemede",
       "loading_transactions": "İşlemler yükleniyor...",
-      "no_transactions": "Henüz işlem yok."
+      "no_transactions": "Henüz işlem yok.",
+      "transfer_to_account": "Hesabına aktar",
+      "transferring": "Aktarılıyor...",
+      "transfer_failed": "Fonlar aktarılamadı.",
+      "transfer_onboarding_required": "Fonları transfer etmek için onboarding işlemini tamamlamanız gerekiyor",
+      "okay": "Tamam"
     },
     "products": {
       "title": "Teklifler",
@@ -242,7 +247,26 @@
       "earnings": "Hesap kazancı",
       "onboarding_body": "Hesabınızdaki fonları aktarmak için onboarding işlemini tamamlayın.",
       "opening": "Açılıyor...",
-      "onboarding_failed": "Onboarding başlatılamadı. Lütfen tekrar deneyin."
+      "onboarding_failed": "Onboarding başlatılamadı. Lütfen tekrar deneyin.",
+      "payout_schedule_title": "Bakiye transferi planla",
+      "payout_schedule_body": "Hesabınıza otomatik bakiye transferlerini planlayın.",
+      "schedule_daily": "Günlük",
+      "schedule_weekly": "Haftalık",
+      "schedule_monthly": "Aylık",
+      "schedule_manual": "Manuel",
+      "weekly_anchor": "Haftalık ödeme günü",
+      "monthly_anchor": "Aylık ödeme günü (1-31)",
+      "save_schedule": "Takvimi kaydet",
+      "saving_schedule": "Kaydediliyor...",
+      "payout_schedule_saved": "Ödeme takvimi kaydedildi.",
+      "payout_schedule_failed": "Ödeme takvimi kaydedilemedi.",
+      "day_monday": "Pazartesi",
+      "day_tuesday": "Salı",
+      "day_wednesday": "Çarşamba",
+      "day_thursday": "Perşembe",
+      "day_friday": "Cuma",
+      "day_saturday": "Cumartesi",
+      "day_sunday": "Pazar"
     },
     "settings": {
       "title": "Ayarlar",

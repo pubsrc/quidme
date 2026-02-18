@@ -7,6 +7,7 @@ export type Account = {
   status: string; // NEW | RESTRICTED | VERIFIED
   created_at: string;
   pending_earnings?: Record<string, number>; // currency -> amount in minor units
+  earnings?: Record<string, number>; // currency -> amount in minor units
 };
 
 export type TransactionItem = {
@@ -141,6 +142,29 @@ export type LinkResponse = {
   interval?: string | null;
 };
 
+export type TransferResponse = {
+  stripe_account_id: string;
+  transferred: Record<string, number>;
+  failed: Record<string, string>;
+  payout_ids?: Record<string, string>;
+  message?: string;
+};
+
+export type PayoutSchedulePayload = {
+  interval: "daily" | "weekly" | "monthly" | "manual";
+  weekly_anchor?: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
+  monthly_anchor?: number;
+};
+
+export type PayoutScheduleResponse = {
+  stripe_account_id: string;
+  schedule: {
+    interval: string;
+    weekly_anchor?: string;
+    monthly_anchor?: number;
+  };
+};
+
 export const api = {
   connectAccount: async (country: string = "GB") => {
     const res = await authFetch(`${base}/platform/connected-accounts`, await withAuth({
@@ -249,6 +273,25 @@ export const api = {
       await withAuth({ method: "POST" })
     );
     if (!res.ok) throw new Error(await errorMessageFromResponse(res, "Failed to disable subscription link"));
+    return res.json();
+  },
+  createPayouts: async (): Promise<TransferResponse> => {
+    const res = await authFetch(
+      `${base}/transfers/payouts`,
+      await withAuth({ method: "POST" })
+    );
+    if (!res.ok) throw new Error(await errorMessageFromResponse(res, "Failed to payout funds"));
+    return res.json();
+  },
+  createPayoutSchedule: async (payload: PayoutSchedulePayload): Promise<PayoutScheduleResponse> => {
+    const res = await authFetch(
+      `${base}/transfers/schedules`,
+      await withAuth({
+        method: "POST",
+        body: JSON.stringify(payload),
+      })
+    );
+    if (!res.ok) throw new Error(await errorMessageFromResponse(res, "Failed to save payout schedule"));
     return res.json();
   },
   listTransactions: async (params: { date_start?: string; date_end?: string; limit?: number }) => {

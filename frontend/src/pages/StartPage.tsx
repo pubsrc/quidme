@@ -28,7 +28,7 @@ const StartPage = () => {
     setError(null);
     try {
       await api.connectAccount();
-      navigate("/app/offerings", { replace: true });
+      navigate("/app/dashboard", { replace: true });
     } catch (err) {
       setError(t("pages.start.errors.create_account_failed"));
     } finally {

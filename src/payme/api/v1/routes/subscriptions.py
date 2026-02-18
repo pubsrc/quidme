@@ -60,6 +60,7 @@ def create_subscription_link(
             title=payload.title or "Subscription",
             description=payload.description,
             amount=total_charge,
+            base_amount=payload.amount,
             currency=payload.currency.value,
             interval=payload.interval.value,
             require_fields=payload.require_fields,

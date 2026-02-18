@@ -151,7 +151,12 @@
       "status_unknown": "unknown",
       "status_pending": "pending",
       "loading_transactions": "Loading transactions...",
-      "no_transactions": "No transactions yet."
+      "no_transactions": "No transactions yet.",
+      "transfer_to_account": "Transfer to your account",
+      "transferring": "Transferring...",
+      "transfer_failed": "Unable to transfer funds.",
+      "transfer_onboarding_required": "You need to complete onboarding in order to transfer funds",
+      "okay": "Okay"
     },
     "products": {
       "title": "Offerings",
@@ -242,7 +247,26 @@
       "earnings": "Account earnings",
       "onboarding_body": "Complete onboarding to transfer funds in your account.",
       "opening": "Opening...",
-      "onboarding_failed": "Unable to start onboarding. Please try again."
+      "onboarding_failed": "Unable to start onboarding. Please try again.",
+      "payout_schedule_title": "Schedule balance transfer",
+      "payout_schedule_body": "Schedule automatic balance transfers to your account.",
+      "schedule_daily": "Daily",
+      "schedule_weekly": "Weekly",
+      "schedule_monthly": "Monthly",
+      "schedule_manual": "Manual",
+      "weekly_anchor": "Weekly payout day",
+      "monthly_anchor": "Monthly payout day (1-31)",
+      "save_schedule": "Save schedule",
+      "saving_schedule": "Saving...",
+      "payout_schedule_saved": "Payout schedule saved.",
+      "payout_schedule_failed": "Unable to save payout schedule.",
+      "day_monday": "Monday",
+      "day_tuesday": "Tuesday",
+      "day_wednesday": "Wednesday",
+      "day_thursday": "Thursday",
+      "day_friday": "Friday",
+      "day_saturday": "Saturday",
+      "day_sunday": "Sunday"
     },
     "settings": {
       "title": "Settings",

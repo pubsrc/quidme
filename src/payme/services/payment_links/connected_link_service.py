@@ -58,18 +58,20 @@ class StripeConnectedAccountLinkService(StripePaymentLinkService):
         title: str,
         description: str | None,
         amount: int,
+        base_amount: int,
         currency: str,
         require_fields: list[str],
         *,
         service_fee: int = 0,
     ) -> dict[str, Any]:
         principal = self._ensure_principal()
-        print("Using connected account link service")
         metadata = {
             "user_id": principal.user_id,
             "user_email": principal.email or "",
             "link_id": link_id,
             "link_type": "one_time",
+            "account_type": "connected_account",
+            "base_amount": str(base_amount),
         }
         product_data: dict[str, Any] = {"name": product_name(title, "one_time")}
         if description:
@@ -100,6 +102,7 @@ class StripeConnectedAccountLinkService(StripePaymentLinkService):
         title: str,
         description: str | None,
         amount: int,
+        base_amount: int,
         currency: str,
         interval: str,
         require_fields: list[str],
@@ -112,6 +115,8 @@ class StripeConnectedAccountLinkService(StripePaymentLinkService):
             "user_email": principal.email or "",
             "link_id": link_id,
             "link_type": "subscription",
+            "account_type": "connected_account",
+            "base_amount": str(base_amount),
         }
         product_data: dict[str, Any] = {"name": product_name(title, "subscription")}
         if description:

@@ -30,6 +30,80 @@ body {
   }
 }
 
+.quidme-loader {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+}
+
+.quidme-loader__halo {
+  position: absolute;
+  inset: 6px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 233, 163, 0.9), rgba(243, 154, 18, 0.28) 68%, transparent 72%);
+  filter: blur(0.2px);
+  animation: quidmeHalo 1.8s ease-in-out infinite;
+}
+
+.quidme-loader__logo {
+  position: relative;
+  width: 94px;
+  height: 94px;
+  transform-origin: 50% 58%;
+  animation: quidmeLogoFloat 1.8s ease-in-out infinite;
+  z-index: 2;
+}
+
+.quidme-loader__sparkle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(255, 245, 199, 0.95);
+  box-shadow: 0 0 14px rgba(255, 199, 51, 0.75);
+  animation: quidmeSparkle 2.1s ease-in-out infinite;
+}
+
+.quidme-loader__sparkle--a {
+  top: 18px;
+  right: 12px;
+}
+
+.quidme-loader__sparkle--b {
+  bottom: 22px;
+  left: 16px;
+  width: 8px;
+  height: 8px;
+  animation-delay: 0.5s;
+}
+
+.quidme-loader__sparkle--c {
+  top: 24px;
+  left: 20px;
+  width: 6px;
+  height: 6px;
+  animation-delay: 0.9s;
+}
+
+.quidme-loader__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #e79b14;
+  opacity: 0.28;
+  animation: quidmeDot 1.1s ease-in-out infinite;
+}
+
+.quidme-loader__dot--delay-1 {
+  animation-delay: 0.16s;
+}
+
+.quidme-loader__dot--delay-2 {
+  animation-delay: 0.32s;
+}
+
 .quidme-landing {
   position: relative;
   overflow: hidden;
@@ -80,5 +154,51 @@ body {
   }
   50% {
     transform: translateY(-18px) translateX(10px) scale(1.04);
+  }
+}
+
+@keyframes quidmeLogoFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.04) rotate(2deg);
+  }
+}
+
+@keyframes quidmeHalo {
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 0.9;
+  }
+}
+
+@keyframes quidmeSparkle {
+  0%,
+  100% {
+    transform: translateY(0) scale(0.85);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateY(-4px) scale(1.1);
+    opacity: 0.95;
+  }
+}
+
+@keyframes quidmeDot {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
   }
 }
