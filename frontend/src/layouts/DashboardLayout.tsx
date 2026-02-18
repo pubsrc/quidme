@@ -72,9 +72,9 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="h-svh overflow-hidden bg-[#f5f7fb]">
+    <div className="h-svh overflow-hidden bg-slate-50">
       <div className="h-full md:flex">
-        <aside className="hidden h-full w-[92px] shrink-0 flex-col items-center border-r border-slate-200 bg-[#f8fafc] py-5 md:flex">
+        <aside className="hidden h-full w-[92px] shrink-0 flex-col items-center border-r border-slate-200 bg-white py-5 md:flex">
           <div className="mb-7 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 ring-1 ring-amber-300">
             <img src="/quidme-logo.svg" alt={t("layouts.dashboard.logo_alt")} className="h-9 w-9" />
           </div>

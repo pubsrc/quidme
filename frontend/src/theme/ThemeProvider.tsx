@@ -1,0 +1,51 @@
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+
+export type AppTheme = "classic" | "gold-cute";
+
+const THEME_STORAGE_KEY = "quidme-theme";
+
+type ThemeContextValue = {
+  theme: AppTheme;
+  setTheme: (value: AppTheme) => void;
+  toggleTheme: () => void;
+};
+
+const ThemeContext = createContext<ThemeContextValue | null>(null);
+
+const getInitialTheme = (): AppTheme => {
+  if (typeof window === "undefined") return "classic";
+  const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+  return saved === "gold-cute" ? "gold-cute" : "classic";
+};
+
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const [theme, setTheme] = useState<AppTheme>(getInitialTheme);
+
+  useEffect(() => {
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    if (theme === "gold-cute") {
+      document.documentElement.setAttribute("data-theme", "gold-cute");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }, [theme]);
+
+  const value = useMemo(
+    () => ({
+      theme,
+      setTheme,
+      toggleTheme: () => setTheme((current) => (current === "classic" ? "gold-cute" : "classic")),
+    }),
+    [theme]
+  );
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+};
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used inside ThemeProvider");
+  }
+  return context;
+};
