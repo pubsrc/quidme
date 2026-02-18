@@ -32,7 +32,7 @@ const PaymentLinkDetailsPage = () => {
 
   useEffect(() => {
     if (!loading && !link && id) {
-      navigate("/app/payment-links", { replace: true });
+      navigate("/app/offerings", { replace: true });
     }
   }, [loading, link, id, navigate]);
 
@@ -47,7 +47,7 @@ const PaymentLinkDetailsPage = () => {
   if (!link) {
     return (
       <div className="space-y-4">
-        <button onClick={() => navigate("/app/payment-links")} className="text-sm text-slate-500 hover:text-slate-700">
+        <button onClick={() => navigate("/app/offerings")} className="text-sm text-slate-500 hover:text-slate-700">
           {t("pages.product_details.back")}
         </button>
         <div className="rounded-2xl bg-white p-6 text-sm text-red-500 shadow">
@@ -59,7 +59,7 @@ const PaymentLinkDetailsPage = () => {
 
   return (
     <div className="space-y-6">
-      <button onClick={() => navigate("/app/payment-links")} className="text-sm text-slate-500 hover:text-slate-700">
+      <button onClick={() => navigate("/app/offerings")} className="text-sm text-slate-500 hover:text-slate-700">
         {t("pages.product_details.back")}
       </button>
 

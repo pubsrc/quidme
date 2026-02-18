@@ -79,7 +79,7 @@ const SettingsPage = () => {
       </div>
 
       <div className="rounded-2xl border border-red-400 bg-white p-4 md:rounded-3xl md:p-6">
-        <h3 className="text-2xl font-bold tracking-tight text-red-500 md:text-3xl">{t("pages.settings.danger_zone")}</h3>
+        <h3 className="text-2xl font-bold tracking-tight md:text-3xl">{t("pages.settings.account_management")}</h3>
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="text-lg font-semibold text-slate-900 md:text-xl">{t("pages.settings.delete_account")}</div>
