@@ -155,7 +155,6 @@
     },
     "products": {
       "title": "Teklifler",
-      "subtitle": "Tek seferlik ve tekrarlayan teklifleri oluşturun ve yönetin.",
       "add_product": "Teklif Ekle",
       "load_failed": "Bağlantılar yüklenemedi.",
       "disable_failed": "Bağlantı devre dışı bırakılamadı.",
