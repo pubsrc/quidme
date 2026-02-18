@@ -13,6 +13,7 @@ from payme.api.dependencies import (
     require_principal,
 )
 from payme.core.auth import Principal
+from payme.core.constants import StripeAccountStatus
 from payme.db.repositories import StripeAccountRepository
 from payme.services.stripe_platform_account_service import StripePlatformAccountService
 
@@ -94,4 +95,53 @@ def transfer_pending_earnings(
         "stripe_account_id": stripe_account_id,
         "transferred": transferred,
         "failed": failed,
+    }
+
+
+@router.post("/payouts")
+def create_payouts(
+    principal: Annotated[Principal, Depends(require_principal(StripeAccountStatus.VERIFIED))],
+    stripe_platform_service: Annotated[
+        type[StripePlatformAccountService],
+        Depends(get_stripe_platform_account_service),
+    ],
+) -> dict:
+    """
+    Create payouts from the connected account's available Stripe balance to bank account.
+    """
+    stripe_account_id = principal.stripe_account_id
+    if not stripe_account_id or not stripe_account_id.startswith("acct_"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Connected Stripe account is required",
+        )
+
+    result = stripe_platform_service.create_payouts_from_available_balance(stripe_account_id)
+    transferred = result.get("transferred", {})
+    failed = result.get("failed", {})
+    payout_ids = result.get("payout_ids", {})
+
+    if not transferred and failed:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail={
+                "message": "Payout failed",
+                "failed": failed,
+            },
+        )
+
+    if not transferred and not failed:
+        return {
+            "stripe_account_id": stripe_account_id,
+            "transferred": {},
+            "failed": {},
+            "payout_ids": {},
+            "message": "No available balance to payout",
+        }
+
+    return {
+        "stripe_account_id": stripe_account_id,
+        "transferred": transferred,
+        "failed": failed,
+        "payout_ids": payout_ids,
     }

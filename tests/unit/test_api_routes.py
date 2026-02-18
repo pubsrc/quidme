@@ -850,6 +850,85 @@ def test_transfer_pending_earnings_partial_failure() -> None:
     assert repo.cleared == [["gbp"]]
 
 
+def test_create_payouts_success() -> None:
+    from payme.api import dependencies as deps
+
+    class FakePlatformService:
+        @staticmethod
+        def create_payouts_from_available_balance(stripe_account_id: str) -> dict[str, Any]:
+            return {
+                "transferred": {"gbp": 1000},
+                "failed": {},
+                "payout_ids": {"gbp": "po_123"},
+            }
+
+    app.dependency_overrides[deps.get_resolved_principal] = override_get_resolved_principal
+    app.dependency_overrides[deps.get_stripe_platform_account_service] = lambda: FakePlatformService
+
+    client = TestClient(app)
+    r = client.post("/api/v1/transfers/payouts", headers={"Authorization": "Bearer x"})
+    app.dependency_overrides.clear()
+
+    assert r.status_code == 200, r.json()
+    body = r.json()
+    assert body["stripe_account_id"] == "acct_123"
+    assert body["transferred"] == {"gbp": 1000}
+    assert body["failed"] == {}
+    assert body["payout_ids"] == {"gbp": "po_123"}
+
+
+def test_create_payouts_no_available_balance() -> None:
+    from payme.api import dependencies as deps
+
+    class FakePlatformService:
+        @staticmethod
+        def create_payouts_from_available_balance(stripe_account_id: str) -> dict[str, Any]:
+            return {
+                "transferred": {},
+                "failed": {},
+                "payout_ids": {},
+            }
+
+    app.dependency_overrides[deps.get_resolved_principal] = override_get_resolved_principal
+    app.dependency_overrides[deps.get_stripe_platform_account_service] = lambda: FakePlatformService
+
+    client = TestClient(app)
+    r = client.post("/api/v1/transfers/payouts", headers={"Authorization": "Bearer x"})
+    app.dependency_overrides.clear()
+
+    assert r.status_code == 200, r.json()
+    body = r.json()
+    assert body["transferred"] == {}
+    assert body["failed"] == {}
+    assert body["payout_ids"] == {}
+    assert "No available balance" in body["message"]
+
+
+def test_create_payouts_failure_returns_502() -> None:
+    from payme.api import dependencies as deps
+
+    class FakePlatformService:
+        @staticmethod
+        def create_payouts_from_available_balance(stripe_account_id: str) -> dict[str, Any]:
+            return {
+                "transferred": {},
+                "failed": {"gbp": "payout failed"},
+                "payout_ids": {},
+            }
+
+    app.dependency_overrides[deps.get_resolved_principal] = override_get_resolved_principal
+    app.dependency_overrides[deps.get_stripe_platform_account_service] = lambda: FakePlatformService
+
+    client = TestClient(app)
+    r = client.post("/api/v1/transfers/payouts", headers={"Authorization": "Bearer x"})
+    app.dependency_overrides.clear()
+
+    assert r.status_code == 502
+    body = r.json()["detail"]
+    assert body["message"] == "Payout failed"
+    assert "gbp" in body["failed"]
+
+
 # ---------------------------------------------------------------------------
 # Exception handlers (on main app)
 # ---------------------------------------------------------------------------

@@ -110,3 +110,50 @@ class StripePlatformAccountService:
             destination=destination,
         )
         return transfer.id
+
+    @staticmethod
+    def create_payout(amount: int, currency: str, stripe_account_id: str) -> str:
+        """Create a payout from a connected account to its external bank account."""
+        stripe.api_key = settings.stripe_secret
+        payout = stripe.Payout.create(
+            amount=amount,
+            currency=currency,
+            stripe_account=stripe_account_id,
+        )
+        return payout.id
+
+    @staticmethod
+    def create_payouts_from_available_balance(stripe_account_id: str) -> dict[str, Any]:
+        """
+        Payout all available balances from a connected account to its bank account.
+        Returns transferred/failed maps keyed by currency.
+        """
+        stripe.api_key = settings.stripe_secret
+        balance = stripe.Balance.retrieve(stripe_account=stripe_account_id)
+        available = balance.get("available", []) or []
+
+        transferred: dict[str, int] = {}
+        failed: dict[str, str] = {}
+        payout_ids: dict[str, str] = {}
+
+        for entry in available:
+            amount = int(entry.get("amount", 0) or 0)
+            currency = str(entry.get("currency", "")).lower()
+            if amount <= 0 or not currency:
+                continue
+            try:
+                payout_id = StripePlatformAccountService.create_payout(
+                    amount=amount,
+                    currency=currency,
+                    stripe_account_id=stripe_account_id,
+                )
+                transferred[currency] = amount
+                payout_ids[currency] = payout_id
+            except stripe.StripeError as e:
+                failed[currency] = str(e)
+
+        return {
+            "transferred": transferred,
+            "failed": failed,
+            "payout_ids": payout_ids,
+        }

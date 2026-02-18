@@ -147,6 +147,52 @@ def test_platform_create_transfer(monkeypatch):
     assert captured["destination"] == _TEST_ACCOUNT_ID
 
 
+def test_platform_create_payout(monkeypatch):
+    captured = {}
+
+    def fake_create(**kwargs):
+        captured.update(kwargs)
+        return SimpleNamespace(id="po_1")
+
+    monkeypatch.setattr(platform_module.stripe.Payout, "create", staticmethod(fake_create))
+
+    payout_id = StripePlatformAccountService.create_payout(
+        amount=900,
+        currency="gbp",
+        stripe_account_id=_TEST_ACCOUNT_ID,
+    )
+
+    assert payout_id == "po_1"
+    assert captured["amount"] == 900
+    assert captured["currency"] == "gbp"
+    assert captured["stripe_account"] == _TEST_ACCOUNT_ID
+
+
+def test_platform_create_payouts_from_available_balance(monkeypatch):
+    monkeypatch.setattr(
+        platform_module.stripe.Balance,
+        "retrieve",
+        staticmethod(
+            lambda stripe_account: {
+                "available": [
+                    {"amount": 1100, "currency": "gbp"},
+                    {"amount": 500, "currency": "usd"},
+                ]
+            }
+        ),
+    )
+    monkeypatch.setattr(
+        platform_module.StripePlatformAccountService,
+        "create_payout",
+        staticmethod(lambda amount, currency, stripe_account_id: f"po_{currency}_{amount}"),
+    )
+
+    result = StripePlatformAccountService.create_payouts_from_available_balance(_TEST_ACCOUNT_ID)
+    assert result["transferred"] == {"gbp": 1100, "usd": 500}
+    assert result["failed"] == {}
+    assert result["payout_ids"] == {"gbp": "po_gbp_1100", "usd": "po_usd_500"}
+
+
 def test_connected_account_disable_payment_link(monkeypatch):
     captured = {}
 
