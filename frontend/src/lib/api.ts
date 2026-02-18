@@ -46,29 +46,8 @@ const base = `${config.apiBaseUrl.replace(/\/$/, "")}/api/v1`;
 
 const STRIPE_ACCOUNT_REQUIRED_ERROR_CODE = "STRIPE_ACCOUNT_REQUIRED";
 
-/**
- * Authenticated fetch. Handles 403 STRIPE_ACCOUNT_REQUIRED in one place:
- * redirects to /start so the rest of the app does not need to handle it.
- * Any protected API (payment links, account, etc.) will 403 when user has no
- * Stripe account; this redirect runs before the promise resolves.
- */
-type AuthFetchOptions = {
-  redirectOnStripeRequired?: boolean;
-};
-
-async function authFetch(input: string, init?: RequestInit, options: AuthFetchOptions = {}): Promise<Response> {
-  const { redirectOnStripeRequired = true } = options;
-  const res = await fetch(input, init);
-  if (res.status === 403) {
-    const body = await res.clone().json().catch(() => ({}));
-    if (body && (body as { error_code?: string }).error_code === STRIPE_ACCOUNT_REQUIRED_ERROR_CODE) {
-      const isAlreadyOnStart = window.location.pathname === "/start";
-      if (redirectOnStripeRequired && !isAlreadyOnStart) {
-        window.location.href = "/start";
-      }
-    }
-  }
-  return res;
+async function authFetch(input: string, init?: RequestInit): Promise<Response> {
+  return fetch(input, init);
 }
 
 const detailToMessage = (detail: unknown): string => {
@@ -173,7 +152,7 @@ export const api = {
     return res.json();
   },
   getAccount: async (): Promise<Account | null> => {
-    const res = await authFetch(`${base}/accounts/account`, await withAuth(), { redirectOnStripeRequired: false });
+    const res = await authFetch(`${base}/accounts/account`, await withAuth());
     if (res.status === 404) return null;
     if (res.status === 403) {
       const body = await res.clone().json().catch(() => ({}));
