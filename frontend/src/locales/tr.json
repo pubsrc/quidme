@@ -151,7 +151,12 @@
       "status_unknown": "bilinmiyor",
       "status_pending": "beklemede",
       "loading_transactions": "İşlemler yükleniyor...",
-      "no_transactions": "Henüz işlem yok."
+      "no_transactions": "Henüz işlem yok.",
+      "transfer_to_account": "Hesabına aktar",
+      "transferring": "Aktarılıyor...",
+      "transfer_failed": "Fonlar aktarılamadı.",
+      "transfer_onboarding_required": "Fonları transfer etmek için onboarding işlemini tamamlamanız gerekiyor",
+      "okay": "Tamam"
     },
     "products": {
       "title": "Teklifler",

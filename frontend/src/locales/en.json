@@ -151,7 +151,12 @@
       "status_unknown": "unknown",
       "status_pending": "pending",
       "loading_transactions": "Loading transactions...",
-      "no_transactions": "No transactions yet."
+      "no_transactions": "No transactions yet.",
+      "transfer_to_account": "Transfer to your account",
+      "transferring": "Transferring...",
+      "transfer_failed": "Unable to transfer funds.",
+      "transfer_onboarding_required": "You need to complete onboarding in order to transfer funds",
+      "okay": "Okay"
     },
     "products": {
       "title": "Offerings",
