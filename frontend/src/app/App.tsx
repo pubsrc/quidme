@@ -100,6 +100,11 @@ const App = () => {
           }
         />
         <Route path="callback" element={<CallbackPage />} />
+        <Route path="dashboard" element={<Navigate to="../app/dashboard" replace />} />
+        <Route path="offerings" element={<Navigate to="../app/offerings" replace />} />
+        <Route path="transactions" element={<Navigate to="../app/transactions" replace />} />
+        <Route path="profile" element={<Navigate to="../app/profile" replace />} />
+        <Route path="settings" element={<Navigate to="../app/settings" replace />} />
         <Route
           path="start"
           element={
