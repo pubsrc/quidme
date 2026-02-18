@@ -84,7 +84,7 @@ const SettingsPage = () => {
         <div className="p-4 md:p-6">
           <h3 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Appearance</h3>
           <p className="mt-2 text-sm text-slate-500 md:text-base">
-            Choose between the existing app style and the experimental cute gold style.
+            Choose between Default, Gold, and Dark themes.
           </p>
           <div className="mt-5 inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
             <button
@@ -94,7 +94,7 @@ const SettingsPage = () => {
                 theme === "classic" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:bg-white/70"
               }`}
             >
-              Classic
+              Default
             </button>
             <button
               type="button"
@@ -103,7 +103,16 @@ const SettingsPage = () => {
                 theme === "gold-cute" ? "bg-amber-500 text-white shadow-sm" : "text-slate-600 hover:bg-white/70"
               }`}
             >
-              Cute Gold
+              Gold
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme("dark")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                theme === "dark" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:bg-white/70"
+              }`}
+            >
+              Dark
             </button>
           </div>
         </div>

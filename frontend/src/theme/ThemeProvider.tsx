@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-export type AppTheme = "classic" | "gold-cute";
+export type AppTheme = "classic" | "gold-cute" | "dark";
 
 const THEME_STORAGE_KEY = "quidme-theme";
 
@@ -15,7 +15,9 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 const getInitialTheme = (): AppTheme => {
   if (typeof window === "undefined") return "classic";
   const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
-  return saved === "gold-cute" ? "gold-cute" : "classic";
+  if (saved === "gold-cute") return "gold-cute";
+  if (saved === "dark") return "dark";
+  return "classic";
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
@@ -23,10 +25,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-    if (theme === "gold-cute") {
-      document.documentElement.setAttribute("data-theme", "gold-cute");
-    } else {
+    if (theme === "classic") {
       document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", theme);
     }
   }, [theme]);
 
