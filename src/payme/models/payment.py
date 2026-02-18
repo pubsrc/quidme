@@ -27,7 +27,7 @@ class PaymentLinkCreate(BaseModel):
 
     title: str | None = None
     description: str | None = None
-    amount: float = Field(..., gt=0, description="Amount")
+    amount: int = Field(..., gt=0, description="Amount in minor units")
     currency: Currency = Currency.gbp
     expires_at: date | None = None
     require_fields: list[str] = Field(
@@ -65,7 +65,7 @@ class SubscriptionCreate(BaseModel):
 
     title: str | None = None
     description: str | None = None
-    amount: float = Field(..., gt=0, description="Amount")
+    amount: int = Field(..., gt=0, description="Amount in minor units")
     currency: Currency = Currency.gbp
     interval: RecurringInterval
     expires_at: date | None = None
@@ -105,21 +105,21 @@ class PaymentLinkResponse(BaseModel):
     url: str
     title: str | None = None
     description: str | None = None
-    amount: float
+    amount: int
     service_fee: int
     currency: Currency
     interval: str | None = None
     status: str
     expires_at: date | None = None
     created_at: datetime | None = None
-    total_amount_paid: float = 0
-    earnings_amount: float = 0
+    total_amount_paid: int = 0
+    earnings_amount: int = 0
     require_fields: list[str] = Field(default_factory=list, description="Fields required at checkout")
 
 
 class TransactionDetail(BaseModel):
     id: str
-    amount: float
+    amount: int
     currency: str
     status: str
     created_at: datetime

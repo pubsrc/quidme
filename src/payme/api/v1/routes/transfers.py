@@ -48,15 +48,14 @@ def transfer_pending_earnings(
             "message": "No pending earnings to transfer",
         }
 
-    transferred: dict[str, float] = {}
+    transferred: dict[str, int] = {}
     failed: dict[str, str] = {}
     transferred_currencies: list[str] = []
 
     for currency, amount in pending.items():
         if amount <= 0:
             continue
-        # Store amounts as float in app; Stripe Transfer requires integer minor units.
-        amount_minor = int(round(float(amount) * 100))
+        amount_minor = int(amount)
         if amount_minor <= 0:
             continue
         try:
@@ -65,7 +64,7 @@ def transfer_pending_earnings(
                 currency=currency,
                 destination=stripe_account_id,
             )
-            transferred[currency] = float(amount)
+            transferred[currency] = amount_minor
             transferred_currencies.append(currency)
         except Exception as exc:
             failed[currency] = str(exc)

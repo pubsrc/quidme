@@ -7,8 +7,6 @@ stripe_accounts table (DynamoDB).
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
-
-import pytest
 from payme.services.stripe_event_handler import (
     handle_invoice_paid,
     handle_payment_succeeded,
@@ -21,12 +19,12 @@ def _payment_intent_succeeded_event(
     amount: int = 1000,
     currency: str = "gbp",
     payment_intent_id: str = "pi_xxx",
-    base_amount: float | None = None,
+    base_amount: int | None = None,
     account_type: str = "platform",
 ) -> dict:
     """Minimal payment_intent.succeeded event payload."""
     if base_amount is None:
-        base_amount = float(amount)
+        base_amount = amount
     return {
         "object": {
             "id": payment_intent_id,
@@ -52,11 +50,11 @@ def _invoice_paid_event(
     currency: str = "usd",
     invoice_id: str = "in_yyy",
     payment_intent_id: str = "pi_zzz",
-    base_amount: float | None = None,
+    base_amount: int | None = None,
 ) -> dict:
     """Minimal invoice.paid event payload (subscription). Uses lines.data[0].metadata for user_id/link_id so extraction does not call Stripe."""
     if base_amount is None:
-        base_amount = float(amount)
+        base_amount = amount
     return {
         "object": {
             "id": invoice_id,
@@ -101,7 +99,7 @@ def test_handle_payment_succeeded_updates_payment_link_and_stripe_account_earnin
     earnings = call_args[1]
     total_amount = call_args[2]
     assert total_amount == 1000
-    assert earnings == pytest.approx(1000.0)
+    assert earnings == 1000
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
     acc_call = mock_account_repo_cls.return_value.add_earnings.call_args[0]
@@ -128,7 +126,7 @@ def test_handle_payment_succeeded_connect_account_still_updates_earnings(
     mock_tx_repo_cls.return_value = mock_tx_repo
 
     data = _payment_intent_succeeded_event(
-        user_id="u2", link_id="link-2", amount=5000, currency="usd", base_amount=5000.0, account_type="connected_account"
+        user_id="u2", link_id="link-2", amount=5000, currency="usd", base_amount=5000, account_type="connected_account"
     )
     result = handle_payment_succeeded("payment_intent.succeeded", data, account_id="acct_connected")
 
@@ -138,7 +136,7 @@ def test_handle_payment_succeeded_connect_account_still_updates_earnings(
     assert call_args[0] == "link-2"
     assert call_args[2] == 5000
     earnings = call_args[1]
-    assert earnings == pytest.approx(5000.0)
+    assert earnings == 5000
     mock_account_repo_cls.return_value.add_pending_earnings.assert_not_called()
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
@@ -174,7 +172,7 @@ def test_handle_invoice_paid_updates_subscription_link_and_stripe_account_earnin
     earnings = call_args[1]
     total_amount = call_args[2]
     assert total_amount == 3000
-    assert earnings == pytest.approx(3000.0)
+    assert earnings == 3000
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
     acc_call = mock_account_repo_cls.return_value.add_earnings.call_args[0]
@@ -199,7 +197,7 @@ def test_handle_invoice_paid_zero_earnings_does_not_call_add_earnings(
     mock_tx_repo.get_by_payment_intent_id.return_value = None
     mock_tx_repo_cls.return_value = mock_tx_repo
 
-    data = _invoice_paid_event(user_id="u4", link_id="sub-1", amount=500, currency="usd", base_amount=0.0)
+    data = _invoice_paid_event(user_id="u4", link_id="sub-1", amount=500, currency="usd", base_amount=0)
     result = handle_invoice_paid(data, account_id=None)
 
     assert result is True

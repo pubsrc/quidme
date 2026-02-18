@@ -43,9 +43,9 @@ def _to_dict(obj: Any) -> dict[str, Any]:
     return {}
 
 
-def _earnings_from_base_amount(extracted: dict[str, Any]) -> float:
+def _earnings_from_base_amount(extracted: dict[str, Any]) -> int:
     """Use base_amount metadata as the single source of truth for earnings."""
-    return float(extracted["base_amount"])
+    return int(extracted["base_amount"])
 
 
 def _extract_from_payment_intent(obj: dict[str, Any] | Any) -> dict[str, Any] | None:

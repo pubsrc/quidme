@@ -164,8 +164,8 @@ class FakeLinkService:
         link_id: str,
         title: str,
         description: str | None,
-        amount: float,
-        base_amount: float,
+        amount: int,
+        base_amount: int,
         currency: str,
         require_fields: list[str],
         *,
@@ -179,8 +179,8 @@ class FakeLinkService:
         link_id: str,
         title: str,
         description: str | None,
-        amount: float,
-        base_amount: float,
+        amount: int,
+        base_amount: int,
         currency: str,
         interval: str,
         require_fields: list[str],
@@ -722,8 +722,8 @@ def test_transfer_pending_earnings_success() -> None:
         def __init__(self) -> None:
             self.cleared: list[list[str]] = []
 
-        def get_pending_earnings(self, user_id: str) -> dict[str, float]:
-            return {"gbp": 10.5, "usd": 3.0}
+        def get_pending_earnings(self, user_id: str) -> dict[str, int]:
+            return {"gbp": 1050, "usd": 300}
 
         def clear_pending_earnings(self, user_id: str, only_currencies: list[str] | None = None) -> None:
             self.cleared.append(list(only_currencies or []))
@@ -750,7 +750,7 @@ def test_transfer_pending_earnings_success() -> None:
     assert r.status_code == 200, r.json()
     body = r.json()
     assert body["stripe_account_id"] == "acct_123"
-    assert body["transferred"] == {"gbp": 10.5, "usd": 3.0}
+    assert body["transferred"] == {"gbp": 1050, "usd": 300}
     assert body["failed"] == {}
     assert FakePlatformService.calls == [
         {"amount": 1050, "currency": "gbp", "destination": "acct_123"},
@@ -763,7 +763,7 @@ def test_transfer_pending_earnings_no_pending() -> None:
     from payme.api import dependencies as deps
 
     class FakeTransferAccountsRepo:
-        def get_pending_earnings(self, user_id: str) -> dict[str, float]:
+        def get_pending_earnings(self, user_id: str) -> dict[str, int]:
             return {}
 
         def clear_pending_earnings(self, user_id: str, only_currencies: list[str] | None = None) -> None:
@@ -800,8 +800,8 @@ def test_transfer_pending_earnings_missing_connected_account_returns_400() -> No
     )
 
     class FakeTransferAccountsRepo:
-        def get_pending_earnings(self, user_id: str) -> dict[str, float]:
-            return {"gbp": 1.0}
+        def get_pending_earnings(self, user_id: str) -> dict[str, int]:
+            return {"gbp": 100}
 
     app.dependency_overrides[deps.get_resolved_principal] = lambda: principal_missing_account_id
     app.dependency_overrides[deps.get_stripe_accounts_repository] = lambda: FakeTransferAccountsRepo()
@@ -821,8 +821,8 @@ def test_transfer_pending_earnings_partial_failure() -> None:
         def __init__(self) -> None:
             self.cleared: list[list[str]] = []
 
-        def get_pending_earnings(self, user_id: str) -> dict[str, float]:
-            return {"gbp": 10.0, "usd": 5.0}
+        def get_pending_earnings(self, user_id: str) -> dict[str, int]:
+            return {"gbp": 1000, "usd": 500}
 
         def clear_pending_earnings(self, user_id: str, only_currencies: list[str] | None = None) -> None:
             self.cleared.append(list(only_currencies or []))
@@ -845,7 +845,7 @@ def test_transfer_pending_earnings_partial_failure() -> None:
 
     assert r.status_code == 200, r.json()
     body = r.json()
-    assert body["transferred"] == {"gbp": 10.0}
+    assert body["transferred"] == {"gbp": 1000}
     assert "usd" in body["failed"]
     assert repo.cleared == [["gbp"]]
 

@@ -163,8 +163,8 @@ def list_payment_links(
                         exc_info=True,
                     )
         else:
-            total_paid = float(total_paid)
-            earnings = float(earnings)
+            total_paid = int(total_paid)
+            earnings = int(earnings)
         responses.append(
             PaymentLinkResponse(
                 id=item["link_id"],

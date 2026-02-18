@@ -22,7 +22,7 @@ class StripeCustomerDetails(BaseModel):
 
 
 class StripeSubscriptionPlan(BaseModel):
-    amount: float | None = None
+    amount: int | None = None
     currency: str | None = None
     interval: str | None = None
 

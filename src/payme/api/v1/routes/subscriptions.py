@@ -147,8 +147,8 @@ def list_subscription_links(
                 status=item.get("status", "ACTIVE"),
                 expires_at=expires_at,
                 created_at=created_at,
-                total_amount_paid=float(total_paid),
-                earnings_amount=float(earnings),
+                total_amount_paid=int(total_paid),
+                earnings_amount=int(earnings),
                 require_fields=require_fields_from_item(item),
             )
         )

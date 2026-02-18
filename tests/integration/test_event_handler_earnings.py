@@ -128,7 +128,7 @@ def _payment_intent_event(user_id: str, link_id: str, amount: int = 1000, curren
             "metadata": {
                 "user_id": user_id,
                 "link_id": link_id,
-                "base_amount": str(float(amount)),
+                "base_amount": str(amount),
                 "account_type": "platform",
             },
             "charges": {"data": []},
@@ -148,7 +148,7 @@ def _invoice_paid_event(
             "customer_email": "cust@example.com",
             "payment_intent": {"id": payment_intent_id},
             "subscription": "sub_stripe_1",
-            "lines": {"data": [{"metadata": {"user_id": user_id, "link_id": link_id, "base_amount": str(float(amount))}}]},
+            "lines": {"data": [{"metadata": {"user_id": user_id, "link_id": link_id, "base_amount": str(amount)}}]},
         }
     }
 
@@ -169,7 +169,7 @@ def test_handle_payment_succeeded_earnings_in_payment_link_and_stripe_account() 
     link_id = "link-earn-1"
     amount = 1000
     service_fee = 55
-    expected_earnings = float(amount)
+    expected_earnings = amount
     links_repo.create(
         link_id=link_id,
         user_id=user_id,
@@ -225,7 +225,7 @@ def test_handle_invoice_paid_earnings_in_subscription_link_and_stripe_account() 
     link_id = "sub-earn-1"
     amount = 3000
     service_fee = 150
-    expected_earnings = float(amount)
+    expected_earnings = amount
     subs_repo.create(
         subscription_id=link_id,
         user_id=user_id,
