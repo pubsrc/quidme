@@ -3,9 +3,11 @@ import { fetchAuthSession } from "aws-amplify/auth";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { signOutWithCognito } from "../lib/auth";
+import { useTheme } from "../theme/ThemeProvider";
 
 const SettingsPage = () => {
   const { t } = useTranslation();
+  const { theme, setTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteConfirmChecked, setDeleteConfirmChecked] = useState(false);
@@ -74,6 +76,44 @@ const SettingsPage = () => {
                 className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-slate-300 focus:outline-none md:rounded-2xl md:px-4 md:py-3 md:text-lg"
               />
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white md:rounded-3xl">
+        <div className="p-4 md:p-6">
+          <h3 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Appearance</h3>
+          <p className="mt-2 text-sm text-slate-500 md:text-base">
+            Choose between Default, Gold, and Dark themes.
+          </p>
+          <div className="mt-5 inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+            <button
+              type="button"
+              onClick={() => setTheme("classic")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                theme === "classic" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:bg-white/70"
+              }`}
+            >
+              Default
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme("gold-cute")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                theme === "gold-cute" ? "bg-amber-500 text-white shadow-sm" : "text-slate-600 hover:bg-white/70"
+              }`}
+            >
+              Gold
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme("dark")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                theme === "dark" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:bg-white/70"
+              }`}
+            >
+              Dark
+            </button>
           </div>
         </div>
       </div>

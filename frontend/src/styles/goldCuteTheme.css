@@ -1,0 +1,213 @@
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap");
+
+:root[data-theme="gold-cute"] {
+  --cute-bg: #fff3cf;
+  --cute-bg-soft: #ffefc5;
+  --cute-panel: #fff9e8;
+  --cute-border: #e7bb72;
+  --cute-border-soft: #f3d7a3;
+  --cute-text: #5a3400;
+  --cute-text-soft: #7b5421;
+  --cute-muted: #a37a3d;
+  --cute-primary: #ef9f1c;
+  --cute-primary-hover: #df8d09;
+  --cute-success: #d97706;
+  --cute-overlay: rgba(77, 38, 0, 0.45);
+}
+
+:root[data-theme="gold-cute"] body {
+  font-family: "Nunito", "Avenir Next", "Trebuchet MS", sans-serif;
+  color: var(--cute-text);
+  background:
+    radial-gradient(1000px 700px at 8% -10%, rgba(255, 214, 122, 0.45), transparent 70%),
+    radial-gradient(900px 600px at 95% 8%, rgba(255, 164, 31, 0.3), transparent 70%),
+    linear-gradient(180deg, #fff6de 0%, #ffeab9 55%, #ffdb95 100%);
+}
+
+:root[data-theme="gold-cute"] body::before,
+:root[data-theme="gold-cute"] body::after {
+  content: "";
+  position: fixed;
+  width: 280px;
+  height: 280px;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+  filter: blur(1px);
+  animation: cuteOrbFloat 10s ease-in-out infinite;
+}
+
+:root[data-theme="gold-cute"] body::before {
+  top: -120px;
+  left: -80px;
+  background: radial-gradient(circle at 30% 30%, #fff2bb, #ffbd3f 75%);
+}
+
+:root[data-theme="gold-cute"] body::after {
+  bottom: -140px;
+  right: -90px;
+  background: radial-gradient(circle at 35% 35%, #ffdfa5, #ff9d15 76%);
+  animation-delay: 2s;
+}
+
+:root[data-theme="gold-cute"] #root {
+  position: relative;
+  z-index: 1;
+}
+
+:root[data-theme="gold-cute"] h1,
+:root[data-theme="gold-cute"] h2,
+:root[data-theme="gold-cute"] h3,
+:root[data-theme="gold-cute"] h4,
+:root[data-theme="gold-cute"] .text-3xl,
+:root[data-theme="gold-cute"] .text-4xl {
+  font-family: "Baloo 2", "Nunito", sans-serif;
+}
+
+:root[data-theme="gold-cute"] .bg-slate-50,
+:root[data-theme="gold-cute"] .bg-white,
+:root[data-theme="gold-cute"] .bg-slate-100,
+:root[data-theme="gold-cute"] .bg-slate-200,
+:root[data-theme="gold-cute"] .bg-emerald-50,
+:root[data-theme="gold-cute"] .bg-emerald-100,
+:root[data-theme="gold-cute"] .bg-amber-50,
+:root[data-theme="gold-cute"] .bg-amber-100 {
+  background-color: var(--cute-panel) !important;
+}
+
+:root[data-theme="gold-cute"] .border-slate-100,
+:root[data-theme="gold-cute"] .border-slate-200,
+:root[data-theme="gold-cute"] .border-slate-300,
+:root[data-theme="gold-cute"] .border-emerald-200,
+:root[data-theme="gold-cute"] .border-amber-200,
+:root[data-theme="gold-cute"] .border-amber-300 {
+  border-color: var(--cute-border-soft) !important;
+}
+
+:root[data-theme="gold-cute"] .text-slate-900,
+:root[data-theme="gold-cute"] .text-slate-800,
+:root[data-theme="gold-cute"] .text-slate-700,
+:root[data-theme="gold-cute"] .text-slate-600,
+:root[data-theme="gold-cute"] .text-slate-500,
+:root[data-theme="gold-cute"] .text-slate-400,
+:root[data-theme="gold-cute"] .text-emerald-700,
+:root[data-theme="gold-cute"] .text-emerald-600,
+:root[data-theme="gold-cute"] .text-amber-700,
+:root[data-theme="gold-cute"] .text-amber-600 {
+  color: var(--cute-text-soft) !important;
+}
+
+:root[data-theme="gold-cute"] .bg-amber-500,
+:root[data-theme="gold-cute"] .bg-emerald-500,
+:root[data-theme="gold-cute"] .bg-emerald-600,
+:root[data-theme="gold-cute"] .bg-slate-900,
+:root[data-theme="gold-cute"] .bg-sky-100,
+:root[data-theme="gold-cute"] .bg-sky-500,
+:root[data-theme="gold-cute"] .bg-orange-100 {
+  background: linear-gradient(140deg, #f6b242 0%, var(--cute-primary) 52%, #e08900 100%) !important;
+  color: #fff7e8 !important;
+}
+
+:root[data-theme="gold-cute"] .text-white {
+  color: #fff7e8 !important;
+}
+
+:root[data-theme="gold-cute"] .hover\:bg-amber-600:hover,
+:root[data-theme="gold-cute"] .hover\:bg-slate-100:hover,
+:root[data-theme="gold-cute"] .hover\:bg-slate-50:hover,
+:root[data-theme="gold-cute"] .hover\:bg-slate-800:hover,
+:root[data-theme="gold-cute"] .hover\:bg-emerald-600:hover,
+:root[data-theme="gold-cute"] .hover\:bg-emerald-500:hover,
+:root[data-theme="gold-cute"] .hover\:bg-red-600:hover,
+:root[data-theme="gold-cute"] .hover\:bg-red-700:hover {
+  background: linear-gradient(140deg, #f3a422 0%, var(--cute-primary-hover) 100%) !important;
+  color: #fff7e8 !important;
+}
+
+:root[data-theme="gold-cute"] .bg-slate-900\/50,
+:root[data-theme="gold-cute"] .bg-slate-900\/55,
+:root[data-theme="gold-cute"] .bg-black\/40,
+:root[data-theme="gold-cute"] .bg-black\/50 {
+  background-color: var(--cute-overlay) !important;
+}
+
+:root[data-theme="gold-cute"] input,
+:root[data-theme="gold-cute"] select,
+:root[data-theme="gold-cute"] textarea {
+  border-color: var(--cute-border-soft) !important;
+  background-color: #fffdf5 !important;
+  color: var(--cute-text) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+:root[data-theme="gold-cute"] input:focus,
+:root[data-theme="gold-cute"] select:focus,
+:root[data-theme="gold-cute"] textarea:focus {
+  border-color: var(--cute-primary) !important;
+  box-shadow: 0 0 0 3px rgba(239, 159, 28, 0.2) !important;
+}
+
+:root[data-theme="gold-cute"] .rounded-2xl,
+:root[data-theme="gold-cute"] .rounded-3xl,
+:root[data-theme="gold-cute"] .rounded-xl {
+  border-radius: 1.35rem !important;
+}
+
+:root[data-theme="gold-cute"] .shadow,
+:root[data-theme="gold-cute"] .shadow-sm,
+:root[data-theme="gold-cute"] .shadow-md,
+:root[data-theme="gold-cute"] .shadow-lg,
+:root[data-theme="gold-cute"] .shadow-xl,
+:root[data-theme="gold-cute"] .shadow-2xl {
+  box-shadow: 0 16px 35px rgba(175, 96, 0, 0.15) !important;
+}
+
+:root[data-theme="gold-cute"] .transition,
+:root[data-theme="gold-cute"] button,
+:root[data-theme="gold-cute"] a {
+  transition-duration: 220ms !important;
+  transition-timing-function: ease-out !important;
+}
+
+:root[data-theme="gold-cute"] button:hover,
+:root[data-theme="gold-cute"] a:hover,
+:root[data-theme="gold-cute"] [role="button"]:hover {
+  transform: translateY(-1px);
+}
+
+:root[data-theme="gold-cute"] svg {
+  filter: saturate(1.1);
+}
+
+:root[data-theme="gold-cute"] .h-12.w-12,
+:root[data-theme="gold-cute"] .h-9.w-9,
+:root[data-theme="gold-cute"] .h-8.w-8 {
+  animation: cutePulse 3s ease-in-out infinite;
+}
+
+:root[data-theme="gold-cute"] .quidme-orb,
+:root[data-theme="gold-cute"] .quidme-loader__sparkle,
+:root[data-theme="gold-cute"] .quidme-loader__logo {
+  animation-duration: 2.8s;
+}
+
+@keyframes cuteOrbFloat {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) translateX(8px) scale(1.04);
+  }
+}
+
+@keyframes cutePulse {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-1px) scale(1.03);
+  }
+}

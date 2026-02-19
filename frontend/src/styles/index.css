@@ -124,6 +124,16 @@ h4,
     linear-gradient(180deg, #fff6de 0%, #ffe3a3 48%, #ffd27a 100%);
 }
 
+.quidme-logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: #ffef92;
+  border: 1px solid #ecc98a;
+  box-shadow: 0 4px 12px rgba(142, 81, 0, 0.12);
+}
+
 .quidme-orb {
   position: absolute;
   border-radius: 9999px;

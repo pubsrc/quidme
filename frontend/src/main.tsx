@@ -3,9 +3,12 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./app/App";
 import "./styles/index.css";
+import "./styles/goldCuteTheme.css";
+import "./styles/darkTheme.css";
 import "./app/i18n";
 import CognitoProvider from "./components/CognitoProvider";
 import { assertConfig } from "./lib/config";
+import { ThemeProvider } from "./theme/ThemeProvider";
 
 let configError: string | null = null;
 try {
@@ -33,11 +36,13 @@ if (configError) {
 } else {
   root.render(
     <React.StrictMode>
-      <BrowserRouter>
-        <CognitoProvider>
-          <App />
-        </CognitoProvider>
-      </BrowserRouter>
+      <ThemeProvider>
+        <BrowserRouter>
+          <CognitoProvider>
+            <App />
+          </CognitoProvider>
+        </BrowserRouter>
+      </ThemeProvider>
     </React.StrictMode>
   );
 }
