@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { signOutWithCognito } from "../lib/auth";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
 import { replaceLocaleInPathname } from "../lib/localeRouting";
+import QuidmeLogo from "../components/QuidmeLogo";
 
 const navItems = [
   {
@@ -74,12 +75,14 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="h-svh overflow-hidden bg-[#f5f7fb]">
+    <div className="h-svh overflow-hidden bg-slate-50">
       <div className="h-full md:flex">
-        <aside className="hidden h-full w-[92px] shrink-0 flex-col items-center border-r border-slate-200 bg-[#f8fafc] py-5 md:flex">
-          <div className="mb-7 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 ring-1 ring-amber-300">
-            <img src="/quidme-logo.svg" alt={t("layouts.dashboard.logo_alt")} className="h-9 w-9" />
-          </div>
+        <aside className="hidden h-full w-[92px] shrink-0 flex-col items-center border-r border-slate-200 bg-white py-5 md:flex">
+          <QuidmeLogo
+            alt={t("layouts.dashboard.logo_alt")}
+            containerClassName="mb-7 h-12 w-12"
+            logoClassName="h-9 w-9"
+          />
 
           <nav className="flex min-h-0 flex-1 flex-col items-center gap-3 overflow-y-auto">
             {navItems.map((item) => (
@@ -144,7 +147,11 @@ const DashboardLayout = () => {
             <aside className="absolute left-0 top-0 h-full w-72 border-r border-slate-200 bg-white p-5">
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <img src="/quidme-logo.svg" alt={t("layouts.dashboard.logo_alt")} className="h-7 w-7" />
+                  <QuidmeLogo
+                    alt={t("layouts.dashboard.logo_alt")}
+                    containerClassName="h-9 w-9"
+                    logoClassName="h-7 w-7"
+                  />
                   <div className="text-lg font-semibold text-slate-800">{t("pages.landing.brand")}</div>
                 </div>
                 <button

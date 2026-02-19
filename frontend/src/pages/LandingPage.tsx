@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
 import { replaceLocaleInPathname } from "../lib/localeRouting";
+import QuidmeLogo from "../components/QuidmeLogo";
 
 const snapshotIdeas = [
   { titleKey: "pages.landing.ideas.piano", image: "/landing-piano.svg" },
@@ -31,7 +32,12 @@ const LandingPage = () => {
 
       <header className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6 md:px-10">
         <div className="flex items-center gap-3">
-          <img src="/quidme-logo.svg" alt={t("layouts.dashboard.logo_alt")} className="h-11 w-11 rounded-full" />
+          <QuidmeLogo
+            alt={t("layouts.dashboard.logo_alt")}
+            containerClassName="h-12 w-12"
+            logoClassName="h-10 w-10"
+            withBadge={false}
+          />
           <div>
             <div className="text-xl font-semibold tracking-tight text-[#5a3000]">{t("pages.landing.brand")}</div>
           </div>
@@ -92,7 +98,7 @@ const LandingPage = () => {
           >
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold uppercase tracking-[0.16em] text-[#8f5d1b]">{t("pages.landing.snapshot_title")}</div>
-              <img src="/quidme-logo.svg" alt="Quidme coin logo" className="h-9 w-9" />
+              <QuidmeLogo alt="Quidme coin logo" containerClassName="h-10 w-10" logoClassName="h-8 w-8" withBadge={false} />
             </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
