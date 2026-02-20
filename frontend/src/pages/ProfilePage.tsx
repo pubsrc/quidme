@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Check } from "lucide-react";
 import { api } from "../lib/api";
 import { useAccountStatus } from "../lib/useAccountStatus";
 import { useLocaleNavigate } from "../lib/useLocaleNavigate";
@@ -86,9 +87,7 @@ const ProfilePage = () => {
           <div className="space-y-6">
             <div className="flex flex-col items-center justify-center py-4 text-center md:py-6">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-200 md:h-20 md:w-20">
-                <svg viewBox="0 0 24 24" className="h-8 w-8 text-emerald-600 md:h-10 md:w-10" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 6 9 17l-5-5" />
-                </svg>
+                <Check className="h-8 w-8 text-emerald-600 md:h-10 md:w-10" />
               </div>
               <div className="mt-4 text-xl font-semibold text-brand-navy md:mt-5 md:text-2xl">{t("pages.account.verified")}</div>
               <div className="mt-1 text-sm text-slate-500">{t("pages.account.verified_body")}</div>

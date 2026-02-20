@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronDown } from "lucide-react";
 import { api, type LinkResponse } from "../lib/api";
 
 type LinkKind = "one_time" | "subscription";
@@ -244,15 +245,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
             className="rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
             aria-label={expanded ? t("components.create_link_dialog.collapse") : t("components.create_link_dialog.expand")}
           >
-            <svg
-              viewBox="0 0 24 24"
-              className={`h-5 w-5 transition-transform ${expanded ? "rotate-180" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M6 9l6 6 6-6" />
-            </svg>
+            <ChevronDown className={`h-5 w-5 transition-transform ${expanded ? "rotate-180" : ""}`} />
           </button>
         </div>
 

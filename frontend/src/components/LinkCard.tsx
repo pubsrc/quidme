@@ -1,5 +1,6 @@
 import type { LinkResponse } from "../lib/api";
 import { useTranslation } from "react-i18next";
+import { RefreshCw } from "lucide-react";
 import PaymentLinkShare from "./PaymentLinkShare";
 
 type LinkCardProps = {
@@ -87,12 +88,7 @@ const LinkCard = ({
           <div className="flex-1 flex justify-center">
             {showInterval ? (
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-emerald-600" title={t("components.link_card.recurring")}>
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 12a9 9 0 0 1 15.3-6.3" />
-                  <path d="M21 12a9 9 0 0 1-15.3 6.3" />
-                  <path d="M18 2v4h-4" />
-                  <path d="M6 22v-4h4" />
-                </svg>
+                <RefreshCw className="h-4 w-4" />
               </span>
             ) : null}
           </div>

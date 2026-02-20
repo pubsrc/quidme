@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Check } from "lucide-react";
 import { api, type TransactionItem } from "../lib/api";
 import { useAccountStatus } from "../lib/useAccountStatus";
 import { useLocaleNavigate } from "../lib/useLocaleNavigate";
@@ -222,25 +223,7 @@ const DashboardPage = () => {
           />
           <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl md:rounded-3xl">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                className="h-9 w-9 text-emerald-600"
-                aria-hidden="true"
-              >
-                <path
-                  d="M12 3l2.1 2.2 3-.4.9 2.8 2.8.9-.4 3L22 12l-1.6 1.5.4 3-2.8.9-.9 2.8-3-.4L12 21l-2.1-2.2-3 .4-.9-2.8-2.8-.9.4-3L2 12l1.6-1.5-.4-3 2.8-.9.9-2.8 3 .4L12 3z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M8.5 12.5l2.2 2.2 4.8-4.8"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <Check className="h-9 w-9 text-emerald-600" aria-hidden="true" />
             </div>
             <p className="text-center text-base font-medium text-slate-800 md:text-lg">
               {t("pages.dashboard.transfer_onboarding_required")}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import QRCode from "qrcode";
+import { Copy, QrCode, Share2 } from "lucide-react";
 
 type PaymentLinkShareProps = {
   url: string;
@@ -70,10 +71,7 @@ const PaymentLinkShare = ({ url, compact = false, iconOnly = false }: PaymentLin
             }`}
             title={copied ? t("components.payment_link_share.copied") : t("components.payment_link_share.copy_link")}
           >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 9h9v9H9z" />
-              <path d="M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1" />
-            </svg>
+            <Copy className="h-4 w-4" />
           </button>
           <button
             onClick={(e) => {
@@ -83,10 +81,7 @@ const PaymentLinkShare = ({ url, compact = false, iconOnly = false }: PaymentLin
             className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50"
             title={t("components.payment_link_share.show_qr")}
           >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z" />
-              <path d="M14 14h3v3h-3zM17 17h3v3h-3zM20 14h0" />
-            </svg>
+            <QrCode className="h-4 w-4" />
           </button>
         </>
       ) : (
@@ -99,12 +94,7 @@ const PaymentLinkShare = ({ url, compact = false, iconOnly = false }: PaymentLin
             className="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"
             title={t("components.payment_link_share.share_link")}
           >
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="18" cy="5" r="2" />
-              <circle cx="6" cy="12" r="2" />
-              <circle cx="18" cy="19" r="2" />
-              <path d="M8 12 16 7M8 12l8 5" />
-            </svg>
+            <Share2 className="h-5 w-5" />
           </button>
         ) : (
         <>
@@ -118,10 +108,7 @@ const PaymentLinkShare = ({ url, compact = false, iconOnly = false }: PaymentLin
             }`}
           >
             <span className="inline-flex h-4 w-4 items-center justify-center">
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 9h9v9H9z" />
-                <path d="M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1" />
-              </svg>
+              <Copy className="h-4 w-4" />
             </span>
             {copied ? t("components.payment_link_share.copied") : t("components.payment_link_share.copy_link")}
           </button>
@@ -133,10 +120,7 @@ const PaymentLinkShare = ({ url, compact = false, iconOnly = false }: PaymentLin
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600"
           >
             <span className="inline-flex h-4 w-4 items-center justify-center">
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z" />
-                <path d="M14 14h3v3h-3zM17 17h3v3h-3zM20 14h0" />
-              </svg>
+              <QrCode className="h-4 w-4" />
             </span>
             {t("components.payment_link_share.qr_code")}
           </button>
@@ -174,10 +158,7 @@ const PaymentLinkShare = ({ url, compact = false, iconOnly = false }: PaymentLin
                 }`}
               >
                 <span className="inline-flex h-4 w-4 items-center justify-center">
-                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 9h9v9H9z" />
-                    <path d="M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1" />
-                  </svg>
+                  <Copy className="h-4 w-4" />
                 </span>
                 {qrCopied ? t("components.payment_link_share.copied") : t("components.payment_link_share.copy_qr")}
               </button>
