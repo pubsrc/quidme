@@ -56,10 +56,10 @@ async def _handle_stripe_webhook(request: Request, *, signing_secret: str, sourc
             signing_secret,
         )
     except ValueError as e:
-        logger.warning("%s webhook invalid payload: %s", source, e)
+        logger.error("%s webhook invalid payload: %s", source, e)
         return Response(status_code=400)
     except stripe.SignatureVerificationError as e:
-        logger.warning("%s webhook signature verification failed: %s", source, e)
+        logger.error("%s webhook signature verification failed: %s", source, e)
         return Response(status_code=401)
 
     event_type = getattr(event, "type", None) or (event.get("type") if isinstance(event, dict) else None)
@@ -79,6 +79,7 @@ async def platform_stripe_webhook(request: Request) -> Response:
     """
     Stripe webhook endpoint for platform account events.
     """
+    logger.info("Processing Stripe webhook for platform accounts")
     return await _handle_stripe_webhook(
         request,
         signing_secret=settings.stripe_webhook_secret,
@@ -92,6 +93,7 @@ async def connected_accounts_stripe_webhook(request: Request) -> Response:
     Stripe webhook endpoint for connected account events (Connect / Accounts v2).
     Handles the same events as platform route, including account.updated.
     """
+    logger.info("Processing Stripe webhook for connected accounts")
     return await _handle_stripe_webhook(
         request,
         signing_secret=settings.stripe_connected_webhook_secret,
