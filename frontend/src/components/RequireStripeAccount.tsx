@@ -1,7 +1,7 @@
-import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAccountStatus } from "../lib/useAccountStatus";
 import SessionLoader from "./SessionLoader";
+import LocaleNavigate from "./LocaleNavigate";
 
 export const RequireStripeAccount = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation();
@@ -30,7 +30,7 @@ export const RequireStripeAccount = ({ children }: { children: React.ReactNode }
   }
 
   if (!status.has_connected_account) {
-    return <Navigate to="/start" replace />;
+    return <LocaleNavigate to="/start" replace />;
   }
 
   return <>{children}</>;

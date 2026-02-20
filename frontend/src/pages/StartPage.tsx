@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { signOutWithCognito } from "../lib/auth";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 /**
  * Start page: create Stripe Connect account.
@@ -10,16 +10,16 @@ import { signOutWithCognito } from "../lib/auth";
  */
 const StartPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localeNavigate } = useLocaleNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleLogout = async () => {
     try {
       await signOutWithCognito();
-      navigate("/", { replace: true });
+      localeNavigate("/", { replace: true });
     } catch {
-      navigate("/", { replace: true });
+      localeNavigate("/", { replace: true });
     }
   };
 
@@ -28,7 +28,7 @@ const StartPage = () => {
     setError(null);
     try {
       await api.connectAccount();
-      navigate("/app/dashboard", { replace: true });
+      localeNavigate("/app/dashboard", { replace: true });
     } catch (err) {
       setError(t("pages.start.errors.create_account_failed"));
     } finally {
@@ -62,7 +62,7 @@ const StartPage = () => {
           </button>
           <div className="flex gap-3">
             <button
-              onClick={() => navigate("/")}
+              onClick={() => localeNavigate("/")}
               className="rounded-full border border-slate-300 px-5 py-2 text-sm"
               disabled={loading}
             >

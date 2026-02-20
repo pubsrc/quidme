@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import LocaleNavigate from "./LocaleNavigate";
 import { useAuth } from "../lib/useAuth";
 import SessionLoader from "./SessionLoader";
 
@@ -10,7 +10,7 @@ export const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <LocaleNavigate to="/login" replace />;
   }
 
   return <>{children}</>;

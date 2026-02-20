@@ -1,6 +1,6 @@
-import { Navigate } from "react-router-dom";
 import { useAuth } from "../lib/useAuth";
 import SessionLoader from "./SessionLoader";
+import LocaleNavigate from "./LocaleNavigate";
 export const RequireGuest = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -9,7 +9,7 @@ export const RequireGuest = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/app/dashboard" replace />;
+    return <LocaleNavigate to="/app/dashboard" replace />;
   }
 
   return <>{children}</>;

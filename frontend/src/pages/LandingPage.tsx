@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
 import { replaceLocaleInPathname } from "../lib/localeRouting";
 import QuidmeLogo from "../components/QuidmeLogo";
+import LocaleLink from "../components/LocaleLink";
 
 const snapshotIdeas = [
   { titleKey: "pages.landing.ideas.piano", image: "/landing-piano.svg" },
@@ -75,18 +76,18 @@ const LandingPage = () => {
             <p className="mt-3 max-w-xl text-base text-[#7f5420] md:text-lg">{t("app.hero_subtitle")}</p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link
+              <LocaleLink
                 to="signup"
                 className="rounded-full bg-[#ee9a0d] px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(190,105,0,0.35)]"
               >
                 {t("app.get_started")}
-              </Link>
-              <Link
+              </LocaleLink>
+              <LocaleLink
                 to="login"
                 className="rounded-full border border-[#cd9033] bg-white/70 px-6 py-3 text-sm font-semibold text-[#653300]"
               >
                 {t("pages.landing.sign_in")}
-              </Link>
+              </LocaleLink>
             </div>
           </div>
 

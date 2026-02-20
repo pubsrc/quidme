@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type TransactionItem } from "../lib/api";
 import { useAccountStatus } from "../lib/useAccountStatus";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 const currencySymbol = (code?: string) => {
   const value = (code || "gbp").toLowerCase();
@@ -32,7 +32,7 @@ const formatTimeAgo = (isoDate: string, t: (key: string, options?: Record<string
 
 const DashboardPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localeNavigate } = useLocaleNavigate();
   const { account, status, refresh } = useAccountStatus();
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -134,7 +134,7 @@ const DashboardPage = () => {
           </div>
           <button
             type="button"
-            onClick={() => navigate("/app/transactions")}
+            onClick={() => localeNavigate("/app/transactions")}
             className="rounded-xl bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 md:rounded-2xl md:px-6 md:py-3 md:text-lg"
           >
             {t("pages.dashboard.view_all")}
@@ -250,7 +250,7 @@ const DashboardPage = () => {
               className="mt-5 w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 md:text-base"
               onClick={() => {
                 setShowOnboardingDialog(false);
-                navigate("/app/profile");
+                localeNavigate("/app/profile");
               }}
             >
               {t("pages.dashboard.okay")}

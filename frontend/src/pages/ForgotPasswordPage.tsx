@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { requestPasswordReset, confirmPasswordReset } from "../lib/auth";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 const ForgotPasswordPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localeNavigate } = useLocaleNavigate();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -41,7 +41,7 @@ const ForgotPasswordPage = () => {
     try {
       await confirmPasswordReset(email, code, newPassword);
       setMessage(t("pages.forgot_password.messages.updated"));
-      setTimeout(() => navigate("/login", { replace: true }), 1500);
+      setTimeout(() => localeNavigate("/login", { replace: true }), 1500);
     } catch (err: any) {
       setError(err?.message || t("pages.forgot_password.errors.reset_failed"));
     } finally {
@@ -147,7 +147,7 @@ const ForgotPasswordPage = () => {
 
         <button
           type="button"
-          onClick={() => navigate("/login")}
+          onClick={() => localeNavigate("/login")}
           className="mt-6 w-full rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700"
         >
           {t("pages.forgot_password.back_login")}

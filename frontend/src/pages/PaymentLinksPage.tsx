@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type LinkResponse } from "../lib/api";
 import CreateLinkDialog from "../components/CreateLinkDialog";
 import LinkCard from "../components/LinkCard";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 type LinkKind = "one_time" | "subscription";
 
 const PaymentLinksPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localeNavigate } = useLocaleNavigate();
   const [createKind, setCreateKind] = useState<LinkKind>("one_time");
   const [paymentLinks, setPaymentLinks] = useState<LinkResponse[]>([]);
   const [subscriptionLinks, setSubscriptionLinks] = useState<LinkResponse[]>([]);
@@ -113,7 +113,7 @@ const PaymentLinksPage = () => {
             key={link.id}
             link={link}
             onDisable={link.__kind === "subscription" ? disableSubscriptionLink : disablePaymentLink}
-            onOpen={link.__kind === "one_time" ? (id) => navigate(`/app/offerings/${id}`) : undefined}
+            onOpen={link.__kind === "one_time" ? (id) => localeNavigate(`/app/offerings/${id}`) : undefined}
             loading={isBusy}
             showInterval={link.__kind === "subscription"}
             showEarnings={false}

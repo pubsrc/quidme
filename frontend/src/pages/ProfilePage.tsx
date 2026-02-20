@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { useAccountStatus } from "../lib/useAccountStatus";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 const formatEarnings = (pending_earnings: Record<string, number> | undefined): string => {
   if (!pending_earnings || Object.keys(pending_earnings).length === 0) return "£0.00";
@@ -16,7 +16,7 @@ const formatEarnings = (pending_earnings: Record<string, number> | undefined): s
 
 const ProfilePage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localeNavigate } = useLocaleNavigate();
   const { account, status, isLoading } = useAccountStatus();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +76,7 @@ const ProfilePage = () => {
             <div className="text-sm text-slate-500">{t("pages.account.status")}</div>
             <div className="text-lg font-semibold">{t("pages.account.connected_required")}</div>
             <button
-              onClick={() => navigate("/start")}
+              onClick={() => localeNavigate("/start")}
               className="mt-4 rounded-full bg-brand-sky px-5 py-2 text-sm font-semibold text-white"
             >
               {t("pages.account.start_onboarding")}
