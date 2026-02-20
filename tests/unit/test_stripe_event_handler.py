@@ -149,7 +149,9 @@ def test_handle_payment_succeeded_connect_account_still_updates_earnings(
 @patch("payme.services.stripe_event_handler.StripeAccountRepository")
 @patch("payme.services.stripe_event_handler.SubscriptionsRepository")
 @patch("payme.services.stripe_event_handler.TransactionsRepository")
+@patch("payme.services.stripe_event_handler.StripeSubscriptionsService")
 def test_handle_invoice_paid_updates_subscription_link_and_stripe_account_earnings(
+    mock_stripe_subs_service: MagicMock,
     mock_tx_repo_cls: MagicMock,
     mock_subs_repo_cls: MagicMock,
     mock_account_repo_cls: MagicMock,
@@ -163,9 +165,11 @@ def test_handle_invoice_paid_updates_subscription_link_and_stripe_account_earnin
     mock_tx_repo_cls.return_value = mock_tx_repo
 
     data = _invoice_paid_event(user_id="u3", link_id="sub-1", amount=3000, currency="gbp")
+    data["object"]["billing_reason"] = "subscription_create"
     result = handle_invoice_paid(data, account_id=None)
 
     assert result is True
+    mock_stripe_subs_service.upsert_from_invoice_paid.assert_called_once()
     mock_subs_repo.add_payment_result.assert_called_once()
     call_args = mock_subs_repo.add_payment_result.call_args[0]
     assert call_args[0] == "sub-1"
@@ -184,7 +188,9 @@ def test_handle_invoice_paid_updates_subscription_link_and_stripe_account_earnin
 @patch("payme.services.stripe_event_handler.StripeAccountRepository")
 @patch("payme.services.stripe_event_handler.SubscriptionsRepository")
 @patch("payme.services.stripe_event_handler.TransactionsRepository")
+@patch("payme.services.stripe_event_handler.StripeSubscriptionsService")
 def test_handle_invoice_paid_zero_earnings_does_not_call_add_earnings(
+    mock_stripe_subs_service: MagicMock,
     mock_tx_repo_cls: MagicMock,
     mock_subs_repo_cls: MagicMock,
     mock_account_repo_cls: MagicMock,
@@ -198,9 +204,11 @@ def test_handle_invoice_paid_zero_earnings_does_not_call_add_earnings(
     mock_tx_repo_cls.return_value = mock_tx_repo
 
     data = _invoice_paid_event(user_id="u4", link_id="sub-1", amount=500, currency="usd", base_amount=0)
+    data["object"]["billing_reason"] = "subscription_create"
     result = handle_invoice_paid(data, account_id=None)
 
     assert result is True
+    mock_stripe_subs_service.upsert_from_invoice_paid.assert_called_once()
     mock_subs_repo.add_payment_result.assert_called_once()
     mock_account_repo_cls.return_value.add_earnings.assert_not_called()
 
