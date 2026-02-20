@@ -19,7 +19,6 @@ from payme.services.stripe_event_handler import (
     handle_invoice_paid,
     handle_payment_failed,
     handle_payment_succeeded,
-    handle_subscription_created,
 )
 from payme.services.stripe_subscriptions_service import StripeSubscriptionsService
 
@@ -28,7 +27,6 @@ logger = logging.getLogger(__name__)
 PAYMENT_SUCCEEDED_EVENTS = {"payment_intent.succeeded"}
 PAYMENT_FAILED_EVENTS = {"payment_intent.payment_failed"}
 INVOICE_PAID_EVENTS = {"invoice.paid"}
-SUBSCRIPTION_CREATED_EVENT = "customer.subscription.created"
 SUBSCRIPTION_UPDATED_EVENT = "customer.subscription.updated"
 SUBSCRIPTION_DELETED_EVENT = "customer.subscription.deleted"
 CHECKOUT_SESSION_COMPLETED_EVENT = "checkout.session.completed"
@@ -121,11 +119,8 @@ def handle_account_updated(data: dict[str, Any]) -> bool:
 def handle_subscription_lifecycle_event(event_type: str, data: dict[str, Any], account_id: str | None = None) -> bool:
     """
     Persist customer subscription rows from Stripe lifecycle events.
-    - created: capture subscription details
     - deleted/updated(canceled): mark as canceled
     """
-    if event_type == SUBSCRIPTION_CREATED_EVENT:
-        return StripeSubscriptionsService.upsert_from_subscription_created(data, account_id=account_id)
     if event_type == SUBSCRIPTION_DELETED_EVENT:
         return StripeSubscriptionsService.mark_canceled_from_subscription_event(data)
     if event_type == SUBSCRIPTION_UPDATED_EVENT:
