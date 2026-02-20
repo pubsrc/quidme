@@ -10,6 +10,7 @@ from payme.core.auth import Principal, STRIPE_ACCOUNT_REQUIRED_PAYLOAD, resolve_
 from payme.core.constants import StripeAccountStatus
 from payme.db.repositories import (
     PaymentLinksRepository,
+    StripeSubscriptionsRepository,
     StripeAccountRepository,
     SubscriptionsRepository,
     TransactionsRepository,
@@ -105,6 +106,10 @@ def get_payment_links_repository() -> PaymentLinksRepository:
 
 def get_subscriptions_repository() -> SubscriptionsRepository:
     return SubscriptionsRepository()
+
+
+def get_stripe_subscriptions_repository() -> StripeSubscriptionsRepository:
+    return StripeSubscriptionsRepository()
 
 
 def get_transactions_repository() -> TransactionsRepository:

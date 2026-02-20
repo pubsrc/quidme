@@ -261,8 +261,11 @@ export const api = {
   },
   cancelStripeSubscription: async (subscriptionId: string) => {
     const res = await authFetch(
-      `${base}/stripe-subscriptions/${subscriptionId}/cancel`,
-      await withAuth({ method: "POST" })
+      `${base}/stripe-subscriptions/cancellations`,
+      await withAuth({
+        method: "PUT",
+        body: JSON.stringify({ subscription_id: subscriptionId }),
+      })
     );
     if (!res.ok) throw new Error(await errorMessageFromResponse(res, "Failed to cancel subscription"));
     return res.json();

@@ -433,6 +433,7 @@ def test_delete_account_deletes_user_data_and_cognito(monkeypatch: Any) -> None:
     stripe_accounts_repo = MagicMock(spec=["delete"])
     payment_links_repo = MagicMock(spec=["delete_all_for_user"])
     subscriptions_repo = MagicMock(spec=["delete_all_for_user"])
+    stripe_subscriptions_repo = MagicMock(spec=["delete_all_for_user"])
     transactions_repo = MagicMock(spec=["delete_all_for_user"])
     platform_service_class = MagicMock()
     cognito_delete_user = MagicMock()
@@ -442,6 +443,7 @@ def test_delete_account_deletes_user_data_and_cognito(monkeypatch: Any) -> None:
     app.dependency_overrides[deps.get_stripe_accounts_repository] = lambda: stripe_accounts_repo
     app.dependency_overrides[deps.get_payment_links_repository] = lambda: payment_links_repo
     app.dependency_overrides[deps.get_subscriptions_repository] = lambda: subscriptions_repo
+    app.dependency_overrides[deps.get_stripe_subscriptions_repository] = lambda: stripe_subscriptions_repo
     app.dependency_overrides[deps.get_transactions_repository] = lambda: transactions_repo
     app.dependency_overrides[deps.get_stripe_platform_account_service] = lambda: platform_service_class
     monkeypatch.setattr(
@@ -458,6 +460,7 @@ def test_delete_account_deletes_user_data_and_cognito(monkeypatch: Any) -> None:
     transactions_repo.delete_all_for_user.assert_called_once_with("user-del")
     payment_links_repo.delete_all_for_user.assert_called_once_with("user-del")
     subscriptions_repo.delete_all_for_user.assert_called_once_with("user-del")
+    stripe_subscriptions_repo.delete_all_for_user.assert_called_once_with("user-del")
     stripe_accounts_repo.delete.assert_called_once_with("user-del")
     users_repo.delete.assert_called_once_with("user-del")
     cognito_delete_user.assert_called_once_with("cognito-sub-123")
@@ -479,6 +482,7 @@ def test_delete_account_no_stripe_account_skips_stripe_delete(monkeypatch: Any) 
     stripe_accounts_repo = MagicMock(spec=["delete"])
     payment_links_repo = MagicMock(spec=["delete_all_for_user"])
     subscriptions_repo = MagicMock(spec=["delete_all_for_user"])
+    stripe_subscriptions_repo = MagicMock(spec=["delete_all_for_user"])
     transactions_repo = MagicMock(spec=["delete_all_for_user"])
     platform_service_class = MagicMock()
     cognito_delete_user = MagicMock()
@@ -488,6 +492,7 @@ def test_delete_account_no_stripe_account_skips_stripe_delete(monkeypatch: Any) 
     app.dependency_overrides[deps.get_stripe_accounts_repository] = lambda: stripe_accounts_repo
     app.dependency_overrides[deps.get_payment_links_repository] = lambda: payment_links_repo
     app.dependency_overrides[deps.get_subscriptions_repository] = lambda: subscriptions_repo
+    app.dependency_overrides[deps.get_stripe_subscriptions_repository] = lambda: stripe_subscriptions_repo
     app.dependency_overrides[deps.get_transactions_repository] = lambda: transactions_repo
     app.dependency_overrides[deps.get_stripe_platform_account_service] = lambda: platform_service_class
     monkeypatch.setattr(

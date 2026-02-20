@@ -24,6 +24,7 @@ os.environ.setdefault("DDB_TABLE_USER_IDENTITIES", "payme-user-identities")
 os.environ.setdefault("DDB_TABLE_STRIPE_ACCOUNTS", "payme-stripe-accounts")
 os.environ.setdefault("DDB_TABLE_PAYMENT_LINKS", "payme-payment-links")
 os.environ.setdefault("DDB_TABLE_SUBSCRIPTION_LINKS", "payme-subscription-links")
+os.environ.setdefault("DDB_TABLE_SUBSCRIPTIONS", "payme-subscriptions")
 os.environ.setdefault("DDB_TABLE_TRANSACTIONS", "payme-transactions")
 
 os.environ.setdefault("CORS_ALLOWED_ORIGINS", "*")

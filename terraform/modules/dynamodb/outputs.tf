@@ -18,6 +18,10 @@ output "subscription_links_table_name" {
   value = aws_dynamodb_table.subscription_links.name
 }
 
+output "subscriptions_table_name" {
+  value = aws_dynamodb_table.subscriptions.name
+}
+
 output "transactions_table_name" {
   value = aws_dynamodb_table.transactions.name
 }
@@ -40,6 +44,10 @@ output "payment_links_table_arn" {
 
 output "subscription_links_table_arn" {
   value = aws_dynamodb_table.subscription_links.arn
+}
+
+output "subscriptions_table_arn" {
+  value = aws_dynamodb_table.subscriptions.arn
 }
 
 output "transactions_table_arn" {

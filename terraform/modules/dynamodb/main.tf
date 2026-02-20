@@ -4,6 +4,7 @@ locals {
   stripe_accounts_table    = "${var.project_name}-stripe-accounts"
   payment_links_table      = "${var.project_name}-payment-links"
   subscription_links_table = "${var.project_name}-subscription-links"
+  subscriptions_table      = "${var.project_name}-subscriptions"
   transactions_table       = "${var.project_name}-transactions"
 }
 
@@ -185,6 +186,48 @@ resource "aws_dynamodb_table" "subscription_links" {
     }
     key_schema {
       attribute_name = "expires_at"
+      key_type       = "RANGE"
+    }
+    projection_type = "ALL"
+  }
+
+  tags = var.tags
+}
+
+resource "aws_dynamodb_table" "subscriptions" {
+  name         = local.subscriptions_table
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "subscription_id"
+  range_key    = "payment_link_id"
+
+  attribute {
+    name = "subscription_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "payment_link_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "user_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "created_at_ts"
+    type = "N"
+  }
+
+  global_secondary_index {
+    name = "user_id_created_at_index"
+    key_schema {
+      attribute_name = "user_id"
+      key_type       = "HASH"
+    }
+    key_schema {
+      attribute_name = "created_at_ts"
       key_type       = "RANGE"
     }
     projection_type = "ALL"

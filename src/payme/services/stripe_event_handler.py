@@ -21,6 +21,7 @@ from payme.db.repositories import (
     TransactionsRepository,
 )
 from payme.services.stripe_platform_account_service import StripePlatformAccountService
+from payme.services.stripe_subscriptions_service import StripeSubscriptionsService
 
 logger = logging.getLogger(__name__)
 
@@ -958,4 +959,15 @@ def handle_checkout_session_completed(
             e,
         )
         return False
+    try:
+        StripeSubscriptionsService.upsert_from_checkout_session_completed(
+            {"object": session},
+            account_id=account_id,
+        )
+    except Exception as e:
+        logger.warning(
+            "Failed to upsert customer subscription from checkout.session.completed sub=%s: %s",
+            stripe_subscription_id,
+            e,
+        )
     return True

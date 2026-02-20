@@ -15,11 +15,14 @@ from payme.services.stripe_webhook import (
     PAYMENT_FAILED_EVENTS,
     PAYMENT_SUCCEEDED_EVENTS,
     SUBSCRIPTION_CREATED_EVENT,
+    SUBSCRIPTION_DELETED_EVENT,
+    SUBSCRIPTION_UPDATED_EVENT,
     handle_account_updated,
     handle_checkout_session_completed,
     handle_invoice_paid,
     handle_payment_failed,
     handle_payment_succeeded,
+    handle_subscription_lifecycle_event,
     handle_subscription_created,
 )
 
@@ -69,6 +72,9 @@ async def stripe_webhook(request: Request) -> Response:
             handle_invoice_paid(data, account_id=account_id)
         elif event_type == SUBSCRIPTION_CREATED_EVENT:
             handle_subscription_created(data, account_id=account_id)
+            handle_subscription_lifecycle_event(event_type, data, account_id=account_id)
+        elif event_type in {SUBSCRIPTION_UPDATED_EVENT, SUBSCRIPTION_DELETED_EVENT}:
+            handle_subscription_lifecycle_event(event_type, data, account_id=account_id)
         elif event_type == CHECKOUT_SESSION_COMPLETED_EVENT:
             handle_checkout_session_completed(data, account_id=account_id)
         elif event_type == ACCOUNT_UPDATED_EVENT:

@@ -39,6 +39,14 @@ class Settings(BaseSettings):
     ddb_table_stripe_accounts: str
     ddb_table_payment_links: str
     ddb_table_subscription_links: str
+    ddb_table_subscriptions: str = Field(
+        ...,
+        validation_alias=AliasChoices(
+            "DDB_TABLE_SUBSCRIPTIONS",
+            "DDB_TABLE_SUBSCRIPTION_INSTANCES",
+            "DDB_TABLE_SUBSCRIPTION_LINKS",
+        ),
+    )
     ddb_table_transactions: str
 
     stripe_webhook_secret: str = ""  # Webhook endpoint signing secret (whsec_...) from Stripe Dashboard

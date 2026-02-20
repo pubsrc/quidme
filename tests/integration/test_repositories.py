@@ -110,6 +110,31 @@ def _create_tables():
         BillingMode="PAY_PER_REQUEST",
     )
 
+    dynamodb.create_table(
+        TableName="payme-subscriptions",
+        KeySchema=[
+            {"AttributeName": "subscription_id", "KeyType": "HASH"},
+            {"AttributeName": "payment_link_id", "KeyType": "RANGE"},
+        ],
+        AttributeDefinitions=[
+            {"AttributeName": "subscription_id", "AttributeType": "S"},
+            {"AttributeName": "payment_link_id", "AttributeType": "S"},
+            {"AttributeName": "user_id", "AttributeType": "S"},
+            {"AttributeName": "created_at_ts", "AttributeType": "N"},
+        ],
+        GlobalSecondaryIndexes=[
+            {
+                "IndexName": "user_id_created_at_index",
+                "KeySchema": [
+                    {"AttributeName": "user_id", "KeyType": "HASH"},
+                    {"AttributeName": "created_at_ts", "KeyType": "RANGE"},
+                ],
+                "Projection": {"ProjectionType": "ALL"},
+            }
+        ],
+        BillingMode="PAY_PER_REQUEST",
+    )
+
 
 @mock_aws
 def test_user_identity_mapping_roundtrip():
