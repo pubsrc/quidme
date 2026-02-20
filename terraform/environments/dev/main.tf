@@ -41,14 +41,16 @@ module "dynamodb" {
 module "secrets" {
   source = "../../modules/secrets"
 
-  stripe_secret_name                = "${var.project_name}-stripe-api-key"
-  stripe_secret_placeholder         = var.stripe_secret_placeholder
-  stripe_webhook_secret_name        = "${var.project_name}-stripe-webhook-secret"
-  stripe_webhook_secret_placeholder = var.stripe_webhook_secret_placeholder
-  google_oauth_secret_name          = "${var.project_name}-google-oauth-pi-key"
-  google_client_id_placeholder      = var.google_client_id_placeholder
-  google_client_secret_placeholder  = var.google_client_secret_placeholder
-  tags                              = local.tags
+  stripe_secret_name                          = "${var.project_name}-stripe-api-key"
+  stripe_secret_placeholder                   = var.stripe_secret_placeholder
+  stripe_webhook_secret_name                  = "${var.project_name}-stripe-webhook-secret"
+  stripe_webhook_secret_placeholder           = var.stripe_webhook_secret_placeholder
+  stripe_connected_webhook_secret_name        = "${var.project_name}-stripe-connected-webhook-secret"
+  stripe_connected_webhook_secret_placeholder = var.stripe_connected_webhook_secret_placeholder
+  google_oauth_secret_name                    = "${var.project_name}-google-oauth-pi-key"
+  google_client_id_placeholder                = var.google_client_id_placeholder
+  google_client_secret_placeholder            = var.google_client_secret_placeholder
+  tags                                        = local.tags
 }
 
 data "aws_secretsmanager_secret_version" "stripe" {
@@ -58,6 +60,11 @@ data "aws_secretsmanager_secret_version" "stripe" {
 
 data "aws_secretsmanager_secret_version" "stripe_webhook" {
   secret_id  = module.secrets.stripe_webhook_secret_name
+  depends_on = [module.secrets]
+}
+
+data "aws_secretsmanager_secret_version" "stripe_connected_webhook" {
+  secret_id  = module.secrets.stripe_connected_webhook_secret_name
   depends_on = [module.secrets]
 }
 
@@ -164,7 +171,7 @@ locals {
   common_env = {
     STRIPE_SECRET                   = data.aws_secretsmanager_secret_version.stripe.secret_string
     STRIPE_WEBHOOK_SECRET           = data.aws_secretsmanager_secret_version.stripe_webhook.secret_string
-    STRIPE_CONNECTED_WEBHOOK_SECRET = data.aws_secretsmanager_secret_version.stripe_webhook.secret_string
+    STRIPE_CONNECTED_WEBHOOK_SECRET = data.aws_secretsmanager_secret_version.stripe_connected_webhook.secret_string
     SERVICE_FEE_BPS                 = tostring(var.service_fee_bps_default)
     SERVICE_FEE_FIXED               = tostring(var.service_fee_fixed_default)
     COGNITO_REGION                  = var.aws_region

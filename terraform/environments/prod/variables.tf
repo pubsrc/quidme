@@ -18,6 +18,11 @@ variable "stripe_webhook_secret_placeholder" {
   default = "stripe-webhook-secret-placeholder"
 }
 
+variable "stripe_connected_webhook_secret_placeholder" {
+  type    = string
+  default = "stripe-connected-webhook-secret-placeholder"
+}
+
 variable "google_client_id_placeholder" {
   type    = string
   default = "google-client-id-placeholder"

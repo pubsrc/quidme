@@ -92,9 +92,8 @@ async def connected_accounts_stripe_webhook(request: Request) -> Response:
     Stripe webhook endpoint for connected account events (Connect / Accounts v2).
     Handles the same events as platform route, including account.updated.
     """
-    signing_secret = settings.stripe_connected_webhook_secret or settings.stripe_webhook_secret
     return await _handle_stripe_webhook(
         request,
-        signing_secret=signing_secret,
+        signing_secret=settings.stripe_connected_webhook_secret,
         source="connected-accounts",
     )

@@ -23,5 +23,6 @@ cors_allowed_origins_default  = ["https://dev.quidme.uk"]
 # Optional: override placeholder secrets for first apply
 # stripe_secret_placeholder         = "sk_test_..."
 # stripe_webhook_secret_placeholder = "whsec_..."
+# stripe_connected_webhook_secret_placeholder = "whsec_..."
 # google_client_id_placeholder      = "..."
 # google_client_secret_placeholder  = "..."
