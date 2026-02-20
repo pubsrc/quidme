@@ -197,18 +197,8 @@ resource "aws_dynamodb_table" "subscription_links" {
 resource "aws_dynamodb_table" "subscriptions" {
   name         = local.subscriptions_table
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "subscription_id"
-  range_key    = "payment_link_id"
-
-  attribute {
-    name = "subscription_id"
-    type = "S"
-  }
-
-  attribute {
-    name = "payment_link_id"
-    type = "S"
-  }
+  hash_key     = "user_id"
+  range_key    = "created_at_key"
 
   attribute {
     name = "user_id"
@@ -216,19 +206,20 @@ resource "aws_dynamodb_table" "subscriptions" {
   }
 
   attribute {
-    name = "created_at_ts"
-    type = "N"
+    name = "created_at_key"
+    type = "S"
+  }
+
+  attribute {
+    name = "subscription_id"
+    type = "S"
   }
 
   global_secondary_index {
-    name = "user_id_created_at_index"
+    name = "subscription_id_index"
     key_schema {
-      attribute_name = "user_id"
+      attribute_name = "subscription_id"
       key_type       = "HASH"
-    }
-    key_schema {
-      attribute_name = "created_at_ts"
-      key_type       = "RANGE"
     }
     projection_type = "ALL"
   }

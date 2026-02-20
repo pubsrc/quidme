@@ -119,21 +119,19 @@ def _create_tables() -> None:
     dynamodb.create_table(
         TableName="payme-subscriptions",
         KeySchema=[
-            {"AttributeName": "subscription_id", "KeyType": "HASH"},
-            {"AttributeName": "payment_link_id", "KeyType": "RANGE"},
+            {"AttributeName": "user_id", "KeyType": "HASH"},
+            {"AttributeName": "created_at_key", "KeyType": "RANGE"},
         ],
         AttributeDefinitions=[
-            {"AttributeName": "subscription_id", "AttributeType": "S"},
-            {"AttributeName": "payment_link_id", "AttributeType": "S"},
             {"AttributeName": "user_id", "AttributeType": "S"},
-            {"AttributeName": "created_at_ts", "AttributeType": "N"},
+            {"AttributeName": "created_at_key", "AttributeType": "S"},
+            {"AttributeName": "subscription_id", "AttributeType": "S"},
         ],
         GlobalSecondaryIndexes=[
             {
-                "IndexName": "user_id_created_at_index",
+                "IndexName": "subscription_id_index",
                 "KeySchema": [
-                    {"AttributeName": "user_id", "KeyType": "HASH"},
-                    {"AttributeName": "created_at_ts", "KeyType": "RANGE"},
+                    {"AttributeName": "subscription_id", "KeyType": "HASH"},
                 ],
                 "Projection": {"ProjectionType": "ALL"},
             }
