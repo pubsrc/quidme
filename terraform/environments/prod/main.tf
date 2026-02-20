@@ -162,26 +162,27 @@ locals {
   frontend_vite_oauth_domain = "${module.cognito.domain}.auth.${var.aws_region}.amazoncognito.com"
 
   common_env = {
-    STRIPE_SECRET                = data.aws_secretsmanager_secret_version.stripe.secret_string
-    STRIPE_WEBHOOK_SECRET        = data.aws_secretsmanager_secret_version.stripe_webhook.secret_string
-    SERVICE_FEE_BPS              = tostring(var.service_fee_bps_default)
-    SERVICE_FEE_FIXED            = tostring(var.service_fee_fixed_default)
-    COGNITO_REGION               = var.aws_region
-    COGNITO_USER_POOL_ID         = module.cognito.user_pool_id
-    COGNITO_APP_CLIENT_ID        = module.cognito.app_client_id
-    PAYME_BASE_URL               = local.payme_base_url_value
-    PAYME_ACCOUNT_REFRESH_URL    = local.account_refresh_url_value
-    PAYME_ACCOUNT_RETURN_URL     = local.account_return_url_value
-    DEFAULT_COUNTRY              = "GB"
-    DDB_TABLE_USERS              = module.dynamodb.users_table_name
-    DDB_TABLE_USER_IDENTITIES    = module.dynamodb.user_identities_table_name
-    DDB_TABLE_STRIPE_ACCOUNTS    = module.dynamodb.user_accounts_table_name
-    DDB_TABLE_PAYMENT_LINKS      = module.dynamodb.payment_links_table_name
-    DDB_TABLE_SUBSCRIPTION_LINKS = module.dynamodb.subscription_links_table_name
-    DDB_TABLE_SUBSCRIPTIONS      = module.dynamodb.subscriptions_table_name
-    DDB_TABLE_TRANSACTIONS       = module.dynamodb.transactions_table_name
-    PAYME_ENV                    = "prod"
-    CORS_ALLOWED_ORIGINS         = join(",", var.cors_allowed_origins_default)
+    STRIPE_SECRET                   = data.aws_secretsmanager_secret_version.stripe.secret_string
+    STRIPE_WEBHOOK_SECRET           = data.aws_secretsmanager_secret_version.stripe_webhook.secret_string
+    STRIPE_CONNECTED_WEBHOOK_SECRET = data.aws_secretsmanager_secret_version.stripe_webhook.secret_string
+    SERVICE_FEE_BPS                 = tostring(var.service_fee_bps_default)
+    SERVICE_FEE_FIXED               = tostring(var.service_fee_fixed_default)
+    COGNITO_REGION                  = var.aws_region
+    COGNITO_USER_POOL_ID            = module.cognito.user_pool_id
+    COGNITO_APP_CLIENT_ID           = module.cognito.app_client_id
+    PAYME_BASE_URL                  = local.payme_base_url_value
+    PAYME_ACCOUNT_REFRESH_URL       = local.account_refresh_url_value
+    PAYME_ACCOUNT_RETURN_URL        = local.account_return_url_value
+    DEFAULT_COUNTRY                 = "GB"
+    DDB_TABLE_USERS                 = module.dynamodb.users_table_name
+    DDB_TABLE_USER_IDENTITIES       = module.dynamodb.user_identities_table_name
+    DDB_TABLE_STRIPE_ACCOUNTS       = module.dynamodb.user_accounts_table_name
+    DDB_TABLE_PAYMENT_LINKS         = module.dynamodb.payment_links_table_name
+    DDB_TABLE_SUBSCRIPTION_LINKS    = module.dynamodb.subscription_links_table_name
+    DDB_TABLE_SUBSCRIPTIONS         = module.dynamodb.subscriptions_table_name
+    DDB_TABLE_TRANSACTIONS          = module.dynamodb.transactions_table_name
+    PAYME_ENV                       = "prod"
+    CORS_ALLOWED_ORIGINS            = join(",", var.cors_allowed_origins_default)
   }
 }
 

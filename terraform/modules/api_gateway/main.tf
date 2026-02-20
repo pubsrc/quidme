@@ -47,6 +47,13 @@ resource "aws_apigatewayv2_route" "stripe_webhook" {
   authorization_type = "NONE"
 }
 
+resource "aws_apigatewayv2_route" "stripe_webhook_connected_accounts" {
+  api_id             = aws_apigatewayv2_api.api.id
+  route_key          = "POST /webhooks/connected-accounts/stripe"
+  target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+  authorization_type = "NONE"
+}
+
 resource "aws_apigatewayv2_route" "proxy" {
   api_id             = aws_apigatewayv2_api.api.id
   route_key          = "ANY /{proxy+}"

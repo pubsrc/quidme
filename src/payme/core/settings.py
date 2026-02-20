@@ -49,7 +49,14 @@ class Settings(BaseSettings):
     )
     ddb_table_transactions: str
 
-    stripe_webhook_secret: str = ""  # Webhook endpoint signing secret (whsec_...) from Stripe Dashboard
+    stripe_webhook_secret: str = ""  # Platform webhook endpoint signing secret (whsec_...)
+    stripe_connected_webhook_secret: str = Field(
+        "",
+        validation_alias=AliasChoices(
+            "STRIPE_CONNECTED_WEBHOOK_SECRET",
+            "STRIPE_WEBHOOK_SECRET_CONNECTED",
+        ),
+    )  # Connected accounts webhook endpoint signing secret (whsec_...)
 
     def model_post_init(self, __context) -> None:  # type: ignore[override]
         # If SERVICE_FEE_BPS is set and SERVICE_FEE_PERCENT was not explicitly set, derive percent.
