@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Eye, EyeOff } from "lucide-react";
-import { signUpWithCognito, signInWithGoogle } from "../lib/auth";
-import { config } from "../lib/config";
+import { signUpWithCognito } from "../lib/auth";
 import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 const SignupPage = () => {
@@ -13,8 +12,6 @@ const SignupPage = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const showGoogle = Boolean(config.cognitoOauthDomain);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,17 +29,6 @@ const SignupPage = () => {
       setError(err?.message || t("pages.signup.errors.signup_failed"));
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleGoogle = async () => {
-    setGoogleLoading(true);
-    setError(null);
-    try {
-      await signInWithGoogle();
-    } catch (err: any) {
-      setError(err?.message || t("pages.signup.errors.google_failed"));
-      setGoogleLoading(false);
     }
   };
 
@@ -102,17 +88,6 @@ const SignupPage = () => {
             {loading ? t("pages.signup.creating") : t("pages.signup.create_account")}
           </button>
         </form>
-
-        {showGoogle && (
-          <button
-            type="button"
-            onClick={handleGoogle}
-            className="mt-4 w-full rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700"
-            disabled={loading || googleLoading}
-          >
-            {googleLoading ? t("pages.signup.redirecting") : t("pages.signup.continue_google")}
-          </button>
-        )}
 
         <div className="mt-6 text-center text-sm text-slate-600">
           {t("pages.signup.already_have")}{" "}
