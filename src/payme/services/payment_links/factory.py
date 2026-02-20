@@ -16,6 +16,7 @@ class StripePaymentLinkFactory:
     @staticmethod
     def get_link_service(principal: Principal) -> StripePaymentLinkService:
         account = principal.stripe_account
-        if account is not None and (account.status or "").strip() == StripeAccountStatus.VERIFIED:
-            return StripeConnectedAccountLinkService(principal)
+        # todo: use platform account untill connected account webhook is implemented
+        # if account is not None and (account.status or "").strip() == StripeAccountStatus.VERIFIED:
+            # return StripeConnectedAccountLinkService(principal)
         return StripePlatformAccountLinkService(principal)

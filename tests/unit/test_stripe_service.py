@@ -1,13 +1,16 @@
 """Unit tests for Stripe platform account service and payment link services."""
 
 from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import payme.services.stripe_platform_account_service as platform_module
 import payme.services.payment_links.connected_link_service as link_module
+import payme.services.stripe_subscriptions_service as subscriptions_module
 from payme.core.constants import StripeAccountStatus
 from payme.db.repositories import StripeAccountRecord
 from payme.services.payment_links import StripeConnectedAccountLinkService
 from payme.services.stripe_platform_account_service import StripePlatformAccountService
+from payme.services.stripe_subscriptions_service import StripeSubscriptionsService
 
 _TEST_ACCOUNT_ID = "acct_123"
 _TEST_USER_ID = "user-1"
@@ -292,3 +295,75 @@ def test_from_account_id_list_transactions_for_link(monkeypatch):
     assert "metadata['link_id']:'link-1'" in captured["query"]
     assert captured["limit"] == 50
     assert captured["stripe_account"] == _TEST_ACCOUNT_ID
+
+
+def test_upsert_from_invoice_paid_only_for_subscription_create(monkeypatch):
+    repo = MagicMock()
+    monkeypatch.setattr(subscriptions_module, "StripeSubscriptionsRepository", lambda: repo)
+    monkeypatch.setattr(subscriptions_module, "SubscriptionsRepository", lambda: MagicMock())
+
+    data = {
+        "object": {
+            "id": "in_1",
+            "billing_reason": "subscription_cycle",
+            "subscription": "sub_1",
+            "customer_email": "customer@example.com",
+            "customer_name": "Customer Name",
+            "currency": "gbp",
+        }
+    }
+
+    result = StripeSubscriptionsService.upsert_from_invoice_paid(data)
+    assert result is False
+    repo.upsert.assert_not_called()
+
+
+def test_upsert_from_invoice_paid_uses_invoice_customer_details(monkeypatch):
+    repo = MagicMock()
+    link_repo = MagicMock()
+    link_repo.get.return_value = {
+        "user_id": "user-1",
+        "title": "Piano lessons",
+        "stripe_payment_link_id": "plink_123",
+        "currency": "gbp",
+        "interval": "month",
+        "amount": 1000,
+    }
+    monkeypatch.setattr(subscriptions_module, "StripeSubscriptionsRepository", lambda: repo)
+    monkeypatch.setattr(subscriptions_module, "SubscriptionsRepository", lambda: link_repo)
+
+    data = {
+        "object": {
+            "id": "in_2",
+            "billing_reason": "subscription_create",
+            "created": 1771603344,
+            "status": "paid",
+            "subscription": "sub_abc",
+            "currency": "gbp",
+            "customer_email": "syedbilal_new@gmail.com",
+            "customer_name": "Bilal Syed",
+            "customer_phone": "+44123456789",
+            "parent": {
+                "subscription_details": {
+                    "metadata": {
+                        "user_id": "user-1",
+                        "link_id": "link-123",
+                        "link_title": "Piano lessons",
+                        "interval": "month",
+                    }
+                }
+            },
+            "lines": {"data": [{"period": {"start": 1771603344, "end": 1774022544}}]},
+        }
+    }
+
+    result = StripeSubscriptionsService.upsert_from_invoice_paid(data)
+    assert result is True
+    repo.upsert.assert_called_once()
+    kwargs = repo.upsert.call_args.kwargs
+    assert kwargs["subscription_id"] == "sub_abc"
+    assert kwargs["user_id"] == "user-1"
+    assert kwargs["payment_link_id"] == "plink_123"
+    assert kwargs["customer_name"] == "Bilal Syed"
+    assert kwargs["customer_email"] == "syedbilal_new@gmail.com"
+    assert kwargs["customer_phone"] == "+44123456789"

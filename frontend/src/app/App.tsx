@@ -103,6 +103,7 @@ const App = () => {
         <Route path="dashboard" element={<Navigate to="../app/dashboard" replace />} />
         <Route path="offerings" element={<Navigate to="../app/offerings" replace />} />
         <Route path="transactions" element={<Navigate to="../app/transactions" replace />} />
+        <Route path="subscribers" element={<Navigate to="../app/subscribers" replace />} />
         <Route path="profile" element={<Navigate to="../app/profile" replace />} />
         <Route path="settings" element={<Navigate to="../app/settings" replace />} />
         <Route
@@ -130,6 +131,7 @@ const App = () => {
           <Route path="offerings" element={<PaymentLinksPage />} />
           <Route path="offerings/:id" element={<PaymentLinkDetailsPage />} />
           <Route path="subscriptions" element={<Navigate to="../offerings" replace />} />
+          <Route path="subscribers" element={<CustomerSubscriptionsPage />} />
           <Route path="customer-subscriptions" element={<CustomerSubscriptionsPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="profile" element={<ProfilePage />} />

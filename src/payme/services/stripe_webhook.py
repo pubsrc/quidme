@@ -19,15 +19,16 @@ from payme.services.stripe_event_handler import (
     handle_invoice_paid,
     handle_payment_failed,
     handle_payment_succeeded,
-    handle_subscription_created,
 )
+from payme.services.stripe_subscriptions_service import StripeSubscriptionsService
 
 logger = logging.getLogger(__name__)
 
 PAYMENT_SUCCEEDED_EVENTS = {"payment_intent.succeeded"}
 PAYMENT_FAILED_EVENTS = {"payment_intent.payment_failed"}
 INVOICE_PAID_EVENTS = {"invoice.paid"}
-SUBSCRIPTION_CREATED_EVENT = "customer.subscription.created"
+SUBSCRIPTION_UPDATED_EVENT = "customer.subscription.updated"
+SUBSCRIPTION_DELETED_EVENT = "customer.subscription.deleted"
 CHECKOUT_SESSION_COMPLETED_EVENT = "checkout.session.completed"
 ACCOUNT_UPDATED_EVENT = "account.updated"
 
@@ -113,3 +114,17 @@ def handle_account_updated(data: dict[str, Any]) -> bool:
         logger.exception("Webhook account.updated: failed to update status: %s", e)
         return False
     return True
+
+
+def handle_subscription_lifecycle_event(event_type: str, data: dict[str, Any], account_id: str | None = None) -> bool:
+    """
+    Persist customer subscription rows from Stripe lifecycle events.
+    - deleted/updated(canceled): mark as canceled
+    """
+    if event_type == SUBSCRIPTION_DELETED_EVENT:
+        return StripeSubscriptionsService.mark_canceled_from_subscription_event(data)
+    if event_type == SUBSCRIPTION_UPDATED_EVENT:
+        obj = _to_dict(data.get("object"))
+        if str(obj.get("status") or "").lower() == "canceled" or obj.get("canceled_at"):
+            return StripeSubscriptionsService.mark_canceled_from_subscription_event(data)
+    return False

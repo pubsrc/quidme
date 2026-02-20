@@ -41,3 +41,38 @@ def product_name(title: str, link_type: str = "one_time") -> str:
     if settings.payme_env == "test":
         return f"TEST_{datetime.now(timezone.utc).strftime('%Y_%m_%d_%H_%M')}"
     return title or ("Payment" if link_type == "one_time" else "Subscription")
+
+
+def build_link_metadata(
+    *,
+    user_id: str,
+    user_email: str | None,
+    link_id: str,
+    link_type: str,
+    account_type: str,
+    base_amount: int,
+    title: str | None,
+    require_fields: list[str],
+    interval: str | None = None,
+    currency: str | None = None,
+) -> dict[str, str]:
+    """
+    Build Stripe-safe metadata for payment/subscription links.
+    Keep values as strings because Stripe metadata does not support non-string values.
+    """
+    required = sorted(normalize_require_fields(require_fields))
+    metadata: dict[str, str] = {
+        "user_id": user_id,
+        "user_email": user_email or "",
+        "link_id": link_id,
+        "link_type": link_type,
+        "account_type": account_type,
+        "base_amount": str(base_amount),
+        "link_title": title or "",
+        "required_fields": ",".join(required),
+    }
+    if interval:
+        metadata["interval"] = interval
+    if currency:
+        metadata["currency"] = currency
+    return metadata

@@ -144,12 +144,14 @@ module "iam_lambda" {
     module.dynamodb.user_accounts_table_arn,
     module.dynamodb.payment_links_table_arn,
     module.dynamodb.subscription_links_table_arn,
+    module.dynamodb.subscriptions_table_arn,
     module.dynamodb.transactions_table_arn,
   ]
   dynamodb_index_arns = [
     "${module.dynamodb.user_identities_table_arn}/index/*",
     "${module.dynamodb.payment_links_table_arn}/index/*",
     "${module.dynamodb.subscription_links_table_arn}/index/*",
+    "${module.dynamodb.subscriptions_table_arn}/index/*",
   ]
   tags = local.tags
 }
@@ -175,6 +177,7 @@ locals {
     DDB_TABLE_STRIPE_ACCOUNTS    = module.dynamodb.user_accounts_table_name
     DDB_TABLE_PAYMENT_LINKS      = module.dynamodb.payment_links_table_name
     DDB_TABLE_SUBSCRIPTION_LINKS = module.dynamodb.subscription_links_table_name
+    DDB_TABLE_SUBSCRIPTIONS      = module.dynamodb.subscriptions_table_name
     DDB_TABLE_TRANSACTIONS       = module.dynamodb.transactions_table_name
     PAYME_ENV                    = "dev"
     CORS_ALLOWED_ORIGINS         = join(",", var.cors_allowed_origins_default)

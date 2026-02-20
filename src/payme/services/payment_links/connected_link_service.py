@@ -10,7 +10,11 @@ from payme.core.auth import Principal
 from payme.core.settings import settings
 
 from payme.services.payment_links.base import StripePaymentLinkService
-from payme.services.payment_links.helpers import apply_require_fields_to_payload, product_name
+from payme.services.payment_links.helpers import (
+    apply_require_fields_to_payload,
+    build_link_metadata,
+    product_name,
+)
 
 
 class StripeConnectedAccountLinkService(StripePaymentLinkService):
@@ -65,14 +69,17 @@ class StripeConnectedAccountLinkService(StripePaymentLinkService):
         service_fee: int = 0,
     ) -> dict[str, Any]:
         principal = self._ensure_principal()
-        metadata = {
-            "user_id": principal.user_id,
-            "user_email": principal.email or "",
-            "link_id": link_id,
-            "link_type": "one_time",
-            "account_type": "connected_account",
-            "base_amount": str(base_amount),
-        }
+        metadata = build_link_metadata(
+            user_id=principal.user_id,
+            user_email=principal.email,
+            link_id=link_id,
+            link_type="one_time",
+            account_type="connected_account",
+            base_amount=base_amount,
+            title=title,
+            require_fields=require_fields,
+            currency=currency,
+        )
         product_data: dict[str, Any] = {"name": product_name(title, "one_time")}
         if description:
             product_data["description"] = description
@@ -110,14 +117,18 @@ class StripeConnectedAccountLinkService(StripePaymentLinkService):
         service_fee_percent: float = 0.0,
     ) -> dict[str, Any]:
         principal = self._ensure_principal()
-        metadata = {
-            "user_id": principal.user_id,
-            "user_email": principal.email or "",
-            "link_id": link_id,
-            "link_type": "subscription",
-            "account_type": "connected_account",
-            "base_amount": str(base_amount),
-        }
+        metadata = build_link_metadata(
+            user_id=principal.user_id,
+            user_email=principal.email,
+            link_id=link_id,
+            link_type="subscription",
+            account_type="connected_account",
+            base_amount=base_amount,
+            title=title,
+            require_fields=require_fields,
+            interval=interval,
+            currency=currency,
+        )
         product_data: dict[str, Any] = {"name": product_name(title, "subscription")}
         if description:
             product_data["description"] = description

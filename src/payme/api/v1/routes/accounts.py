@@ -12,6 +12,7 @@ from payme.api.dependencies import (
     get_payment_links_repository,
     get_stripe_accounts_repository,
     get_stripe_platform_account_service,
+    get_stripe_subscriptions_repository,
     get_subscriptions_repository,
     get_transactions_repository,
     get_users_repository,
@@ -21,6 +22,7 @@ from payme.core.auth import Principal
 from payme.core.cognito import delete_user as cognito_delete_user
 from payme.db.repositories import (
     PaymentLinksRepository,
+    StripeSubscriptionsRepository,
     StripeAccountRepository,
     SubscriptionsRepository,
     TransactionsRepository,
@@ -72,6 +74,7 @@ def delete_account(
     stripe_accounts_repository: Annotated[StripeAccountRepository, Depends(get_stripe_accounts_repository)],
     payment_links_repository: Annotated[PaymentLinksRepository, Depends(get_payment_links_repository)],
     subscriptions_repository: Annotated[SubscriptionsRepository, Depends(get_subscriptions_repository)],
+    stripe_subscriptions_repository: Annotated[StripeSubscriptionsRepository, Depends(get_stripe_subscriptions_repository)],
     transactions_repository: Annotated[TransactionsRepository, Depends(get_transactions_repository)],
     stripe_platform_service: Annotated[type[StripePlatformAccountService], Depends(get_stripe_platform_account_service)],
 ) -> None:
@@ -100,6 +103,7 @@ def delete_account(
     transactions_repository.delete_all_for_user(user_id)
     payment_links_repository.delete_all_for_user(user_id)
     subscriptions_repository.delete_all_for_user(user_id)
+    stripe_subscriptions_repository.delete_all_for_user(user_id)
     stripe_accounts_repository.delete(user_id)
     users_repository.delete(user_id)
     # user_identities intentionally not deleted per requirement

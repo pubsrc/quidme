@@ -116,6 +116,29 @@ def _create_tables() -> None:
         BillingMode="PAY_PER_REQUEST",
     )
 
+    dynamodb.create_table(
+        TableName="payme-subscriptions",
+        KeySchema=[
+            {"AttributeName": "user_id", "KeyType": "HASH"},
+            {"AttributeName": "created_at_key", "KeyType": "RANGE"},
+        ],
+        AttributeDefinitions=[
+            {"AttributeName": "user_id", "AttributeType": "S"},
+            {"AttributeName": "created_at_key", "AttributeType": "S"},
+            {"AttributeName": "subscription_id", "AttributeType": "S"},
+        ],
+        GlobalSecondaryIndexes=[
+            {
+                "IndexName": "subscription_id_index",
+                "KeySchema": [
+                    {"AttributeName": "subscription_id", "KeyType": "HASH"},
+                ],
+                "Projection": {"ProjectionType": "ALL"},
+            }
+        ],
+        BillingMode="PAY_PER_REQUEST",
+    )
+
 
 def _payment_intent_event(user_id: str, link_id: str, amount: int = 1000, currency: str = "gbp") -> dict:
     return {

@@ -15,6 +15,7 @@ from payme.api.v1.routes import (
     payment_links,
     platform,
     refunds,
+    stripe_subscriptions,
     subscriptions,
     transactions,
     transfers,
@@ -48,6 +49,7 @@ app.include_router(subscriptions.router, prefix=API_V1_PREFIX)
 app.include_router(transactions.router, prefix=API_V1_PREFIX)
 app.include_router(transfers.router, prefix=API_V1_PREFIX)
 app.include_router(refunds.router, prefix=API_V1_PREFIX)
+app.include_router(stripe_subscriptions.router, prefix=API_V1_PREFIX)
 # Webhooks stay at /webhooks/stripe (no version prefix) for stable Stripe callback URL
 app.include_router(webhooks.router)
 

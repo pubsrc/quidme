@@ -21,6 +21,7 @@ from payme.db.repositories import (
     TransactionsRepository,
 )
 from payme.services.stripe_platform_account_service import StripePlatformAccountService
+from payme.services.stripe_subscriptions_service import StripeSubscriptionsService
 
 logger = logging.getLogger(__name__)
 
@@ -726,6 +727,14 @@ def handle_invoice_paid(data: dict[str, Any], account_id: str | None = None) -> 
         )
         return False
 
+    # Capture subscriber profile details from the first paid invoice of a subscription.
+    # We intentionally gate this to billing_reason=subscription_create inside the service
+    # to avoid duplicate "new subscriber" writes on renewals.
+    try:
+        StripeSubscriptionsService.upsert_from_invoice_paid(data, account_id=account_id)
+    except Exception as e:
+        logger.warning("Invoice paid: subscriber upsert skipped due to error: %s", e)
+
     user_id = extracted["user_id"]
     link_id = extracted["link_id"]
     amount = extracted["amount"]
@@ -958,4 +967,15 @@ def handle_checkout_session_completed(
             e,
         )
         return False
+    try:
+        StripeSubscriptionsService.upsert_from_checkout_session_completed(
+            {"object": session},
+            account_id=account_id,
+        )
+    except Exception as e:
+        logger.warning(
+            "Failed to upsert customer subscription from checkout.session.completed sub=%s: %s",
+            stripe_subscription_id,
+            e,
+        )
     return True

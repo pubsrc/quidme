@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import json
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -704,3 +706,170 @@ class SubscriptionsRepository:
                 break
             for item in items:
                 self._table.delete_item(Key={"subscription_id": item["subscription_id"]})
+
+
+class StripeSubscriptionsRepository:
+    """
+    Stores customer subscription instances captured from Stripe webhooks.
+    Table schema:
+      - PK: user_id (S)
+      - SK: created_at_key (S, date-ordered key)
+      - GSI: subscription_id_index (HASH=subscription_id)
+    """
+
+    def __init__(self) -> None:
+        self._table = get_dynamodb_resource().Table(settings.ddb_table_subscriptions)
+
+    @staticmethod
+    def _encode_cursor(key: dict | None) -> str | None:
+        if not key:
+            return None
+        raw = json.dumps(key, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+        return base64.urlsafe_b64encode(raw).decode("ascii")
+
+    @staticmethod
+    def _decode_cursor(cursor: str | None) -> dict | None:
+        if not cursor:
+            return None
+        try:
+            raw = base64.urlsafe_b64decode(cursor.encode("ascii"))
+            decoded = json.loads(raw.decode("utf-8"))
+            return decoded if isinstance(decoded, dict) else None
+        except Exception:
+            return None
+
+    @staticmethod
+    def _created_at_key(created_at_ts: int, subscription_id: str) -> str:
+        # Lexicographically sortable by time while remaining unique per subscription.
+        return f"{int(created_at_ts):012d}#{subscription_id}"
+
+    def _list_by_subscription_id(self, subscription_id: str, limit: int = 10) -> list[dict]:
+        resp = self._table.query(
+            IndexName="subscription_id_index",
+            KeyConditionExpression=Key("subscription_id").eq(subscription_id),
+            Limit=max(1, min(int(limit), 100)),
+        )
+        return resp.get("Items", [])
+
+    def upsert(
+        self,
+        *,
+        subscription_id: str,
+        payment_link_id: str,
+        user_id: str,
+        status: str,
+        created_at_ts: int,
+        payment_link_title: str | None = None,
+        customer_name: str | None = None,
+        customer_email: str | None = None,
+        customer_phone: str | None = None,
+        customer_address: dict | None = None,
+        plan_amount: int | None = None,
+        plan_currency: str | None = None,
+        plan_interval: str | None = None,
+        current_period_start: int | None = None,
+        current_period_end: int | None = None,
+        stripe_account_id: str | None = None,
+    ) -> None:
+        existing = self._list_by_subscription_id(subscription_id, limit=1)
+        if existing:
+            key_user_id = str(existing[0]["user_id"])
+            key_created_at = str(existing[0]["created_at_key"])
+        else:
+            key_user_id = user_id
+            key_created_at = self._created_at_key(created_at_ts, subscription_id)
+
+        now_iso = datetime.now(timezone.utc).isoformat()
+        self._table.update_item(
+            Key={"user_id": key_user_id, "created_at_key": key_created_at},
+            UpdateExpression=(
+                "SET subscription_id = :sid, payment_link_id = :plid, #status = :status, "
+                "created_at_ts = if_not_exists(created_at_ts, :created), "
+                "payment_link_title = :title, customer_name = :cname, customer_email = :cemail, "
+                "customer_phone = :cphone, customer_address = :caddr, "
+                "plan_amount = :pamount, plan_currency = :pcurrency, plan_interval = :pinterval, "
+                "current_period_start = :cps, current_period_end = :cpe, "
+                "stripe_account_id = :acct, updated_at = :updated"
+            ),
+            ExpressionAttributeNames={"#status": "status"},
+            ExpressionAttributeValues={
+                ":sid": subscription_id,
+                ":plid": payment_link_id,
+                ":status": status,
+                ":created": int(created_at_ts),
+                ":title": payment_link_title,
+                ":cname": customer_name,
+                ":cemail": customer_email,
+                ":cphone": customer_phone,
+                ":caddr": customer_address,
+                ":pamount": plan_amount,
+                ":pcurrency": plan_currency,
+                ":pinterval": plan_interval,
+                ":cps": current_period_start,
+                ":cpe": current_period_end,
+                ":acct": stripe_account_id,
+                ":updated": now_iso,
+            },
+        )
+
+    def list_by_user_paginated(
+        self, user_id: str, *, limit: int = 25, page: str | None = None
+    ) -> tuple[list[dict], bool, str | None]:
+        kwargs: dict = {
+            "KeyConditionExpression": Key("user_id").eq(user_id),
+            "Limit": max(1, min(int(limit), 100)),
+            "ScanIndexForward": False,
+        }
+        start_key = self._decode_cursor(page)
+        if start_key:
+            kwargs["ExclusiveStartKey"] = start_key
+
+        resp = self._table.query(**kwargs)
+        items = resp.get("Items", [])
+        lek = resp.get("LastEvaluatedKey")
+        return items, bool(lek), self._encode_cursor(lek)
+
+    def get_for_user(self, user_id: str, subscription_id: str) -> dict | None:
+        for item in self._list_by_subscription_id(subscription_id):
+            if item.get("user_id") == user_id:
+                return item
+        return None
+
+    def mark_canceled(self, *, subscription_id: str, canceled_at_ts: int | None = None) -> bool:
+        items = self._list_by_subscription_id(subscription_id)
+        if not items:
+            return False
+        now_iso = datetime.now(timezone.utc).isoformat()
+        canceled = int(canceled_at_ts or int(datetime.now(timezone.utc).timestamp()))
+        for item in items:
+            self._table.update_item(
+                Key={
+                    "user_id": item["user_id"],
+                    "created_at_key": item["created_at_key"],
+                },
+                UpdateExpression="SET #status = :status, canceled_at = :canceled, updated_at = :updated",
+                ExpressionAttributeNames={"#status": "status"},
+                ExpressionAttributeValues={
+                    ":status": "canceled",
+                    ":canceled": canceled,
+                    ":updated": now_iso,
+                },
+            )
+        return True
+
+    def delete_all_for_user(self, user_id: str, batch_size: int = 100) -> None:
+        while True:
+            items, _, next_cursor = self.list_by_user_paginated(
+                user_id, limit=batch_size, page=None
+            )
+            if not items:
+                break
+            for item in items:
+                self._table.delete_item(
+                    Key={
+                        "user_id": item["user_id"],
+                        "created_at_key": item["created_at_key"],
+                    }
+                )
+            if not next_cursor:
+                break
