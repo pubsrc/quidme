@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { LinkResponse } from "../lib/api";
 import PaymentLinkShare from "../components/PaymentLinkShare";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 const formatAmount = (value: number) => (value / 100).toFixed(2);
 
 const PaymentLinkDetailsPage = () => {
   const { t } = useTranslation();
   const { id } = useParams();
-  const navigate = useNavigate();
   const location = useLocation();
+  const { localeNavigate } = useLocaleNavigate();
   const [link, setLink] = useState<LinkResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,9 +33,9 @@ const PaymentLinkDetailsPage = () => {
 
   useEffect(() => {
     if (!loading && !link && id) {
-      navigate("/app/offerings", { replace: true });
+      localeNavigate("/app/offerings", { replace: true });
     }
-  }, [loading, link, id, navigate]);
+  }, [loading, link, id, localeNavigate]);
 
   if (loading) {
     return (
@@ -47,7 +48,7 @@ const PaymentLinkDetailsPage = () => {
   if (!link) {
     return (
       <div className="space-y-4">
-        <button onClick={() => navigate("/app/offerings")} className="text-sm text-slate-500 hover:text-slate-700">
+        <button onClick={() => localeNavigate("/app/offerings")} className="text-sm text-slate-500 hover:text-slate-700">
           {t("pages.product_details.back")}
         </button>
         <div className="rounded-2xl bg-white p-6 text-sm text-red-500 shadow">
@@ -59,7 +60,7 @@ const PaymentLinkDetailsPage = () => {
 
   return (
     <div className="space-y-6">
-      <button onClick={() => navigate("/app/offerings")} className="text-sm text-slate-500 hover:text-slate-700">
+      <button onClick={() => localeNavigate("/app/offerings")} className="text-sm text-slate-500 hover:text-slate-700">
         {t("pages.product_details.back")}
       </button>
 

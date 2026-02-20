@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { signInWithCognito, signInWithGoogle } from "../lib/auth";
 import { config } from "../lib/config";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 const LoginPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localeNavigate } = useLocaleNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,10 +22,10 @@ const LoginPage = () => {
 
     try {
       await signInWithCognito(email, password);
-      navigate("/app/dashboard", { replace: true });
+      localeNavigate("/app/dashboard", { replace: true });
     } catch (err: any) {
       if (err?.code === "USER_NOT_CONFIRMED") {
-        navigate(`/verify-email?email=${encodeURIComponent(email)}`, { replace: true });
+        localeNavigate(`/verify-email?email=${encodeURIComponent(email)}`, { replace: true });
         return;
       }
       setError(err?.message || t("pages.login.errors.sign_in_failed"));
@@ -138,14 +138,14 @@ const LoginPage = () => {
         <div className="mt-6 flex items-center justify-between text-sm text-slate-600">
           <button
             type="button"
-            onClick={() => navigate("/forgot-password")}
+            onClick={() => localeNavigate("/forgot-password")}
             className="text-brand-sky hover:underline"
           >
             {t("pages.login.forgot_password")}
           </button>
           <button
             type="button"
-            onClick={() => navigate("/signup")}
+            onClick={() => localeNavigate("/signup")}
             className="text-brand-sky hover:underline"
           >
             {t("pages.login.create_account")}

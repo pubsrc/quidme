@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { signOutWithCognito } from "../lib/auth";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
 import { replaceLocaleInPathname } from "../lib/localeRouting";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 import QuidmeLogo from "../components/QuidmeLogo";
 
 const navItems = [
@@ -53,6 +54,7 @@ const DashboardLayout = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { localeNavigate } = useLocaleNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const currentLanguage = (i18n.resolvedLanguage || "en").startsWith("tr") ? "tr" : "en";
 
@@ -70,7 +72,7 @@ const DashboardLayout = () => {
     try {
       await signOutWithCognito();
     } finally {
-      navigate("/login", { replace: true });
+      localeNavigate("/login", { replace: true });
     }
   };
 

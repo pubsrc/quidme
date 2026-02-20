@@ -24,3 +24,9 @@ export const replaceLocaleInPathname = (pathname: string, locale: AppLocale): st
   const stripped = stripLocalePrefix(pathname);
   return stripped === "/" ? `/${locale}` : `/${locale}${stripped}`;
 };
+
+export const localizePath = (targetPath: string, currentPathname: string, fallbackLocale: AppLocale = "en"): string => {
+  const locale = getLocaleFromPathname(currentPathname) ?? fallbackLocale;
+  const normalizedTarget = targetPath.startsWith("/") ? targetPath : `/${targetPath}`;
+  return replaceLocaleInPathname(normalizedTarget, locale);
+};

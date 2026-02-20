@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { signUpWithCognito, signInWithGoogle } from "../lib/auth";
 import { config } from "../lib/config";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 const SignupPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localeNavigate } = useLocaleNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,9 +23,9 @@ const SignupPage = () => {
     try {
       const response = await signUpWithCognito(email, password);
       if (response.confirmed) {
-        navigate("/login", { replace: true });
+        localeNavigate("/login", { replace: true });
       } else {
-        navigate(`/verify-email?email=${encodeURIComponent(email)}`, { replace: true });
+        localeNavigate(`/verify-email?email=${encodeURIComponent(email)}`, { replace: true });
       }
     } catch (err: any) {
       setError(err?.message || t("pages.signup.errors.signup_failed"));
@@ -139,7 +139,7 @@ const SignupPage = () => {
           {t("pages.signup.already_have")}{" "}
           <button
             type="button"
-            onClick={() => navigate("/login")}
+            onClick={() => localeNavigate("/login")}
             className="text-brand-sky hover:underline"
           >
             {t("pages.signup.sign_in")}

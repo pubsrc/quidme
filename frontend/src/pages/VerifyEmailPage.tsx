@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { confirmSignUpWithCognito, resendConfirmationCode } from "../lib/auth";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 const VerifyEmailPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localeNavigate } = useLocaleNavigate();
   const [searchParams] = useSearchParams();
   const initialEmail = searchParams.get("email") ?? "";
 
@@ -24,7 +25,7 @@ const VerifyEmailPage = () => {
     try {
       await confirmSignUpWithCognito(email, code);
       setMessage(t("pages.verify_email.messages.verified"));
-      setTimeout(() => navigate("/login", { replace: true }), 1500);
+      setTimeout(() => localeNavigate("/login", { replace: true }), 1500);
     } catch (err: any) {
       setError(err?.message || t("pages.verify_email.errors.verify_failed"));
     } finally {

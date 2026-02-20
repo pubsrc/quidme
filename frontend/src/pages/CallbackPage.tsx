@@ -1,28 +1,28 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
 import { useTranslation } from "react-i18next";
+import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 
 const CallbackPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localeNavigate } = useLocaleNavigate();
 
   useEffect(() => {
     const finalize = async () => {
       try {
         const session = await fetchAuthSession();
         if (session.tokens?.idToken) {
-          navigate("/app/dashboard", { replace: true });
+          localeNavigate("/app/dashboard", { replace: true });
         } else {
-          navigate("/login", { replace: true });
+          localeNavigate("/login", { replace: true });
         }
       } catch {
-        navigate("/login", { replace: true });
+        localeNavigate("/login", { replace: true });
       }
     };
 
     finalize();
-  }, [navigate]);
+  }, [localeNavigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
