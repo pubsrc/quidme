@@ -595,6 +595,29 @@ def test_create_payment_link_title_optional(monkeypatch: Any) -> None:
     assert link_fake.created_one_time[0]["title"] == "Test"
 
 
+def test_create_quick_payment_link_success_without_dynamo(monkeypatch: Any) -> None:
+    from payme.api import dependencies as deps
+
+    link_fake = FakeLinkService(is_platform=False)
+
+    app.dependency_overrides[deps.get_resolved_principal] = override_get_resolved_principal
+    app.dependency_overrides[deps.get_stripe_link_service] = lambda: link_fake
+
+    client = TestClient(app)
+    r = client.post(
+        "/api/v1/payment-links/quick-payments",
+        headers={"Authorization": "Bearer x"},
+        json={"title": "Quick Piano Payment", "amount": 100, "currency": "bgn"},
+    )
+    app.dependency_overrides.clear()
+
+    assert r.status_code == 200, r.json()
+    assert r.json()["url"] == "https://example.com"
+    assert len(link_fake.created_one_time) == 1
+    assert link_fake.created_one_time[0]["title"] == "Quick Piano Payment"
+    assert link_fake.created_one_time[0]["amount"] == 158  # total with fixed + percent fees
+
+
 def test_list_payment_links_sorted(monkeypatch: Any) -> None:
     from payme.api import dependencies as deps
 

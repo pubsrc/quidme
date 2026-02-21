@@ -9,6 +9,9 @@ class Currency(str, Enum):
     usd = "usd"
     eur = "eur"
     gbp = "gbp"
+    bgn = "bgn"
+    ron = "ron"
+    all = "all"
 
 
 class RecurringInterval(str, Enum):
@@ -140,6 +143,26 @@ class PaymentLinkDetailResponse(BaseModel):
 class DisableLinkResponse(BaseModel):
     id: str
     status: str
+
+
+class QuickPaymentCreate(BaseModel):
+    """Quick one-time payment payload (no DB persistence)."""
+
+    title: str | None = None
+    amount: int = Field(..., gt=0, description="Amount in minor units")
+    currency: Currency = Currency.gbp
+
+    @field_validator("title")
+    @classmethod
+    def normalize_title(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        return value or None
+
+
+class QuickPaymentResponse(BaseModel):
+    url: str
 
 
 class RefundRequest(BaseModel):
