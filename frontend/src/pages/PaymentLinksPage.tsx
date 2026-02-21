@@ -4,12 +4,15 @@ import { api, type LinkResponse } from "../lib/api";
 import CreateLinkDialog from "../components/CreateLinkDialog";
 import LinkCard from "../components/LinkCard";
 import { useLocaleNavigate } from "../lib/useLocaleNavigate";
+import { useAccountStatus } from "../lib/useAccountStatus";
+import { getDefaultCurrencyForCountry } from "../lib/currency";
 
 type LinkKind = "one_time" | "subscription";
 
 const PaymentLinksPage = () => {
   const { t } = useTranslation();
   const { localeNavigate } = useLocaleNavigate();
+  const { account } = useAccountStatus();
   const [createKind, setCreateKind] = useState<LinkKind>("one_time");
   const [paymentLinks, setPaymentLinks] = useState<LinkResponse[]>([]);
   const [subscriptionLinks, setSubscriptionLinks] = useState<LinkResponse[]>([]);
@@ -127,6 +130,7 @@ const PaymentLinksPage = () => {
         open={showDialog}
         onClose={() => setShowDialog(false)}
         initialKind={createKind}
+        defaultCurrency={getDefaultCurrencyForCountry(account?.country)}
         onCreated={(link, kind) => {
           if (kind === "one_time") setPaymentLinks((prev) => [link, ...prev]);
           else setSubscriptionLinks((prev) => [link, ...prev]);

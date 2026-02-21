@@ -54,15 +54,26 @@ export type CreateLinkDialogProps = {
   onClose: () => void;
   onCreated: (link: LinkResponse, kind: LinkKind) => void;
   initialKind?: LinkKind;
+  defaultCurrency?: string;
 };
 
-const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }: CreateLinkDialogProps) => {
+const CreateLinkDialog = ({
+  open,
+  onClose,
+  onCreated,
+  initialKind = "one_time",
+  defaultCurrency = "gbp",
+}: CreateLinkDialogProps) => {
   const { t } = useTranslation();
+  const resolvedDefaultCurrency = useMemo(() => {
+    const normalized = (defaultCurrency || "").toLowerCase();
+    return currencies.some((item) => item.code === normalized) ? normalized : "gbp";
+  }, [defaultCurrency]);
   const [kind, setKind] = useState<LinkKind>(initialKind);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("gbp");
+  const [currency, setCurrency] = useState(resolvedDefaultCurrency);
   const [interval, setInterval] = useState("month");
   const [expiresAt, setExpiresAt] = useState("");
   const [requireName, setRequireName] = useState(true);
@@ -93,7 +104,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
     setTitle("");
     setDescription("");
     setAmount("");
-    setCurrency("gbp");
+    setCurrency(resolvedDefaultCurrency);
     setInterval("month");
     setExpiresAt("");
     setRequireName(true);
@@ -116,7 +127,8 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
     setPlaceholderCharIndex(0);
     setIsDeletingPlaceholder(false);
     setPlaceholderPaused(false);
-  }, [open, initialKind]);
+    setCurrency(resolvedDefaultCurrency);
+  }, [open, initialKind, resolvedDefaultCurrency]);
 
   useEffect(() => {
     if (!open) return;
