@@ -186,6 +186,13 @@
   animation: cutePulse 3s ease-in-out infinite;
 }
 
+/* Sidebar should stay steady (no pulse animation). */
+:root[data-theme="gold-cute"] .sidebar-shell .h-12.w-12,
+:root[data-theme="gold-cute"] .sidebar-shell .h-9.w-9,
+:root[data-theme="gold-cute"] .sidebar-shell .h-8.w-8 {
+  animation: none !important;
+}
+
 :root[data-theme="gold-cute"] .quidme-orb,
 :root[data-theme="gold-cute"] .quidme-loader__sparkle,
 :root[data-theme="gold-cute"] .quidme-loader__logo {

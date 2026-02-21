@@ -42,6 +42,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const { localeNavigate } = useLocaleNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [desktopSidebarHovered, setDesktopSidebarHovered] = useState(false);
   const currentLanguage = (i18n.resolvedLanguage || "en").startsWith("tr") ? "tr" : "en";
 
   const setLanguage = async (lang: "en" | "tr") => {
@@ -64,38 +65,66 @@ const DashboardLayout = () => {
 
   return (
     <div className="h-svh overflow-hidden bg-slate-50">
-      <div className="h-full md:flex">
-        <aside className="hidden h-full w-[92px] shrink-0 flex-col items-center border-r border-slate-200 bg-white py-5 md:flex">
-          <QuidmeLogo
-            alt={t("layouts.dashboard.logo_alt")}
-            containerClassName="mb-7 h-12 w-12"
-            logoClassName="h-9 w-9"
-          />
+      <div className="relative h-full">
+        <aside
+          className={`sidebar-shell hidden absolute inset-y-0 left-0 z-20 flex-col border-r border-slate-200 bg-white py-5 transition-all duration-200 md:flex ${
+            desktopSidebarHovered ? "w-[240px]" : "w-[92px]"
+          }`}
+          onMouseEnter={() => setDesktopSidebarHovered(true)}
+          onMouseLeave={() => setDesktopSidebarHovered(false)}
+        >
+          <div className="relative mb-7 h-12 w-full">
+            <QuidmeLogo
+              alt={t("layouts.dashboard.logo_alt")}
+              containerClassName="absolute left-[22px] h-12 w-12"
+              logoClassName="h-9 w-9"
+            />
+          </div>
 
-          <nav className="flex min-h-0 flex-1 flex-col items-center gap-3 overflow-y-auto">
+          <nav className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 title={t(item.labelKey)}
-                className={({ isActive }) =>
-                  `flex h-12 w-12 items-center justify-center rounded-full transition ${
-                    isActive ? "bg-emerald-500 text-white" : "text-slate-500 hover:bg-slate-100"
-                  }`
-                }
+                className="relative block h-12 w-full"
               >
-                {item.icon}
+                {({ isActive }) => (
+                  <>
+                    <span
+                      className={`absolute left-[22px] top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full transition ${
+                        isActive ? "bg-emerald-500 text-white" : "text-slate-500 hover:bg-slate-100"
+                      }`}
+                    >
+                      {item.icon}
+                    </span>
+                    <span
+                      className={`absolute left-[76px] top-1/2 -translate-y-1/2 whitespace-nowrap text-sm font-medium text-slate-700 transition-all duration-150 ${
+                        desktopSidebarHovered
+                          ? "translate-x-0 opacity-100"
+                          : "pointer-events-none -translate-x-1 opacity-0"
+                      } ${isActive ? "text-emerald-700" : ""}`}
+                    >
+                      {t(item.labelKey)}
+                    </span>
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>
 
-          <div className="mt-4 flex flex-col items-center gap-3">
-            <div className="flex flex-col items-center gap-1">
+          <div className="mt-4 flex flex-col gap-3">
+            <div className="relative h-12 w-full">
+              {desktopSidebarHovered && (
+                <div className="absolute left-[76px] top-1/2 -translate-y-1/2 text-sm font-medium text-slate-700">
+                  {t("layouts.dashboard.language.label")}
+                </div>
+              )}
               <select
                 value={currentLanguage}
                 onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
                 aria-label={t("layouts.dashboard.language.label")}
-                className="h-8 w-14 rounded-md border border-slate-200 bg-white px-1 text-center text-xs text-slate-700 outline-none"
+                className="absolute left-[22px] top-1/2 h-10 w-10 -translate-y-1/2 appearance-none rounded-full border border-slate-200 bg-white p-0 text-center text-2xl leading-none text-slate-700 outline-none"
               >
                 <option value="en">🇬🇧</option>
                 <option value="tr">🇹🇷</option>
@@ -104,21 +133,47 @@ const DashboardLayout = () => {
             <NavLink
               to="settings"
               title={t("layouts.dashboard.nav.settings")}
-              className={({ isActive }) =>
-                `flex h-12 w-12 items-center justify-center rounded-full transition ${
-                  isActive ? "bg-emerald-500 text-white" : "text-slate-500 hover:bg-slate-100"
-                }`
-              }
+              className="relative block h-12 w-full"
             >
-              <Settings className="h-8 w-8" />
+              {({ isActive }) => (
+                <>
+                  <span
+                    className={`absolute left-[22px] top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full transition ${
+                      isActive ? "bg-emerald-500 text-white" : "text-slate-500 hover:bg-slate-100"
+                    }`}
+                  >
+                    <Settings className="h-8 w-8" />
+                  </span>
+                  <span
+                    className={`absolute left-[76px] top-1/2 -translate-y-1/2 whitespace-nowrap text-sm font-medium text-slate-700 transition-all duration-150 ${
+                      desktopSidebarHovered
+                        ? "translate-x-0 opacity-100"
+                        : "pointer-events-none -translate-x-1 opacity-0"
+                    } ${isActive ? "text-emerald-700" : ""}`}
+                  >
+                    {t("layouts.dashboard.nav.settings")}
+                  </span>
+                </>
+              )}
             </NavLink>
             <button
               type="button"
               onClick={handleLogout}
               title={t("layouts.dashboard.menu.logout")}
-              className="flex h-12 w-12 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"
+              className="relative h-12 w-full"
             >
-              <LogOut className="h-8 w-8" />
+              <span className="absolute left-[22px] top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100">
+                <LogOut className="h-8 w-8" />
+              </span>
+              <span
+                className={`absolute left-[76px] top-1/2 -translate-y-1/2 whitespace-nowrap text-sm font-medium text-slate-700 transition-all duration-150 ${
+                  desktopSidebarHovered
+                    ? "translate-x-0 opacity-100"
+                    : "pointer-events-none -translate-x-1 opacity-0"
+                }`}
+              >
+                {t("layouts.dashboard.menu.logout")}
+              </span>
             </button>
           </div>
         </aside>
@@ -153,7 +208,7 @@ const DashboardLayout = () => {
                     value={currentLanguage}
                     onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
                     aria-label={t("layouts.dashboard.language.label")}
-                    className="mt-2 h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none"
+                    className="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-base text-slate-700 outline-none"
                   >
                     <option value="en">🇬🇧 {t("layouts.dashboard.language.english")}</option>
                     <option value="tr">🇹🇷 {t("layouts.dashboard.language.turkish")}</option>
@@ -197,7 +252,7 @@ const DashboardLayout = () => {
           </div>
         )}
 
-        <main className="min-h-0 flex-1 overflow-y-auto p-4 md:p-8 lg:p-10">
+        <main className="h-full min-h-0 overflow-y-auto p-4 md:pl-[112px] md:pr-8 md:pt-8 md:pb-8 lg:pr-10 lg:pt-10 lg:pb-10">
           <div className="mb-4 md:hidden">
             <button
               type="button"
