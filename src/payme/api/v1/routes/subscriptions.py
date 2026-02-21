@@ -39,7 +39,10 @@ def create_subscription_link(
     Create a subscription (recurring) payment link. Factory returns platform or connected service based on account status (VERIFIED -> connected).
     """
     subscription_id = str(uuid.uuid4())
-    total_charge, service_fee_percent, stripe_fee_percent = amount_with_subscription_fee(payload.amount)
+    total_charge, service_fee_percent, stripe_fee_percent = amount_with_subscription_fee(
+        payload.amount,
+        currency=payload.currency.value,
+    )
     service_fee_cents = int(round(total_charge * service_fee_percent / 100))  # for DB and response
 
     subs_repository.create_draft(

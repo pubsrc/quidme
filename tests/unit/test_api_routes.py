@@ -543,7 +543,7 @@ def test_create_payment_link_success_no_account_uses_platform(monkeypatch: Any) 
     assert r.status_code == 200
     assert r.json()["amount"] == 100
     assert len(link_fake.created_one_time) == 1
-    assert link_fake.created_one_time[0]["amount"] == 158  # total = (100+50)/0.95
+    assert link_fake.created_one_time[0]["amount"] == 140  # amount 100 + tiered fixed fee 40
 
 
 def test_create_payment_link_success(monkeypatch: Any) -> None:
@@ -565,11 +565,11 @@ def test_create_payment_link_success(monkeypatch: Any) -> None:
     app.dependency_overrides.clear()
     assert r.status_code == 200, r.json()
     data = r.json()
-    assert data["service_fee"] == 8  # 5% of total (158)
+    assert data["service_fee"] == 40  # tiered fixed fee
     assert data["amount"] == 100
     assert len(links_repo.created) >= 1
     assert len(link_fake.created_one_time) == 1
-    assert link_fake.created_one_time[0]["amount"] == 158  # total with fixed_fee + percent fees
+    assert link_fake.created_one_time[0]["amount"] == 140  # amount + tiered fixed fee
 
 
 def test_create_payment_link_title_optional(monkeypatch: Any) -> None:
@@ -615,7 +615,7 @@ def test_create_quick_payment_link_success_without_dynamo(monkeypatch: Any) -> N
     assert r.json()["url"] == "https://example.com"
     assert len(link_fake.created_one_time) == 1
     assert link_fake.created_one_time[0]["title"] == "Quick Piano Payment"
-    assert link_fake.created_one_time[0]["amount"] == 158  # total with fixed + percent fees
+    assert link_fake.created_one_time[0]["amount"] == 180  # amount + tiered fixed fee (bgn)
 
 
 def test_list_payment_links_sorted(monkeypatch: Any) -> None:
@@ -733,7 +733,7 @@ def test_create_subscription_link_success(monkeypatch: Any) -> None:
     )
     app.dependency_overrides.clear()
     assert r.status_code == 200
-    assert r.json()["service_fee"] == 13  # 5% of total (264) for amount 200
+    assert r.json()["service_fee"] == 40  # tiered fixed fee
     assert len(subs_repo.created) >= 1
     assert len(link_fake.created_subscription) == 1
 

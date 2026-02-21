@@ -48,7 +48,10 @@ def create_payment_link(
     Create a one-time payment link. Factory returns platform or connected service based on account status (VERIFIED -> connected).
     """
     link_id = str(uuid.uuid4())
-    total_amount, service_fee_percent, stripe_fee_percent, service_fee_cents = amount_with_fee(payload.amount)
+    total_amount, service_fee_percent, stripe_fee_percent, service_fee_cents = amount_with_fee(
+        payload.amount,
+        currency=payload.currency.value,
+    )
     links_repository.create_draft(
         link_id=link_id,
         user_id=principal.user_id,
@@ -122,7 +125,10 @@ def create_quick_payment_link(
     Returns only the generated checkout URL.
     """
     quick_link_id = str(uuid.uuid4())
-    total_amount, _, _, service_fee_cents = amount_with_fee(payload.amount)
+    total_amount, _, _, service_fee_cents = amount_with_fee(
+        payload.amount,
+        currency=payload.currency.value,
+    )
 
     try:
         stripe_link = link_service.create_payment_link_one_time(
