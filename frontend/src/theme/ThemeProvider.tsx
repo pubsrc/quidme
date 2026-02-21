@@ -13,11 +13,11 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const getInitialTheme = (): AppTheme => {
-  if (typeof window === "undefined") return "classic";
+  if (typeof window === "undefined") return "gold-cute";
   const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
   if (saved === "gold-cute") return "gold-cute";
   if (saved === "dark") return "dark";
-  return "classic";
+  return "gold-cute";
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
