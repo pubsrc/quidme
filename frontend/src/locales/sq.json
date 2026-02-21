@@ -1,0 +1,437 @@
+{
+  "app": {
+    "hero_title": "Shitni ofertat më shpejt me Quidme",
+    "hero_subtitle": "Krijoni oferta, gjurmoni shitjet, menaxhoni rimbursimet në një vend.",
+    "get_started": "Filloni",
+    "login": "Identifikohu",
+    "signup": "Regjistrohu"
+  },
+  "pages": {
+    "callback": {
+      "signing_in": "Po identifikohesh..."
+    },
+    "landing": {
+      "brand": "Quidme",
+      "tagline": "Aplikacion i vogël për bizneset e vogla",
+      "sign_in": "Identifikohu",
+      "snapshot_title": "Foto e Quidme",
+      "snapshot_footer_title": "Ofertat, abonimet dhe rimbursimet në një vend.",
+      "snapshot_footer_subtitle": "Ndërtuar për shitës të pavarur dhe biznese të vogla.",
+      "seo": {
+        "title": "Quidme | Pagesat, abonimet dhe rimbursimet për tregtarët e vetëm dhe bizneset e vogla",
+        "description": "Quidme ndihmon tregtarët e vetëm, profesionistët e vetëpunësuar dhe bizneset e vogla të shesin më shpejt me lidhje pagese, abonime të përsëritura, rimbursime të lehta dhe opsione fleksibël pagese.",
+        "keywords": [
+          "lidhjet e pagesës për biznesin e vogël",
+          "abonimet për tregtarët individualë",
+          "aplikacioni i pagesave të vetëpunësuar",
+          "pagesat e biznesit të vogël",
+          "abonimet e klientëve",
+          "pagesa online për tutorët",
+          "platformë pagese për bizneset e shërbimit",
+          "menaxhimi i rimbursimit për bizneset e vogla"
+        ]
+      },
+      "for_who": {
+        "sole_traders_title": "E ndërtuar për tregtarë të vetëm",
+        "sole_traders_body": "Nga mësuesit e pianos deri te shitësit e drekës së bërë në shtëpi, paguhuni në internet pa fërkime manuale të transfertave bankare.",
+        "subscriptions_title": "Rriteni me abonime",
+        "subscriptions_body": "Ofroni faturim të përsëritur për të mbajtur klientët ekzistues dhe për të krijuar të ardhura mujore të parashikueshme.",
+        "refunds_title": "Trajtoni shpejt rimbursimet",
+        "refunds_body": "Mbajeni besimin e klientit të lartë me rimbursime të thjeshta dhe ndjekje transparente të pagesave."
+      },
+      "benefits": {
+        "title": "Shitet me më pak rezistencë dhe konvertim më të lartë",
+        "body": "Bizneset e vogla që mbështeten në para ose në transferta bankare manuale humbasin shitjet. Quidme heq fërkimin e pagesave me lidhjet e pagesave të ndara, faturimin e abonimit dhe mënyrat e gjera të pagesës."
+      },
+      "ideas": {
+        "piano": "Mësime pianoje për fëmijë",
+        "lunch": "Dreka e bërë në shtëpi në kuzhinën indiane",
+        "spanish": "Mësime të gjuhës spanjolle",
+        "maths": "Mësimet online të matematikës"
+      }
+    },
+    "login": {
+      "title": "Mirë se vini përsëri",
+      "subtitle": "Identifikohu me email-in tënd ose vazhdo me Google.",
+      "email": "Email",
+      "password": "Fjalëkalimi",
+      "hide_password": "Fshih fjalëkalimin",
+      "show_password": "Shfaq fjalëkalimin",
+      "hide": "Fshih",
+      "show": "Shfaq",
+      "signing_in": "Po identifikohet...",
+      "sign_in": "Identifikohu",
+      "redirecting": "Po ridrejton...",
+      "continue_google": "Vazhdo me Google",
+      "forgot_password": "Keni harruar fjalëkalimin?",
+      "create_account": "Krijo llogari",
+      "errors": {
+        "sign_in_failed": "Nuk mund të identifikohet.",
+        "google_failed": "Nuk mund të niset identifikimi në Google."
+      }
+    },
+    "signup": {
+      "title": "Krijoni llogarinë tuaj",
+      "subtitle": "Filloni me Quidme në pak minuta.",
+      "email": "Email",
+      "password": "Fjalëkalimi",
+      "hide_password": "Fshih fjalëkalimin",
+      "show_password": "Shfaq fjalëkalimin",
+      "hide": "Fshih",
+      "show": "Shfaq",
+      "creating": "Po krijohet...",
+      "create_account": "Krijo llogari",
+      "redirecting": "Po ridrejton...",
+      "continue_google": "Vazhdo me Google",
+      "already_have": "Keni tashmë një llogari?",
+      "sign_in": "Identifikohu",
+      "errors": {
+        "signup_failed": "Llogaria nuk mund të krijohet.",
+        "google_failed": "Nuk mund të niset identifikimi në Google."
+      }
+    },
+    "verify_email": {
+      "title": "Verifikoni emailin tuaj",
+      "subtitle": "Futni kodin e verifikimit të dërguar në kutinë tuaj hyrëse.",
+      "email": "Email",
+      "code": "Kodi i verifikimit",
+      "verifying": "Po verifikohet...",
+      "verify": "Verifiko emailin",
+      "resend": "Ridërgo kodin",
+      "messages": {
+        "verified": "Email i verifikuar. Tani mund të identifikohesh.",
+        "resent": "Ne dërguam një kod të ri verifikimi."
+      },
+      "errors": {
+        "verify_failed": "Verifikimi dështoi.",
+        "resend_failed": "Kodi nuk mund të ridërgohet."
+      }
+    },
+    "forgot_password": {
+      "title": "Rivendosni fjalëkalimin tuaj",
+      "subtitle_request": "Kërkoni një kod rivendosjeje për llogarinë tuaj.",
+      "subtitle_confirm": "Futni kodin dhe zgjidhni një fjalëkalim të ri.",
+      "email": "Email",
+      "reset_code": "Rivendos kodin",
+      "new_password": "Fjalëkalim i ri",
+      "hide_password": "Fshih fjalëkalimin",
+      "show_password": "Shfaq fjalëkalimin",
+      "hide": "Fshih",
+      "show": "Shfaq",
+      "sending": "Po dërgohet...",
+      "send_code": "Dërgo kodin e rivendosjes",
+      "updating": "Po përditësohet...",
+      "update_password": "Përditëso fjalëkalimin",
+      "back_login": "Kthehu te identifikimi",
+      "messages": {
+        "sent": "Ne dërguam një kod rivendosjeje në emailin tuaj.",
+        "updated": "Fjalëkalimi u përditësua. Tani mund të identifikohesh."
+      },
+      "errors": {
+        "send_failed": "Kodi i rivendosjes nuk mund të dërgohet.",
+        "reset_failed": "Fjalëkalimi nuk mund të rivendoset."
+      }
+    },
+    "start": {
+      "title": "Filloni të shisni me Quidme",
+      "subtitle": "Krijoni llogarinë tuaj Stripe Express me detaje minimale. Zgjidhni vendin tuaj nga lista e mbështetur më poshtë.",
+      "country": "Vendi",
+      "account_type": "Llogaria Express",
+      "logout": "Dilni",
+      "cancel": "Anulo",
+      "starting": "Duke filluar...",
+      "ok": "OK",
+      "countries": {
+        "gb": "Mbretëria e Bashkuar",
+        "de": "Gjermania",
+        "at": "Austria",
+        "it": "Italia",
+        "gr": "Greqia",
+        "bg": "Bullgaria",
+        "ro": "Rumania",
+        "xk": "Kosova",
+        "al": "Shqipëria"
+      },
+      "errors": {
+        "create_account_failed": "Nuk mund të krijohet llogaria juaj. Ju lutemi provoni përsëri."
+      }
+    },
+    "dashboard": {
+      "title": "Paneli",
+      "subtitle": "Një përmbledhje e shpejtë e aktivitetit tuaj të shitjeve të ofrimit.",
+      "total_earnings": "Fitimet totale",
+      "pending_earnings": "Fitimet në pritje",
+      "account_status": "Statusi i llogarisë",
+      "verified": "Verifikuar",
+      "pending": "Në pritje",
+      "recent_transactions": "Transaksionet e fundit",
+      "recent_subtitle": "Një regjistër i shitjeve tuaja më të fundit.",
+      "view_all": "Shiko të gjitha",
+      "customer": "Klienti",
+      "status": "Statusi",
+      "date": "Data",
+      "amount": "Shuma",
+      "default_customer": "Klienti",
+      "just_now": "vetëm tani",
+      "minutes_ago": "{{count}} minutë më parë",
+      "minutes_ago_plural": "{{count}} minuta më parë",
+      "hours_ago": "{{count}} orë më parë",
+      "hours_ago_plural": "{{count}} orë më parë",
+      "days_ago": "{{count}} ditë më parë",
+      "days_ago_plural": "{{count}} ditë më parë",
+      "years_ago": "mbi {{count}} vit më parë",
+      "years_ago_plural": "mbi {{count}} vjet më parë",
+      "status_refunded": "rimbursohen",
+      "status_succeeded": "ia doli",
+      "status_failed": "dështoi",
+      "status_unknown": "i panjohur",
+      "status_pending": "në pritje",
+      "loading_transactions": "Transaksionet po ngarkohen...",
+      "no_transactions": "Nuk ka ende transaksione.",
+      "transfer_to_account": "Transferoni në llogarinë tuaj",
+      "transferring": "Po transferohet...",
+      "transfer_failed": "Në pamundësi për të transferuar fonde.",
+      "transfer_onboarding_required": "Ju duhet të përfundoni hyrjen në bord për të transferuar fonde",
+      "okay": "Në rregull"
+    },
+    "products": {
+      "title": "Ofertat",
+      "add_product": "Shto Ofertën",
+      "load_failed": "Lidhjet nuk mund të ngarkohen.",
+      "disable_failed": "Lidhja nuk mund të çaktivizohet.",
+      "loading": "Po ngarkohet...",
+      "empty": "Ende nuk ka oferta. Shtoni ofertën tuaj të parë.",
+      "default_subscription_product": "Oferta e Abonimit",
+      "default_product": "Ofrimi"
+    },
+    "product_details": {
+      "open_from_list": "Hape këtë faqe nga lista e ofertave.",
+      "loading": "Oferta po ngarkohet...",
+      "back": "Kthehu te ofertat",
+      "not_found": "Oferta nuk u gjet.",
+      "default_title": "Ofrimi",
+      "amount": "Shuma",
+      "earnings": "Fitimet",
+      "expires": "Skadon",
+      "no_expiry": "Nuk ka skadim",
+      "transactions": "Transaksionet",
+      "transactions_info": "Transaksionet regjistrohen automatikisht kur pagesat të kenë sukses. Shikoni të gjitha transaksionet në faqen e Transaksioneve."
+    },
+    "transactions": {
+      "title": "Transaksionet",
+      "subtitle": "Rishikoni të gjitha blerjet dhe rimbursimet e klientëve.",
+      "from": "Nga",
+      "to": "për të",
+      "apply": "Aplikoni",
+      "reset": "Rivendos",
+      "fetch_failed": "Transaksionet nuk mund të merren.",
+      "refund_failed": "Rimbursimi dështoi.",
+      "customer": "Klienti",
+      "status": "Statusi",
+      "date": "Data",
+      "amount": "Shuma",
+      "default_customer": "Klienti",
+      "just_now": "vetëm tani",
+      "minutes_ago": "{{count}} minuta më parë",
+      "hours_ago": "{{count}} orë më parë",
+      "days_ago": "{{count}} ditë më parë",
+      "years_ago": "mbi {{count}} vjet më parë",
+      "status_refunded": "rimbursohen",
+      "status_succeeded": "ia doli",
+      "status_failed": "dështoi",
+      "status_unknown": "i panjohur",
+      "status_pending": "në pritje",
+      "refund": "Rimbursimi",
+      "refunding": "Po rimbursohet...",
+      "no_transactions": "Nuk u gjet asnjë transaksion.",
+      "loading_transactions": "Transaksionet po ngarkohen...",
+      "confirm_refund_title": "Konfirmo rimbursimin",
+      "confirm_refund_text": "Jeni i sigurt që dëshironi të rimbursoni këtë transaksion?",
+      "cancel": "Anulo",
+      "confirm_refund": "Konfirmo rimbursimin"
+    },
+    "customer_subscriptions": {
+      "title": "Abonentët",
+      "subtitle": "Abonimet e krijuara nga ofertat tuaja.",
+      "limit": "Kufiri",
+      "load_failed": "Abonimet e klientëve nuk mund të ngarkohen.",
+      "load_more_failed": "Nuk mund të ngarkohen më shumë abonime.",
+      "cancel_failed": "Abonimi nuk mund të anulohet.",
+      "loading": "Po ngarkon abonimet e klientëve...",
+      "customer": "Klienti",
+      "name": "Emri",
+      "email": "Email",
+      "status": "Statusi",
+      "phone": "Telefoni",
+      "payment_link_title": "Ofrimi",
+      "action": "Veprimi",
+      "plan": "Planifikoni",
+      "period": "Periudha",
+      "address": "Adresa",
+      "dash": "—",
+      "cancel_subscription": "Anulo abonimin",
+      "confirm_cancel_title": "Anulo abonimin",
+      "confirm_cancel_text": "Jeni i sigurt që dëshironi të anuloni abonimin e këtij pajtimtari?",
+      "confirm_cancel_no": "Mbani aktiv",
+      "confirm_cancel_yes": "Po, anuloje",
+      "canceling": "Po anulohet...",
+      "canceled": "Anuluar",
+      "empty": "Nuk ka ende abonime klientësh.",
+      "loading_more": "Po ngarkohet...",
+      "load_more": "Ngarko më shumë"
+    },
+    "account": {
+      "title": "Llogaria",
+      "subtitle": "Detajet e biznesit dhe statusi i hyrjes.",
+      "loading_status": "Po ngarkohet statusi...",
+      "status": "Statusi",
+      "connected_required": "Kërkohet një llogari e lidhur",
+      "start_onboarding": "Filloni të futeni në bord",
+      "verified": "Verifikuar",
+      "verified_body": "Llogaria juaj mund të pranojë pagesa dhe të marrë pagesa.",
+      "earnings": "Fitimet e llogarisë",
+      "onboarding_body": "Përfundoni hyrjen për të transferuar fonde në llogarinë tuaj.",
+      "opening": "Po hapet...",
+      "onboarding_failed": "Nuk mund të fillojë futja. Ju lutemi provoni përsëri.",
+      "payout_schedule_title": "Programoni transferimin e bilancit",
+      "payout_schedule_body": "Programoni transferime automatike të bilancit në llogarinë tuaj.",
+      "schedule_daily": "Ditore",
+      "schedule_weekly": "Javore",
+      "schedule_monthly": "Mujore",
+      "schedule_manual": "Manual",
+      "weekly_anchor": "Dita e pagesës javore",
+      "monthly_anchor": "Dita e pagesës mujore (1-31)",
+      "save_schedule": "Ruaj orarin",
+      "saving_schedule": "Po ruan...",
+      "payout_schedule_saved": "Orari i pagesave u ruajt.",
+      "payout_schedule_failed": "Orari i pagesave nuk mund të ruhet.",
+      "day_monday": "e hënë",
+      "day_tuesday": "e martë",
+      "day_wednesday": "e mërkurë",
+      "day_thursday": "e enjte",
+      "day_friday": "e premte",
+      "day_saturday": "e shtunë",
+      "day_sunday": "të dielën"
+    },
+    "settings": {
+      "title": "Cilësimet",
+      "subtitle": "Menaxhoni llogarinë tuaj dhe cilësimet e shitjes.",
+      "profile": "Profili",
+      "email": "Email",
+      "account_management": "Menaxhimi i llogarisë",
+      "delete_account": "Fshi llogarinë",
+      "delete_description": "Fshini përgjithmonë llogarinë tuaj dhe të gjitha të dhënat e lidhura. Ky veprim nuk mund të zhbëhet.",
+      "delete_modal_title": "Fshi llogarinë",
+      "delete_modal_intro": "Kjo do të fshijë përgjithmonë llogarinë tuaj dhe të gjitha të dhënat e lidhura me të:",
+      "delete_item_links": "Ofertat dhe arkat e abonimeve",
+      "delete_item_transactions": "Historia e transaksioneve",
+      "delete_item_stripe": "Llogaria Stripe Connect",
+      "delete_item_login": "Llogaria juaj e hyrjes (do të dilni)",
+      "delete_confirm": "E kuptoj që të gjitha të dhënat e mia do të fshihen përgjithmonë",
+      "delete_failed": "Fshirja e llogarisë dështoi. Ju lutemi provoni përsëri.",
+      "cancel": "Anulo",
+      "deleting": "Po fshihet...",
+      "delete_my_account": "Fshi llogarinë time"
+    }
+  },
+  "components": {
+    "require": {
+      "checking_session": "Po kontrollon seancën..."
+    },
+    "create_link_dialog": {
+      "cta_one_time": "Krijo ofertë",
+      "cta_subscription": "Krijo ofertë abonimi",
+      "errors": {
+        "title_required": "Ju lutemi shtoni një titull.",
+        "invalid_amount": "Fut një shumë të vlefshme (deri në 2 dhjetore).",
+        "create_failed": "Oferta nuk mund të krijohet."
+      },
+      "amount_placeholder": "10.00",
+      "one_time": "Një herë",
+      "repeat": "Përsëriteni",
+      "collapse": "Palos detajet",
+      "expand": "Zgjero detajet",
+      "title_placeholder": "Fut titullin",
+      "description_placeholder": "Përshkrimi (opsionale)",
+      "currency": "Monedha",
+      "interval": "Intervali",
+      "customer_fields": "Klienti duhet të sigurojë",
+      "field_email": "email",
+      "field_name": "emri",
+      "field_phone": "telefon",
+      "field_address": "adresa",
+      "expiry_optional": "Data e skadencës (opsionale)",
+      "creating": "Po krijohet...",
+      "interval_options": {
+        "day": "Ditore",
+        "week": "Javore",
+        "month": "Mujore",
+        "year": "vjetore"
+      },
+      "currency_options": {
+        "gbp": "GBP - Paundi Britanik",
+        "eur": "EUR - Euro",
+        "usd": "USD - Dollar Amerikan"
+      },
+      "title_placeholders": {
+        "piano": "Mësime pianoje për fëmijë",
+        "lunch": "Dreka e bërë në shtëpi në kuzhinën indiane",
+        "spanish": "Mësime të gjuhës spanjolle",
+        "maths": "Mësimet online të matematikës"
+      }
+    },
+    "link_card": {
+      "default_title": "Ofrimi",
+      "recurring": "Të përsëritura",
+      "disabled": "I paaftë",
+      "disable": "Çaktivizo",
+      "amount": "Shuma",
+      "earnings": "Fitimet",
+      "interval": "Intervali",
+      "expires": "Skadon",
+      "no_expiry": "Nuk ka skadim"
+    },
+    "payment_link_share": {
+      "copied": "E kopjuar",
+      "copy_link": "Kopjo lidhjen",
+      "show_qr": "Shfaq kodin QR",
+      "share_link": "Ndani lidhjen",
+      "qr_code": "Kodi QR",
+      "qr_title": "Ofron QR",
+      "close": "Mbylle",
+      "generating": "Po gjeneron kodin QR...",
+      "copy_qr": "Kopjo imazhin QR",
+      "qr_alt": "Ofron kodin QR"
+    }
+  },
+  "layouts": {
+    "dashboard": {
+      "nav": {
+        "dashboard": "Paneli",
+        "products": "Shitet",
+        "subscribers": "Abonentët",
+        "transactions": "Transaksionet",
+        "account": "Llogaria",
+        "settings": "Cilësimet"
+      },
+      "menu": {
+        "title": "Menyja",
+        "close": "Mbyll menunë",
+        "logout": "Dilni",
+        "open": "Menyja"
+      },
+      "logo_alt": "Logoja e Quidme",
+      "language": {
+        "label": "Gjuha",
+        "english": "English",
+        "turkish": "Türkçe",
+        "german": "Deutsch",
+        "italian": "Italiano",
+        "greek": "Ελληνικά",
+        "bulgarian": "Български",
+        "romanian": "Română",
+        "albanian": "Shqip"
+      }
+    }
+  }
+}

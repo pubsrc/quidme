@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { BarChart3, DollarSign, Home, LogOut, Menu, Settings, User, Users, X } from "lucide-react";
 import { signOutWithCognito } from "../lib/auth";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
-import { replaceLocaleInPathname } from "../lib/localeRouting";
+import { LOCALE_OPTIONS, replaceLocaleInPathname, resolveLocale, type AppLocale } from "../lib/localeRouting";
 import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 import QuidmeLogo from "../components/QuidmeLogo";
 
@@ -43,9 +43,9 @@ const DashboardLayout = () => {
   const { localeNavigate } = useLocaleNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [desktopSidebarHovered, setDesktopSidebarHovered] = useState(false);
-  const currentLanguage = (i18n.resolvedLanguage || "en").startsWith("tr") ? "tr" : "en";
+  const currentLanguage = resolveLocale(i18n.resolvedLanguage) ?? "en";
 
-  const setLanguage = async (lang: "en" | "tr") => {
+  const setLanguage = async (lang: AppLocale) => {
     await i18n.changeLanguage(lang);
     localStorage.setItem(LOCALE_STORAGE_KEY, lang);
     navigate(replaceLocaleInPathname(location.pathname, lang), { replace: true });
@@ -115,19 +115,21 @@ const DashboardLayout = () => {
 
           <div className="mt-4 flex flex-col gap-3">
             <div className="relative h-12 w-full">
-              {desktopSidebarHovered && (
-                <div className="absolute left-[76px] top-1/2 -translate-y-1/2 text-sm font-medium text-slate-700">
-                  {t("layouts.dashboard.language.label")}
-                </div>
-              )}
               <select
                 value={currentLanguage}
-                onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
+                onChange={(e) => setLanguage(e.target.value as AppLocale)}
                 aria-label={t("layouts.dashboard.language.label")}
-                className="absolute left-[22px] top-1/2 h-10 w-10 -translate-y-1/2 appearance-none rounded-full border border-slate-200 bg-white p-0 text-center text-2xl leading-none text-slate-700 outline-none"
+                className={`absolute left-[22px] top-1/2 h-10 -translate-y-1/2 appearance-none border border-slate-200 bg-white text-slate-700 outline-none transition-all ${
+                  desktopSidebarHovered
+                    ? "w-[150px] rounded-xl px-3 pr-8 text-sm font-medium"
+                    : "w-10 rounded-full p-0 text-center text-2xl leading-none"
+                }`}
               >
-                <option value="en">🇬🇧</option>
-                <option value="tr">🇹🇷</option>
+                {LOCALE_OPTIONS.map((option) => (
+                  <option key={option.code} value={option.code}>
+                    {option.flag} {t(option.labelKey)}
+                  </option>
+                ))}
               </select>
             </div>
             <NavLink
@@ -206,12 +208,15 @@ const DashboardLayout = () => {
                   </div>
                   <select
                     value={currentLanguage}
-                    onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
+                    onChange={(e) => setLanguage(e.target.value as AppLocale)}
                     aria-label={t("layouts.dashboard.language.label")}
                     className="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-base text-slate-700 outline-none"
                   >
-                    <option value="en">🇬🇧 {t("layouts.dashboard.language.english")}</option>
-                    <option value="tr">🇹🇷 {t("layouts.dashboard.language.turkish")}</option>
+                    {LOCALE_OPTIONS.map((option) => (
+                      <option key={option.code} value={option.code}>
+                        {option.flag} {t(option.labelKey)}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 {navItems.map((item) => (

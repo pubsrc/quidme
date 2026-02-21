@@ -134,13 +134,24 @@
     },
     "start": {
       "title": "Quidme ile satışa başlayın",
-      "subtitle": "Stripe Express hesabınızı minimum bilgilerle oluşturun. Ülke seçimi şu anda yalnızca Birleşik Krallık ile sınırlıdır.",
-      "country": "Birleşik Krallık",
+      "subtitle": "Stripe Express hesabınızı minimum bilgilerle oluşturun. Aşağıdaki desteklenen listeden ülkenizi seçin.",
+      "country": "Ülke",
       "account_type": "Express hesap",
       "logout": "Çıkış yap",
       "cancel": "İptal",
       "starting": "Başlatılıyor...",
       "ok": "Tamam",
+      "countries": {
+        "gb": "Birleşik Krallık",
+        "de": "Almanya",
+        "at": "Avusturya",
+        "it": "İtalya",
+        "gr": "Yunanistan",
+        "bg": "Bulgaristan",
+        "ro": "Romanya",
+        "xk": "Kosova",
+        "al": "Arnavutluk"
+      },
       "errors": {
         "create_account_failed": "Hesabınız oluşturulamadı. Lütfen tekrar deneyin."
       }
@@ -417,8 +428,14 @@
       "logo_alt": "Quidme logosu",
       "language": {
         "label": "Dil",
-        "english": "İngilizce",
-        "turkish": "Türkçe"
+        "english": "English",
+        "turkish": "Türkçe",
+        "german": "Deutsch",
+        "italian": "Italiano",
+        "greek": "Ελληνικά",
+        "bulgarian": "Български",
+        "romanian": "Română",
+        "albanian": "Shqip"
       }
     }
   }

@@ -3,7 +3,7 @@ import { CreditCard, HandCoins, Repeat, Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
-import { replaceLocaleInPathname } from "../lib/localeRouting";
+import { LOCALE_OPTIONS, replaceLocaleInPathname, resolveLocale, type AppLocale } from "../lib/localeRouting";
 import { useSeo } from "../lib/useSeo";
 import QuidmeLogo from "../components/QuidmeLogo";
 import LocaleLink from "../components/LocaleLink";
@@ -19,7 +19,7 @@ const LandingPage = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const currentLanguage = (i18n.resolvedLanguage || "en").startsWith("tr") ? "tr" : "en";
+  const currentLanguage = resolveLocale(i18n.resolvedLanguage) ?? "en";
 
   useSeo({
     title: t("pages.landing.seo.title"),
@@ -52,7 +52,7 @@ const LandingPage = () => {
     },
   });
 
-  const setLanguage = async (lang: "en" | "tr") => {
+  const setLanguage = async (lang: AppLocale) => {
     await i18n.changeLanguage(lang);
     localStorage.setItem(LOCALE_STORAGE_KEY, lang);
     navigate(replaceLocaleInPathname(location.pathname, lang), { replace: true });
@@ -84,12 +84,15 @@ const LandingPage = () => {
           <select
             id="landing-language"
             value={currentLanguage}
-            onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
+            onChange={(e) => setLanguage(e.target.value as AppLocale)}
             aria-label={t("layouts.dashboard.language.label")}
             className="h-10 rounded-full border border-[#d89c35] bg-white/80 px-4 text-sm font-semibold text-[#603400] backdrop-blur outline-none transition hover:bg-white"
           >
-            <option value="en">🇬🇧 English</option>
-            <option value="tr">🇹🇷 Türkçe</option>
+            {LOCALE_OPTIONS.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.flag} {t(option.labelKey)}
+              </option>
+            ))}
           </select>
         </div>
       </header>
