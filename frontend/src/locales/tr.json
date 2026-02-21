@@ -373,7 +373,10 @@
       "currency_options": {
         "gbp": "GBP — İngiliz Sterlini",
         "eur": "EUR — Euro",
-        "usd": "USD — Amerikan Doları"
+        "usd": "USD — Amerikan Doları",
+        "bgn": "BGN — Bulgar Levi",
+        "ron": "RON — Rumen Leyi",
+        "all": "ALL — Arnavutluk Leki"
       },
       "title_placeholders": {
         "piano": "Çocuklar için piyano dersleri",

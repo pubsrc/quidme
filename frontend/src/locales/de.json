@@ -371,7 +371,10 @@
       "currency_options": {
         "gbp": "GBP – Britisches Pfund",
         "eur": "EUR – Euro",
-        "usd": "USD – US-Dollar"
+        "usd": "USD – US-Dollar",
+        "bgn": "BGN – Bulgarischer Lew",
+        "ron": "RON – Rumänischer Leu",
+        "all": "ALL – Albanischer Lek"
       },
       "title_placeholders": {
         "piano": "Klavierunterricht für Kinder",

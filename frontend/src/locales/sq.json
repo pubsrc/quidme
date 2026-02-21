@@ -371,7 +371,10 @@
       "currency_options": {
         "gbp": "GBP - Paundi Britanik",
         "eur": "EUR - Euro",
-        "usd": "USD - Dollar Amerikan"
+        "usd": "USD - Dollar Amerikan",
+        "bgn": "BGN - Leva bullgare",
+        "ron": "RON - Leu rumun",
+        "all": "ALL - Lek shqiptar"
       },
       "title_placeholders": {
         "piano": "Mësime pianoje për fëmijë",

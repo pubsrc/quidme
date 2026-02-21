@@ -371,7 +371,10 @@
       "currency_options": {
         "gbp": "GBP - liră sterlină",
         "eur": "EUR — euro",
-        "usd": "USD — dolar american"
+        "usd": "USD — dolar american",
+        "bgn": "BGN — leva bulgărească",
+        "ron": "RON — leu românesc",
+        "all": "ALL — lek albanez"
       },
       "title_placeholders": {
         "piano": "Lecții de pian pentru copii",

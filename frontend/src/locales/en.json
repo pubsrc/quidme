@@ -373,7 +373,10 @@
       "currency_options": {
         "gbp": "GBP — British Pound",
         "eur": "EUR — Euro",
-        "usd": "USD — US Dollar"
+        "usd": "USD — US Dollar",
+        "bgn": "BGN — Bulgarian Lev",
+        "ron": "RON — Romanian Leu",
+        "all": "ALL — Albanian Lek"
       },
       "title_placeholders": {
         "piano": "Piano lessons for children",

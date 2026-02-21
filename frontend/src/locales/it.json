@@ -371,7 +371,10 @@
       "currency_options": {
         "gbp": "GBP: sterlina britannica",
         "eur": "EUR—Euro",
-        "usd": "USD: dollaro statunitense"
+        "usd": "USD: dollaro statunitense",
+        "bgn": "BGN: lev bulgaro",
+        "ron": "RON: leu rumeno",
+        "all": "ALL: lek albanese"
       },
       "title_placeholders": {
         "piano": "Lezioni di pianoforte per bambini",
