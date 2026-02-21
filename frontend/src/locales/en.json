@@ -17,6 +17,32 @@
       "snapshot_title": "Quidme Snapshot",
       "snapshot_footer_title": "Offerings, subscriptions, and refunds in one place.",
       "snapshot_footer_subtitle": "Built for independent sellers and small businesses.",
+      "seo": {
+        "title": "Quidme | Payments, Subscriptions and Refunds for Sole Traders & Small Businesses",
+        "description": "Quidme helps sole traders, self-employed professionals and small businesses sell faster with payment links, recurring subscriptions, easy refunds and flexible payment options.",
+        "keywords": [
+          "payment links for small business",
+          "subscriptions for sole traders",
+          "self-employed payment app",
+          "small business payments",
+          "customer subscriptions",
+          "online payments for tutors",
+          "payment platform for service businesses",
+          "refund management for small businesses"
+        ]
+      },
+      "for_who": {
+        "sole_traders_title": "Built for sole traders",
+        "sole_traders_body": "From piano tutors to homemade lunch sellers, get paid online without manual bank transfer friction.",
+        "subscriptions_title": "Grow with subscriptions",
+        "subscriptions_body": "Offer recurring billing to retain existing customers and build predictable monthly income.",
+        "refunds_title": "Handle refunds quickly",
+        "refunds_body": "Keep customer trust high with simple refunds and transparent payment tracking."
+      },
+      "benefits": {
+        "title": "Sell with less resistance and higher conversion",
+        "body": "Small businesses that rely on cash or manual bank transfers lose sales. Quidme removes payment friction with shareable payment links, subscription billing and broad payment methods."
+      },
       "ideas": {
         "piano": "Piano lessons for children",
         "lunch": "Home made lunch in Indian cuisine",

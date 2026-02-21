@@ -17,6 +17,32 @@
       "snapshot_title": "Quidme Özeti",
       "snapshot_footer_title": "Teklifler, abonelikler ve iadeler tek yerde.",
       "snapshot_footer_subtitle": "Bağımsız satıcılar ve küçük işletmeler için tasarlandı.",
+      "seo": {
+        "title": "Quidme | Esnaf, Serbest Çalışanlar ve Küçük İşletmeler için Ödeme, Abonelik ve İade",
+        "description": "Quidme, esnafı, serbest çalışanları ve küçük işletmeleri ödeme bağlantıları, abonelikler, kolay iade yönetimi ve esnek ödeme seçenekleriyle daha hızlı satışa ulaştırır.",
+        "keywords": [
+          "küçük işletme ödeme linki",
+          "serbest çalışan abonelik",
+          "esnaf ödeme uygulaması",
+          "küçük işletme tahsilat",
+          "müşteri abonelik yönetimi",
+          "öğretmenler için online ödeme",
+          "hizmet işletmeleri için ödeme platformu",
+          "küçük işletmeler için iade yönetimi"
+        ]
+      },
+      "for_who": {
+        "sole_traders_title": "Serbest çalışanlar için",
+        "sole_traders_body": "Piyano eğitmenlerinden ev yapımı yemek satıcılarına kadar manuel havale sürecini azaltın ve online ödeme alın.",
+        "subscriptions_title": "Aboneliklerle büyüyün",
+        "subscriptions_body": "Mevcut müşterileri korumak ve düzenli gelir oluşturmak için tekrarlı ödeme sunun.",
+        "refunds_title": "İadeleri hızlı yönetin",
+        "refunds_body": "Kolay iade ve şeffaf ödeme takibiyle müşteri güvenini yüksek tutun."
+      },
+      "benefits": {
+        "title": "Daha az ödeme direnci, daha yüksek dönüşüm",
+        "body": "Nakit veya manuel banka transferine bağlı kalan küçük işletmeler satış kaçırır. Quidme paylaşılabilir ödeme bağlantıları, abonelik tahsilatı ve geniş ödeme yöntemleri ile bu direnci azaltır."
+      },
       "ideas": {
         "piano": "Çocuklar için piyano dersleri",
         "lunch": "Ev yapımı Hint mutfağı öğle yemekleri",
