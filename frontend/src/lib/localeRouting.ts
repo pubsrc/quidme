@@ -1,6 +1,17 @@
-export const SUPPORTED_LOCALES = ["en", "tr"] as const;
+export const SUPPORTED_LOCALES = ["en", "tr", "de", "it", "el", "bg", "ro", "sq"] as const;
 
 export type AppLocale = (typeof SUPPORTED_LOCALES)[number];
+
+export const LOCALE_OPTIONS: ReadonlyArray<{ code: AppLocale; flag: string; labelKey: string }> = [
+  { code: "en", flag: "🇬🇧", labelKey: "layouts.dashboard.language.english" },
+  { code: "tr", flag: "🇹🇷", labelKey: "layouts.dashboard.language.turkish" },
+  { code: "de", flag: "🇩🇪", labelKey: "layouts.dashboard.language.german" },
+  { code: "it", flag: "🇮🇹", labelKey: "layouts.dashboard.language.italian" },
+  { code: "el", flag: "🇬🇷", labelKey: "layouts.dashboard.language.greek" },
+  { code: "bg", flag: "🇧🇬", labelKey: "layouts.dashboard.language.bulgarian" },
+  { code: "ro", flag: "🇷🇴", labelKey: "layouts.dashboard.language.romanian" },
+  { code: "sq", flag: "🇦🇱", labelKey: "layouts.dashboard.language.albanian" },
+];
 
 export const resolveLocale = (value: string | null | undefined): AppLocale | null => {
   if (!value) return null;

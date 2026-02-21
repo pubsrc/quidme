@@ -1,0 +1,446 @@
+{
+  "app": {
+    "hero_title": "Vendi le offerte più velocemente con Quidme",
+    "hero_subtitle": "Crea offerte, monitora le vendite, gestisci i rimborsi in un unico posto.",
+    "get_started": "Inizia",
+    "login": "Login",
+    "signup": "Iscrizione"
+  },
+  "quickPayments": {
+    "title": "Pagamento rapido",
+    "generate_code": "Genera codice",
+    "link_ready": "Link pronto da copiare"
+  },
+  "pages": {
+    "callback": {
+      "signing_in": "Ti sto facendo accedere..."
+    },
+    "landing": {
+      "brand": "Quidme",
+      "tagline": "Piccola app per le piccole imprese",
+      "sign_in": "Registrazione",
+      "snapshot_title": "Istantanea di Quidme",
+      "snapshot_footer_title": "Offerte, abbonamenti e rimborsi in un unico posto.",
+      "snapshot_footer_subtitle": "Progettato per venditori indipendenti e piccole imprese.",
+      "seo": {
+        "title": "Quidme | Pagamenti, abbonamenti e rimborsi per commercianti individuali e piccole imprese",
+        "description": "Quidme aiuta le imprese individuali, i liberi professionisti e le piccole imprese a vendere più velocemente con link di pagamento, abbonamenti ricorrenti, rimborsi facili e opzioni di pagamento flessibili.",
+        "keywords": [
+          "collegamenti di pagamento per le piccole imprese",
+          "abbonamenti per ditte individuali",
+          "app di pagamento per lavoratori autonomi",
+          "pagamenti alle piccole imprese",
+          "abbonamenti dei clienti",
+          "pagamenti online per i tutor",
+          "piattaforma di pagamento per le imprese di servizi",
+          "gestione dei rimborsi per le piccole imprese"
+        ]
+      },
+      "for_who": {
+        "sole_traders_title": "Costruito per commercianti individuali",
+        "sole_traders_body": "Dai tutor di pianoforte ai venditori di pranzi fatti in casa, ricevi pagamenti online senza problemi legati al bonifico bancario manuale.",
+        "subscriptions_title": "Cresci con gli abbonamenti",
+        "subscriptions_body": "Offri fatturazione ricorrente per fidelizzare i clienti esistenti e creare un reddito mensile prevedibile.",
+        "refunds_title": "Gestisci rapidamente i rimborsi",
+        "refunds_body": "Mantieni alta la fiducia dei clienti con rimborsi semplici e un monitoraggio trasparente dei pagamenti."
+      },
+      "benefits": {
+        "title": "Vendi con meno resistenza e conversione più alta",
+        "body": "Le piccole imprese che fanno affidamento sui contanti o sui bonifici bancari manuali perdono vendite. Quidme elimina le difficoltà legate ai pagamenti grazie a link di pagamento condivisibili, fatturazione in abbonamento e metodi di pagamento ampi."
+      },
+      "ideas": {
+        "piano": "Lezioni di pianoforte per bambini",
+        "lunch": "Pranzo fatto in casa con cucina indiana",
+        "spanish": "Lezioni di lingua spagnola",
+        "maths": "Lezioni di matematica online"
+      }
+    },
+    "login": {
+      "title": "Bentornato",
+      "subtitle": "Accedi con la tua email o continua con Google.",
+      "email": "E-mail",
+      "password": "Password",
+      "hide_password": "Nascondi la password",
+      "show_password": "Mostra password",
+      "hide": "Nascondere",
+      "show": "Spettacolo",
+      "signing_in": "Accesso...",
+      "sign_in": "Registrazione",
+      "redirecting": "Reindirizzamento...",
+      "continue_google": "Continua con Google",
+      "forgot_password": "Ha dimenticato la password?",
+      "create_account": "Creare un account",
+      "errors": {
+        "sign_in_failed": "Impossibile accedere.",
+        "google_failed": "Impossibile avviare l'accesso a Google."
+      }
+    },
+    "signup": {
+      "title": "Crea il tuo account",
+      "subtitle": "Inizia con Quidme in pochi minuti.",
+      "email": "E-mail",
+      "password": "Password",
+      "hide_password": "Nascondi la password",
+      "show_password": "Mostra password",
+      "hide": "Nascondere",
+      "show": "Spettacolo",
+      "creating": "Creazione...",
+      "create_account": "Creare un account",
+      "redirecting": "Reindirizzamento...",
+      "continue_google": "Continua con Google",
+      "already_have": "Hai già un account?",
+      "sign_in": "Registrazione",
+      "errors": {
+        "signup_failed": "Impossibile creare un account.",
+        "google_failed": "Impossibile avviare l'accesso a Google."
+      }
+    },
+    "verify_email": {
+      "title": "Verifica la tua email",
+      "subtitle": "Inserisci il codice di verifica inviato alla tua casella di posta.",
+      "email": "E-mail",
+      "code": "Codice di verifica",
+      "verifying": "Verifica...",
+      "verify": "Verifica l'e-mail",
+      "resend": "Invia nuovamente il codice",
+      "messages": {
+        "verified": "E-mail verificata. Ora puoi accedere.",
+        "resent": "Abbiamo inviato un nuovo codice di verifica."
+      },
+      "errors": {
+        "verify_failed": "Verifica non riuscita.",
+        "resend_failed": "Impossibile inviare nuovamente il codice."
+      }
+    },
+    "forgot_password": {
+      "title": "Reimposta la tua password",
+      "subtitle_request": "Richiedi un codice di ripristino per il tuo account.",
+      "subtitle_confirm": "Inserisci il codice e scegli una nuova password.",
+      "email": "E-mail",
+      "reset_code": "Reimposta il codice",
+      "new_password": "Nuova password",
+      "hide_password": "Nascondi la password",
+      "show_password": "Mostra password",
+      "hide": "Nascondere",
+      "show": "Spettacolo",
+      "sending": "Invio...",
+      "send_code": "Invia il codice di ripristino",
+      "updating": "Aggiornamento...",
+      "update_password": "Aggiorna password",
+      "back_login": "Torna al login",
+      "messages": {
+        "sent": "Abbiamo inviato un codice di ripristino alla tua email.",
+        "updated": "Password aggiornata. Ora puoi accedere."
+      },
+      "errors": {
+        "send_failed": "Impossibile inviare il codice di ripristino.",
+        "reset_failed": "Impossibile reimpostare la password."
+      }
+    },
+    "start": {
+      "title": "Inizia a vendere con Quidme",
+      "subtitle": "Crea il tuo account Stripe Express con dettagli minimi. Scegli il tuo Paese dall'elenco supportato di seguito.",
+      "country": "Paese",
+      "account_type": "Conto espresso",
+      "logout": "Esci",
+      "cancel": "Cancellare",
+      "starting": "Di partenza...",
+      "ok": "OK",
+      "countries": {
+        "gb": "Regno Unito",
+        "de": "Germania",
+        "at": "Austria",
+        "it": "Italia",
+        "gr": "Grecia",
+        "bg": "Bulgaria",
+        "ro": "Romania",
+        "xk": "Kosovo",
+        "al": "Albania"
+      },
+      "errors": {
+        "create_account_failed": "Impossibile creare il tuo account. Per favore riprova."
+      }
+    },
+    "dashboard": {
+      "title": "Pannello di controllo",
+      "subtitle": "Una rapida panoramica dell'attività di vendita delle tue offerte.",
+      "total_earnings": "Guadagni totali",
+      "pending_earnings": "Guadagni in sospeso",
+      "account_status": "Stato dell'account",
+      "verified": "Verificato",
+      "pending": "In attesa di",
+      "recent_transactions": "Transazioni recenti",
+      "recent_subtitle": "Un registro delle tue vendite più recenti.",
+      "view_all": "Visualizza tutto",
+      "customer": "Cliente",
+      "status": "Stato",
+      "date": "Data",
+      "amount": "Quantità",
+      "default_customer": "Cliente",
+      "just_now": "proprio adesso",
+      "minutes_ago": "{{count}} minuto fa",
+      "minutes_ago_plural": "{{count}} minuti fa",
+      "hours_ago": "{{count}} ora fa",
+      "hours_ago_plural": "{{count}} ore fa",
+      "days_ago": "{{count}} giorno fa",
+      "days_ago_plural": "{{count}} giorni fa",
+      "years_ago": "oltre {{count}} anno fa",
+      "years_ago_plural": "più di {{count}} anni fa",
+      "status_refunded": "rimborsato",
+      "status_succeeded": "riuscito",
+      "status_failed": "fallito",
+      "status_unknown": "sconosciuto",
+      "status_pending": "in attesa di",
+      "loading_transactions": "Caricamento transazioni...",
+      "no_transactions": "Nessuna transazione ancora.",
+      "transfer_to_account": "Trasferisci sul tuo conto",
+      "transferring": "Trasferimento...",
+      "transfer_failed": "Impossibile trasferire fondi.",
+      "transfer_onboarding_required": "È necessario completare l'onboarding per poter trasferire fondi",
+      "okay": "Va bene"
+    },
+    "products": {
+      "title": "Offerte",
+      "add_product": "Aggiungi offerta",
+      "load_failed": "Impossibile caricare i collegamenti.",
+      "disable_failed": "Impossibile disattivare il collegamento.",
+      "loading": "Caricamento...",
+      "empty": "Nessuna offerta ancora. Aggiungi la tua prima offerta.",
+      "default_subscription_product": "Offerta di abbonamento",
+      "default_product": "Offerta"
+    },
+    "product_details": {
+      "open_from_list": "Apri questa pagina dall'elenco delle offerte.",
+      "loading": "Caricamento offerta...",
+      "back": "Torniamo alle offerte",
+      "not_found": "Offerta non trovata.",
+      "default_title": "Offerta",
+      "amount": "Quantità",
+      "earnings": "Guadagni",
+      "expires": "Scade",
+      "no_expiry": "Nessuna scadenza",
+      "transactions": "Transazioni",
+      "transactions_info": "Le transazioni vengono registrate automaticamente quando i pagamenti vanno a buon fine. Visualizza tutte le transazioni nella pagina Transazioni."
+    },
+    "transactions": {
+      "title": "Transazioni",
+      "subtitle": "Esamina tutti gli acquisti e i rimborsi dei clienti.",
+      "from": "Da",
+      "to": "A",
+      "apply": "Fare domanda a",
+      "reset": "Reset",
+      "fetch_failed": "Impossibile recuperare le transazioni.",
+      "refund_failed": "Rimborso non riuscito.",
+      "customer": "Cliente",
+      "status": "Stato",
+      "date": "Data",
+      "amount": "Quantità",
+      "default_customer": "Cliente",
+      "just_now": "proprio adesso",
+      "minutes_ago": "{{count}} minuti fa",
+      "hours_ago": "{{count}} ore fa",
+      "days_ago": "{{count}} giorni fa",
+      "years_ago": "più di {{count}} anni fa",
+      "status_refunded": "rimborsato",
+      "status_succeeded": "riuscito",
+      "status_failed": "fallito",
+      "status_unknown": "sconosciuto",
+      "status_pending": "in attesa di",
+      "refund": "Rimborso",
+      "refunding": "Rimborso...",
+      "no_transactions": "Nessuna transazione trovata.",
+      "loading_transactions": "Caricamento transazioni...",
+      "confirm_refund_title": "Conferma il rimborso",
+      "confirm_refund_text": "Sei sicuro di voler rimborsare questa transazione?",
+      "cancel": "Cancellare",
+      "confirm_refund": "Conferma il rimborso"
+    },
+    "customer_subscriptions": {
+      "title": "Abbonati",
+      "subtitle": "Abbonamenti creati dalle tue offerte.",
+      "limit": "Limite",
+      "load_failed": "Impossibile caricare gli abbonamenti dei clienti.",
+      "load_more_failed": "Impossibile caricare più abbonamenti.",
+      "cancel_failed": "Impossibile annullare l'abbonamento.",
+      "loading": "Caricamento abbonamenti cliente...",
+      "customer": "Cliente",
+      "name": "Nome",
+      "email": "E-mail",
+      "status": "Stato",
+      "phone": "Telefono",
+      "payment_link_title": "Offerta",
+      "action": "Azione",
+      "plan": "Piano",
+      "period": "Periodo",
+      "address": "Indirizzo",
+      "dash": "—",
+      "cancel_subscription": "Annulla l'abbonamento",
+      "confirm_cancel_title": "Annulla l'abbonamento",
+      "confirm_cancel_text": "Sei sicuro di voler annullare l'abbonamento di questo abbonato?",
+      "confirm_cancel_no": "Mantieniti attivo",
+      "confirm_cancel_yes": "Sì, annulla",
+      "canceling": "Annullamento...",
+      "canceled": "Annullato",
+      "empty": "Nessun abbonamento cliente ancora.",
+      "loading_more": "Caricamento...",
+      "load_more": "Carica di più"
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "Dettagli aziendali e stato di onboarding.",
+      "loading_status": "Stato caricamento...",
+      "status": "Stato",
+      "connected_required": "È richiesto un account connesso",
+      "start_onboarding": "Inizia l'onboarding",
+      "verified": "Verificato",
+      "verified_body": "Il tuo account può accettare pagamenti e ricevere compensi.",
+      "earnings": "Guadagni del conto",
+      "onboarding_body": "Completa l'onboarding per trasferire fondi sul tuo conto.",
+      "opening": "Apertura...",
+      "onboarding_failed": "Impossibile avviare l'onboarding. Per favore riprova.",
+      "payout_schedule_title": "Pianifica il trasferimento del saldo",
+      "payout_schedule_body": "Pianifica trasferimenti automatici del saldo sul tuo account.",
+      "schedule_daily": "Quotidiano",
+      "schedule_weekly": "Settimanale",
+      "schedule_monthly": "Mensile",
+      "schedule_manual": "Manuale",
+      "weekly_anchor": "Giorno di pagamento settimanale",
+      "monthly_anchor": "Giorno di pagamento mensile (1-31)",
+      "save_schedule": "Salva programma",
+      "saving_schedule": "Risparmio...",
+      "payout_schedule_saved": "Programma di pagamento salvato.",
+      "payout_schedule_failed": "Impossibile salvare il programma di pagamento.",
+      "day_monday": "Lunedi",
+      "day_tuesday": "Martedì",
+      "day_wednesday": "Mercoledì",
+      "day_thursday": "Giovedì",
+      "day_friday": "Venerdì",
+      "day_saturday": "Sabato",
+      "day_sunday": "Domenica"
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "subtitle": "Gestisci il tuo account e le impostazioni di vendita.",
+      "profile": "Profilo",
+      "email": "E-mail",
+      "account_management": "Gestione del conto",
+      "delete_account": "Elimina account",
+      "delete_description": "Elimina definitivamente il tuo account e tutti i dati associati. Questa azione non può essere annullata.",
+      "delete_modal_title": "Elimina account",
+      "delete_modal_intro": "Ciò eliminerà definitivamente il tuo account e tutti i dati ad esso associati:",
+      "delete_item_links": "Offerte e checkout degli abbonamenti",
+      "delete_item_transactions": "Cronologia delle transazioni",
+      "delete_item_stripe": "Conto Stripe Connect",
+      "delete_item_login": "Il tuo account di accesso (verrai disconnesso)",
+      "delete_confirm": "Comprendo che tutti i miei dati verranno cancellati definitivamente",
+      "delete_failed": "Impossibile eliminare l'account. Per favore riprova.",
+      "cancel": "Cancellare",
+      "deleting": "Eliminazione...",
+      "delete_my_account": "Elimina il mio account"
+    }
+  },
+  "components": {
+    "require": {
+      "checking_session": "Controllo sessione..."
+    },
+    "create_link_dialog": {
+      "cta_one_time": "Creare un'offerta",
+      "cta_subscription": "Crea un'offerta di abbonamento",
+      "errors": {
+        "title_required": "Per favore aggiungi un titolo.",
+        "invalid_amount": "Inserisci un importo valido (fino a 2 decimali).",
+        "create_failed": "Impossibile creare un'offerta."
+      },
+      "amount_placeholder": "10.00",
+      "one_time": "Una volta",
+      "repeat": "Ripetere",
+      "collapse": "Comprimi i dettagli",
+      "expand": "Espandi i dettagli",
+      "title_placeholder": "Inserisci il titolo",
+      "description_placeholder": "Descrizione (facoltativa)",
+      "currency": "Valuta",
+      "interval": "Intervallo",
+      "customer_fields": "Il cliente deve fornire",
+      "field_email": "e-mail",
+      "field_name": "nome",
+      "field_phone": "telefono",
+      "field_address": "indirizzo",
+      "expiry_optional": "Data di scadenza (facoltativa)",
+      "creating": "Creazione...",
+      "interval_options": {
+        "day": "Quotidiano",
+        "week": "Settimanale",
+        "month": "Mensile",
+        "year": "Annuale"
+      },
+      "currency_options": {
+        "gbp": "GBP: sterlina britannica",
+        "eur": "EUR—Euro",
+        "usd": "USD: dollaro statunitense",
+        "bgn": "BGN: lev bulgaro",
+        "ron": "RON: leu rumeno",
+        "all": "ALL: lek albanese"
+      },
+      "title_placeholders": {
+        "piano": "Lezioni di pianoforte per bambini",
+        "lunch": "Pranzo fatto in casa con cucina indiana",
+        "spanish": "Lezioni di lingua spagnola",
+        "maths": "Lezioni di matematica online"
+      }
+    },
+    "link_card": {
+      "default_title": "Offerta",
+      "recurring": "Ricorrente",
+      "disabled": "Disabilitato",
+      "disable": "Disabilita",
+      "amount": "Quantità",
+      "earnings": "Guadagni",
+      "interval": "Intervallo",
+      "expires": "Scade",
+      "no_expiry": "Nessuna scadenza"
+    },
+    "payment_link_share": {
+      "copied": "Copiato",
+      "copy_link": "Copia collegamento",
+      "show_qr": "Mostra il codice QR",
+      "share_link": "Condividi collegamento",
+      "qr_code": "Codice QR",
+      "qr_title": "Offerta QR",
+      "close": "Vicino",
+      "generating": "Generazione del codice QR...",
+      "copy_qr": "Copia l'immagine QR",
+      "qr_alt": "Offerta del codice QR"
+    }
+  },
+  "layouts": {
+    "dashboard": {
+      "nav": {
+        "quick_payments": "Pagamenti rapidi",
+        "dashboard": "Pannello di controllo",
+        "products": "Vendere",
+        "subscribers": "Abbonati",
+        "transactions": "Transazioni",
+        "account": "Account",
+        "settings": "Impostazioni"
+      },
+      "menu": {
+        "title": "Menu",
+        "close": "Chiudi menù",
+        "logout": "Esci",
+        "open": "Menu"
+      },
+      "logo_alt": "Il logo Quidme",
+      "language": {
+        "label": "Lingua",
+        "english": "English",
+        "turkish": "Türkçe",
+        "german": "Deutsch",
+        "italian": "Italiano",
+        "greek": "Ελληνικά",
+        "bulgarian": "Български",
+        "romanian": "Română",
+        "albanian": "Shqip"
+      }
+    }
+  }
+}

@@ -7,9 +7,9 @@
     "signup": "Sign Up"
   },
   "quickPayments": {
-    "title": "Quick Payment",
-    "generate_code": "Generate code",
-    "link_ready": "Link ready to copy"
+    "title": "Бързо плащане",
+    "generate_code": "Генерирай код",
+    "link_ready": "Връзката е готова за копиране"
   },
   "pages": {
     "callback": {
@@ -377,9 +377,9 @@
         "gbp": "GBP — British Pound",
         "eur": "EUR — Euro",
         "usd": "USD — US Dollar",
-        "bgn": "BGN — Bulgarian Lev",
-        "ron": "RON — Romanian Leu",
-        "all": "ALL — Albanian Lek"
+        "bgn": "BGN — Български лев",
+        "ron": "RON — Румънска лея",
+        "all": "ALL — Албански лек"
       },
       "title_placeholders": {
         "piano": "Piano lessons for children",
@@ -415,7 +415,7 @@
   "layouts": {
     "dashboard": {
       "nav": {
-        "quick_payments": "Quick Payments",
+        "quick_payments": "Бързи плащания",
         "dashboard": "Dashboard",
         "products": "Sell",
         "subscribers": "Subscribers",

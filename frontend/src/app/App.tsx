@@ -16,6 +16,7 @@ import CustomerSubscriptionsPage from "../pages/CustomerSubscriptionsPage";
 import TransactionsPage from "../pages/TransactionsPage";
 import ProfilePage from "../pages/ProfilePage";
 import SettingsPage from "../pages/SettingsPage";
+import QuickPaymentsPage from "../pages/QuickPaymentsPage";
 import { RequireAuth } from "../components/RequireAuth";
 import { RequireGuest } from "../components/RequireGuest";
 import { RequireNoStripeAccount } from "../components/RequireNoStripeAccount";
@@ -128,6 +129,7 @@ const App = () => {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="quick-payments" element={<QuickPaymentsPage />} />
           <Route path="offerings" element={<PaymentLinksPage />} />
           <Route path="offerings/:id" element={<PaymentLinkDetailsPage />} />
           <Route path="subscriptions" element={<Navigate to="../offerings" replace />} />

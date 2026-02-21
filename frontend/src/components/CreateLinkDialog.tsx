@@ -9,6 +9,9 @@ const currencies = [
   { code: "gbp", labelKey: "components.create_link_dialog.currency_options.gbp", flag: "🇬🇧" },
   { code: "eur", labelKey: "components.create_link_dialog.currency_options.eur", flag: "🇪🇺" },
   { code: "usd", labelKey: "components.create_link_dialog.currency_options.usd", flag: "🇺🇸" },
+  { code: "bgn", labelKey: "components.create_link_dialog.currency_options.bgn", flag: "🇧🇬" },
+  { code: "ron", labelKey: "components.create_link_dialog.currency_options.ron", flag: "🇷🇴" },
+  { code: "all", labelKey: "components.create_link_dialog.currency_options.all", flag: "🇦🇱" },
 ];
 
 const intervals = [
@@ -30,6 +33,9 @@ const currencySymbol = (code: string) => {
   if (v === "gbp") return "£";
   if (v === "usd") return "$";
   if (v === "eur") return "€";
+  if (v === "bgn") return "лв";
+  if (v === "ron") return "lei";
+  if (v === "all") return "L";
   return v.toUpperCase() + " ";
 };
 
@@ -48,15 +54,26 @@ export type CreateLinkDialogProps = {
   onClose: () => void;
   onCreated: (link: LinkResponse, kind: LinkKind) => void;
   initialKind?: LinkKind;
+  defaultCurrency?: string;
 };
 
-const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }: CreateLinkDialogProps) => {
+const CreateLinkDialog = ({
+  open,
+  onClose,
+  onCreated,
+  initialKind = "one_time",
+  defaultCurrency = "gbp",
+}: CreateLinkDialogProps) => {
   const { t } = useTranslation();
+  const resolvedDefaultCurrency = useMemo(() => {
+    const normalized = (defaultCurrency || "").toLowerCase();
+    return currencies.some((item) => item.code === normalized) ? normalized : "gbp";
+  }, [defaultCurrency]);
   const [kind, setKind] = useState<LinkKind>(initialKind);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("gbp");
+  const [currency, setCurrency] = useState(resolvedDefaultCurrency);
   const [interval, setInterval] = useState("month");
   const [expiresAt, setExpiresAt] = useState("");
   const [requireName, setRequireName] = useState(true);
@@ -87,7 +104,7 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
     setTitle("");
     setDescription("");
     setAmount("");
-    setCurrency("gbp");
+    setCurrency(resolvedDefaultCurrency);
     setInterval("month");
     setExpiresAt("");
     setRequireName(true);
@@ -110,7 +127,8 @@ const CreateLinkDialog = ({ open, onClose, onCreated, initialKind = "one_time" }
     setPlaceholderCharIndex(0);
     setIsDeletingPlaceholder(false);
     setPlaceholderPaused(false);
-  }, [open, initialKind]);
+    setCurrency(resolvedDefaultCurrency);
+  }, [open, initialKind, resolvedDefaultCurrency]);
 
   useEffect(() => {
     if (!open) return;

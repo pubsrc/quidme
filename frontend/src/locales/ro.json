@@ -1,0 +1,446 @@
+{
+  "app": {
+    "hero_title": "Vinde ofertele mai repede cu Quidme",
+    "hero_subtitle": "Creați oferte, urmăriți vânzările, gestionați rambursările într-un singur loc.",
+    "get_started": "Începeți",
+    "login": "Log in",
+    "signup": "Înscrieți-vă"
+  },
+  "quickPayments": {
+    "title": "Plată rapidă",
+    "generate_code": "Generează cod",
+    "link_ready": "Link gata de copiat"
+  },
+  "pages": {
+    "callback": {
+      "signing_in": "Te conectez..."
+    },
+    "landing": {
+      "brand": "Quidme",
+      "tagline": "Mică aplicație pentru întreprinderile mici",
+      "sign_in": "Conectare",
+      "snapshot_title": "Quidme Snapshot",
+      "snapshot_footer_title": "Oferte, abonamente și rambursări într-un singur loc.",
+      "snapshot_footer_subtitle": "Construit pentru vânzătorii independenți și întreprinderile mici.",
+      "seo": {
+        "title": "Quidme | Plăți, abonamente și rambursări pentru comercianți individuali și întreprinderi mici",
+        "description": "Quidme ajută comercianții individuali, profesioniștii care desfășoară activități independente și întreprinderile mici să vândă mai rapid cu link-uri de plată, abonamente recurente, rambursări ușoare și opțiuni de plată flexibile.",
+        "keywords": [
+          "link-uri de plată pentru afaceri mici",
+          "abonamente pentru comercianții individuali",
+          "aplicație de plată pentru lucrători independenți",
+          "plăți pentru întreprinderile mici",
+          "abonamentele clienților",
+          "plăți online pentru tutori",
+          "platformă de plată pentru întreprinderile de servicii",
+          "gestionarea rambursărilor pentru întreprinderile mici"
+        ]
+      },
+      "for_who": {
+        "sole_traders_title": "Construit pentru comercianții individuali",
+        "sole_traders_body": "De la profesori de pian la vânzători de prânz de casă, primiți plăți online fără fricțiuni de transfer bancar manual.",
+        "subscriptions_title": "Creșteți cu abonamente",
+        "subscriptions_body": "Oferiți facturare recurentă pentru a păstra clienții existenți și pentru a genera venituri lunare previzibile.",
+        "refunds_title": "Gestionați rapid rambursările",
+        "refunds_body": "Păstrați încrederea clienților la un nivel ridicat, cu rambursări simple și urmărire transparentă a plăților."
+      },
+      "benefits": {
+        "title": "Vindeți cu mai puțină rezistență și cu o conversie mai mare",
+        "body": "Afacerile mici care se bazează pe numerar sau pe transferuri bancare manuale pierd vânzări. Quidme elimină fricțiunile de plată cu link-uri de plată care pot fi partajate, facturarea abonamentului și metode largi de plată."
+      },
+      "ideas": {
+        "piano": "Lecții de pian pentru copii",
+        "lunch": "Prânz de casă în bucătăria indiană",
+        "spanish": "Lecții de limba spaniolă",
+        "maths": "Predații online de matematică"
+      }
+    },
+    "login": {
+      "title": "Bine ai revenit",
+      "subtitle": "Conectați-vă cu e-mailul sau continuați cu Google.",
+      "email": "E-mail",
+      "password": "Parolă",
+      "hide_password": "Ascunde parola",
+      "show_password": "Afișați parola",
+      "hide": "Ascunde",
+      "show": "Spectacol",
+      "signing_in": "Conectare...",
+      "sign_in": "Conectare",
+      "redirecting": "Se redirecționează...",
+      "continue_google": "Continuați cu Google",
+      "forgot_password": "Aţi uitat parola?",
+      "create_account": "Creează cont",
+      "errors": {
+        "sign_in_failed": "Nu se poate conecta.",
+        "google_failed": "Nu se poate porni conectarea la Google."
+      }
+    },
+    "signup": {
+      "title": "Creați-vă contul",
+      "subtitle": "Începeți cu Quidme în câteva minute.",
+      "email": "E-mail",
+      "password": "Parolă",
+      "hide_password": "Ascunde parola",
+      "show_password": "Afișați parola",
+      "hide": "Ascunde",
+      "show": "Spectacol",
+      "creating": "Se creează...",
+      "create_account": "Creează cont",
+      "redirecting": "Se redirecționează...",
+      "continue_google": "Continuați cu Google",
+      "already_have": "Aveți deja un cont?",
+      "sign_in": "Conectare",
+      "errors": {
+        "signup_failed": "Nu se poate crea contul.",
+        "google_failed": "Nu se poate porni conectarea la Google."
+      }
+    },
+    "verify_email": {
+      "title": "Verificați-vă adresa de e-mail",
+      "subtitle": "Introdu codul de verificare trimis în căsuța de e-mail.",
+      "email": "E-mail",
+      "code": "Cod de verificare",
+      "verifying": "Se verifică...",
+      "verify": "Verificați e-mailul",
+      "resend": "Retrimiteți codul",
+      "messages": {
+        "verified": "E-mail verificat. Acum vă puteți conecta.",
+        "resent": "Am trimis un nou cod de verificare."
+      },
+      "errors": {
+        "verify_failed": "Verificarea a eșuat.",
+        "resend_failed": "Nu se poate retrimite codul."
+      }
+    },
+    "forgot_password": {
+      "title": "Resetați parola",
+      "subtitle_request": "Solicitați un cod de resetare pentru contul dvs.",
+      "subtitle_confirm": "Introdu codul și alege o nouă parolă.",
+      "email": "E-mail",
+      "reset_code": "Resetați codul",
+      "new_password": "Parolă Nouă",
+      "hide_password": "Ascunde parola",
+      "show_password": "Afișați parola",
+      "hide": "Ascunde",
+      "show": "Spectacol",
+      "sending": "Se trimite...",
+      "send_code": "Trimite codul de resetare",
+      "updating": "Se actualizează...",
+      "update_password": "Actualizați parola",
+      "back_login": "Înapoi la autentificare",
+      "messages": {
+        "sent": "Am trimis un cod de resetare la adresa ta de e-mail.",
+        "updated": "Parola a fost actualizată. Acum vă puteți conecta."
+      },
+      "errors": {
+        "send_failed": "Nu se poate trimite codul de resetare.",
+        "reset_failed": "Nu se poate reseta parola."
+      }
+    },
+    "start": {
+      "title": "Începeți să vindeți cu Quidme",
+      "subtitle": "Creați-vă contul Stripe Express cu detalii minime. Alegeți țara dvs. din lista acceptată de mai jos.",
+      "country": "Ţară",
+      "account_type": "Cont Express",
+      "logout": "Deconectați-vă",
+      "cancel": "Anula",
+      "starting": "Pornire...",
+      "ok": "Bine",
+      "countries": {
+        "gb": "Regatul Unit",
+        "de": "Germania",
+        "at": "Austria",
+        "it": "Italia",
+        "gr": "Grecia",
+        "bg": "Bulgaria",
+        "ro": "România",
+        "xk": "Kosovo",
+        "al": "Albania"
+      },
+      "errors": {
+        "create_account_failed": "Nu se poate crea contul. Vă rugăm să încercați din nou."
+      }
+    },
+    "dashboard": {
+      "title": "Bord",
+      "subtitle": "O privire de ansamblu rapidă asupra activității dvs. de vânzare a ofertelor.",
+      "total_earnings": "Câștigurile totale",
+      "pending_earnings": "Câștiguri în așteptare",
+      "account_status": "Starea contului",
+      "verified": "Verificat",
+      "pending": "În așteptare",
+      "recent_transactions": "Tranzacții recente",
+      "recent_subtitle": "Un jurnal cu cele mai recente vânzări.",
+      "view_all": "Vezi toate",
+      "customer": "Client",
+      "status": "Stare",
+      "date": "Data",
+      "amount": "Cantitate",
+      "default_customer": "Client",
+      "just_now": "tocmai acum",
+      "minutes_ago": "{{count}} minut în urmă",
+      "minutes_ago_plural": "{{count}} minute în urmă",
+      "hours_ago": "acum {{count}} oră",
+      "hours_ago_plural": "{{count}} ore în urmă",
+      "days_ago": "{{count}} zi în urmă",
+      "days_ago_plural": "{{count}} zile în urmă",
+      "years_ago": "acum peste {{count}} an",
+      "years_ago_plural": "acum peste {{count}} ani",
+      "status_refunded": "rambursat",
+      "status_succeeded": "a reusit",
+      "status_failed": "a eșuat",
+      "status_unknown": "necunoscut",
+      "status_pending": "în aşteptare",
+      "loading_transactions": "Se încarcă tranzacțiile...",
+      "no_transactions": "Nicio tranzacție încă.",
+      "transfer_to_account": "Transferați în contul dvs",
+      "transferring": "Se transferă...",
+      "transfer_failed": "Nu se pot transfera fonduri.",
+      "transfer_onboarding_required": "Trebuie să finalizați înscrierea pentru a transfera fonduri",
+      "okay": "Bine"
+    },
+    "products": {
+      "title": "Oferte",
+      "add_product": "Adaugă ofertă",
+      "load_failed": "Nu se pot încărca linkurile.",
+      "disable_failed": "Nu se poate dezactiva legătura.",
+      "loading": "Încărcare...",
+      "empty": "Nicio ofertă încă. Adaugă prima ta ofertă.",
+      "default_subscription_product": "Oferta de abonament",
+      "default_product": "Ofertă"
+    },
+    "product_details": {
+      "open_from_list": "Deschideți această pagină din lista de oferte.",
+      "loading": "Se încarcă oferta...",
+      "back": "Înapoi la oferte",
+      "not_found": "Oferta nu a fost găsită.",
+      "default_title": "Ofertă",
+      "amount": "Cantitate",
+      "earnings": "Câștiguri",
+      "expires": "Expiră",
+      "no_expiry": "Fără expirare",
+      "transactions": "Tranzacții",
+      "transactions_info": "Tranzacțiile sunt înregistrate automat atunci când plățile au succes. Vizualizați toate tranzacțiile în pagina Tranzacții."
+    },
+    "transactions": {
+      "title": "Tranzacții",
+      "subtitle": "Examinați toate achizițiile și rambursările clienților.",
+      "from": "Din",
+      "to": "La",
+      "apply": "Aplicați",
+      "reset": "Resetați",
+      "fetch_failed": "Nu se pot prelua tranzacțiile.",
+      "refund_failed": "Rambursarea eșuată.",
+      "customer": "Client",
+      "status": "Stare",
+      "date": "Data",
+      "amount": "Cantitate",
+      "default_customer": "Client",
+      "just_now": "tocmai acum",
+      "minutes_ago": "{{count}} minute în urmă",
+      "hours_ago": "{{count}} ore în urmă",
+      "days_ago": "{{count}} zile în urmă",
+      "years_ago": "acum peste {{count}} ani",
+      "status_refunded": "rambursat",
+      "status_succeeded": "a reusit",
+      "status_failed": "a eșuat",
+      "status_unknown": "necunoscut",
+      "status_pending": "în aşteptare",
+      "refund": "Restituire",
+      "refunding": "Rambursare...",
+      "no_transactions": "Nu s-au găsit tranzacții.",
+      "loading_transactions": "Se încarcă tranzacțiile...",
+      "confirm_refund_title": "Confirmați rambursarea",
+      "confirm_refund_text": "Sigur doriți să rambursați această tranzacție?",
+      "cancel": "Anula",
+      "confirm_refund": "Confirmați rambursarea"
+    },
+    "customer_subscriptions": {
+      "title": "Abonați",
+      "subtitle": "Abonamente create din ofertele dvs.",
+      "limit": "Limită",
+      "load_failed": "Nu se pot încărca abonamentele clienților.",
+      "load_more_failed": "Nu se pot încărca mai multe abonamente.",
+      "cancel_failed": "Nu se poate anula abonamentul.",
+      "loading": "Se încarcă abonamentele clienților...",
+      "customer": "Client",
+      "name": "Nume",
+      "email": "E-mail",
+      "status": "Stare",
+      "phone": "Telefon",
+      "payment_link_title": "Ofertă",
+      "action": "Acţiune",
+      "plan": "Plan",
+      "period": "Perioadă",
+      "address": "Adresa",
+      "dash": "—",
+      "cancel_subscription": "Anulați abonamentul",
+      "confirm_cancel_title": "Anulați abonamentul",
+      "confirm_cancel_text": "Sigur doriți să anulați abonamentul acestui abonat?",
+      "confirm_cancel_no": "Păstrați-vă activ",
+      "confirm_cancel_yes": "Da, anulează",
+      "canceling": "Se anulează...",
+      "canceled": "Anulat",
+      "empty": "Nu există încă abonamente pentru clienți.",
+      "loading_more": "Încărcare...",
+      "load_more": "Încărcați mai multe"
+    },
+    "account": {
+      "title": "Cont",
+      "subtitle": "Detaliile companiei și starea de înscriere.",
+      "loading_status": "Se încarcă starea...",
+      "status": "Stare",
+      "connected_required": "Este necesar un cont conectat",
+      "start_onboarding": "Începeți integrarea",
+      "verified": "Verificat",
+      "verified_body": "Contul dvs. poate accepta plăți și poate primi plăți.",
+      "earnings": "Câștigurile din cont",
+      "onboarding_body": "Finalizați înscrierea pentru a transfera fonduri în contul dvs.",
+      "opening": "Deschidere...",
+      "onboarding_failed": "Nu se poate începe îmbarcarea. Vă rugăm să încercați din nou.",
+      "payout_schedule_title": "Programează transferul soldului",
+      "payout_schedule_body": "Programați transferuri automate de sold în contul dvs.",
+      "schedule_daily": "Zilnic",
+      "schedule_weekly": "Săptămânal",
+      "schedule_monthly": "Lunar",
+      "schedule_manual": "Manual",
+      "weekly_anchor": "Zi de plată săptămânală",
+      "monthly_anchor": "Ziua de plată lunară (1-31)",
+      "save_schedule": "Salvați programul",
+      "saving_schedule": "Economisire...",
+      "payout_schedule_saved": "Programul de plată a fost salvat.",
+      "payout_schedule_failed": "Nu se poate salva programul de plată.",
+      "day_monday": "luni",
+      "day_tuesday": "marţi",
+      "day_wednesday": "miercuri",
+      "day_thursday": "joi",
+      "day_friday": "vineri",
+      "day_saturday": "sâmbătă",
+      "day_sunday": "duminică"
+    },
+    "settings": {
+      "title": "Setări",
+      "subtitle": "Gestionați-vă contul și setările de vânzare.",
+      "profile": "Profil",
+      "email": "E-mail",
+      "account_management": "Managementul contului",
+      "delete_account": "Șterge contul",
+      "delete_description": "Ștergeți definitiv contul și toate datele asociate. Această acțiune nu poate fi anulată.",
+      "delete_modal_title": "Ștergeți contul",
+      "delete_modal_intro": "Aceasta vă va șterge definitiv contul și toate datele asociate cu acesta:",
+      "delete_item_links": "Oferte și plăți de abonament",
+      "delete_item_transactions": "Istoricul tranzacțiilor",
+      "delete_item_stripe": "cont Stripe Connect",
+      "delete_item_login": "Contul dvs. de autentificare (veți fi deconectat)",
+      "delete_confirm": "Înțeleg că toate datele mele vor fi șterse definitiv",
+      "delete_failed": "Nu s-a șters contul. Vă rugăm să încercați din nou.",
+      "cancel": "Anula",
+      "deleting": "Se șterge...",
+      "delete_my_account": "Ștergeți contul meu"
+    }
+  },
+  "components": {
+    "require": {
+      "checking_session": "Sesiune de verificare..."
+    },
+    "create_link_dialog": {
+      "cta_one_time": "Creați o ofertă",
+      "cta_subscription": "Creați o ofertă de abonament",
+      "errors": {
+        "title_required": "Vă rugăm să adăugați un titlu.",
+        "invalid_amount": "Introduceți o sumă validă (până la 2 zecimale).",
+        "create_failed": "Nu se poate crea oferta."
+      },
+      "amount_placeholder": "10.00",
+      "one_time": "O dată",
+      "repeat": "Repeta",
+      "collapse": "Restrângeți detaliile",
+      "expand": "Extindeți detaliile",
+      "title_placeholder": "Introduceți titlul",
+      "description_placeholder": "Descriere (opțional)",
+      "currency": "Valută",
+      "interval": "Interval",
+      "customer_fields": "Clientul trebuie să furnizeze",
+      "field_email": "e-mail",
+      "field_name": "nume",
+      "field_phone": "telefon",
+      "field_address": "adresa",
+      "expiry_optional": "Data expirării (opțional)",
+      "creating": "Se creează...",
+      "interval_options": {
+        "day": "Zilnic",
+        "week": "Săptămânal",
+        "month": "Lunar",
+        "year": "Anual"
+      },
+      "currency_options": {
+        "gbp": "GBP - liră sterlină",
+        "eur": "EUR — euro",
+        "usd": "USD — dolar american",
+        "bgn": "BGN — leva bulgărească",
+        "ron": "RON — leu românesc",
+        "all": "ALL — lek albanez"
+      },
+      "title_placeholders": {
+        "piano": "Lecții de pian pentru copii",
+        "lunch": "Prânz de casă în bucătăria indiană",
+        "spanish": "Lecții de limba spaniolă",
+        "maths": "Predații online de matematică"
+      }
+    },
+    "link_card": {
+      "default_title": "Ofertă",
+      "recurring": "Recurente",
+      "disabled": "Dezactivat",
+      "disable": "Dezactivați",
+      "amount": "Cantitate",
+      "earnings": "Câștiguri",
+      "interval": "Interval",
+      "expires": "Expiră",
+      "no_expiry": "Fără expirare"
+    },
+    "payment_link_share": {
+      "copied": "Copiat",
+      "copy_link": "Copiați linkul",
+      "show_qr": "Afișați codul QR",
+      "share_link": "Distribuiți linkul",
+      "qr_code": "cod QR",
+      "qr_title": "Oferind QR",
+      "close": "Aproape",
+      "generating": "Se generează codul QR...",
+      "copy_qr": "Copiați imaginea QR",
+      "qr_alt": "Ofer cod QR"
+    }
+  },
+  "layouts": {
+    "dashboard": {
+      "nav": {
+        "quick_payments": "Plăți rapide",
+        "dashboard": "Bord",
+        "products": "Vinde",
+        "subscribers": "Abonați",
+        "transactions": "Tranzacții",
+        "account": "Cont",
+        "settings": "Setări"
+      },
+      "menu": {
+        "title": "Meniu",
+        "close": "Închide meniul",
+        "logout": "Deconectați-vă",
+        "open": "Meniu"
+      },
+      "logo_alt": "Logo Quidme",
+      "language": {
+        "label": "Limbă",
+        "english": "English",
+        "turkish": "Türkçe",
+        "german": "Deutsch",
+        "italian": "Italiano",
+        "greek": "Ελληνικά",
+        "bulgarian": "Български",
+        "romanian": "Română",
+        "albanian": "Shqip"
+      }
+    }
+  }
+}

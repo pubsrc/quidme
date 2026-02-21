@@ -1,0 +1,446 @@
+{
+  "app": {
+    "hero_title": "Verkaufen Sie Angebote schneller mit Quidme",
+    "hero_subtitle": "Erstellen Sie Angebote, verfolgen Sie Verkäufe und verwalten Sie Rückerstattungen an einem Ort.",
+    "get_started": "Legen Sie los",
+    "login": "Einloggen",
+    "signup": "Melden Sie sich an"
+  },
+  "quickPayments": {
+    "title": "Schnellzahlung",
+    "generate_code": "Code generieren",
+    "link_ready": "Link ist zum Kopieren bereit"
+  },
+  "pages": {
+    "callback": {
+      "signing_in": "Ich melde Sie an..."
+    },
+    "landing": {
+      "brand": "Quidme",
+      "tagline": "Kleine App für kleine Unternehmen",
+      "sign_in": "anmelden",
+      "snapshot_title": "Quidme-Schnappschuss",
+      "snapshot_footer_title": "Angebote, Abonnements und Rückerstattungen an einem Ort.",
+      "snapshot_footer_subtitle": "Entwickelt für unabhängige Verkäufer und kleine Unternehmen.",
+      "seo": {
+        "title": "Quidme | Zahlungen, Abonnements und Rückerstattungen für Einzelunternehmer und kleine Unternehmen",
+        "description": "Quidme hilft Einzelunternehmern, Selbstständigen und kleinen Unternehmen mit Zahlungslinks, wiederkehrenden Abonnements, einfachen Rückerstattungen und flexiblen Zahlungsoptionen, schneller zu verkaufen.",
+        "keywords": [
+          "Zahlungslinks für kleine Unternehmen",
+          "Abonnements für Einzelunternehmer",
+          "Bezahl-App für Selbstständige",
+          "Zahlungen für kleine Unternehmen",
+          "Kundenabonnements",
+          "Online-Zahlungen für Tutoren",
+          "Zahlungsplattform für Dienstleistungsunternehmen",
+          "Rückerstattungsmanagement für kleine Unternehmen"
+        ]
+      },
+      "for_who": {
+        "sole_traders_title": "Entwickelt für Einzelunternehmer",
+        "sole_traders_body": "Von Klavierlehrern bis hin zu Verkäufern hausgemachter Mittagessen – lassen Sie sich online bezahlen, ohne dass manuelle Banküberweisungen erforderlich sind.",
+        "subscriptions_title": "Wachsen Sie mit Abonnements",
+        "subscriptions_body": "Bieten Sie eine wiederkehrende Abrechnung an, um bestehende Kunden zu binden und ein vorhersehbares monatliches Einkommen aufzubauen.",
+        "refunds_title": "Erledigen Sie Rückerstattungen schnell",
+        "refunds_body": "Sorgen Sie mit einfachen Rückerstattungen und einer transparenten Zahlungsverfolgung für ein hohes Kundenvertrauen."
+      },
+      "benefits": {
+        "title": "Verkaufen Sie mit weniger Widerstand und höherer Conversion",
+        "body": "Kleine Unternehmen, die auf Bargeld oder manuelle Banküberweisungen angewiesen sind, verlieren Umsätze. Quidme beseitigt Zahlungsprobleme mit gemeinsam nutzbaren Zahlungslinks, Abonnementabrechnungen und breiten Zahlungsmethoden."
+      },
+      "ideas": {
+        "piano": "Klavierunterricht für Kinder",
+        "lunch": "Hausgemachtes Mittagessen mit indischer Küche",
+        "spanish": "Spanischunterricht",
+        "maths": "Online-Mathe-Nachhilfe"
+      }
+    },
+    "login": {
+      "title": "Willkommen zurück",
+      "subtitle": "Melden Sie sich mit Ihrer E-Mail-Adresse an oder fahren Sie mit Google fort.",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "hide_password": "Passwort verbergen",
+      "show_password": "Passwort anzeigen",
+      "hide": "Verstecken",
+      "show": "Zeigen",
+      "signing_in": "Anmelden...",
+      "sign_in": "anmelden",
+      "redirecting": "Weiterleitung...",
+      "continue_google": "Weiter mit Google",
+      "forgot_password": "Passwort vergessen?",
+      "create_account": "Benutzerkonto erstellen",
+      "errors": {
+        "sign_in_failed": "Anmeldung nicht möglich.",
+        "google_failed": "Die Google-Anmeldung kann nicht gestartet werden."
+      }
+    },
+    "signup": {
+      "title": "Erstellen Sie Ihr Konto",
+      "subtitle": "Beginnen Sie in wenigen Minuten mit Quidme.",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "hide_password": "Passwort verbergen",
+      "show_password": "Passwort anzeigen",
+      "hide": "Verstecken",
+      "show": "Zeigen",
+      "creating": "Erstellen...",
+      "create_account": "Benutzerkonto erstellen",
+      "redirecting": "Weiterleitung...",
+      "continue_google": "Weiter mit Google",
+      "already_have": "Sie haben bereits ein Konto?",
+      "sign_in": "anmelden",
+      "errors": {
+        "signup_failed": "Konto kann nicht erstellt werden.",
+        "google_failed": "Die Google-Anmeldung kann nicht gestartet werden."
+      }
+    },
+    "verify_email": {
+      "title": "Bestätigen Sie Ihre E-Mail",
+      "subtitle": "Geben Sie den Bestätigungscode ein, der an Ihren Posteingang gesendet wurde.",
+      "email": "E-Mail",
+      "code": "Bestätigungscode",
+      "verifying": "Überprüfung...",
+      "verify": "E-Mail bestätigen",
+      "resend": "Code erneut senden",
+      "messages": {
+        "verified": "E-Mail bestätigt. Sie können sich jetzt anmelden.",
+        "resent": "Wir haben einen neuen Bestätigungscode gesendet."
+      },
+      "errors": {
+        "verify_failed": "Die Überprüfung ist fehlgeschlagen.",
+        "resend_failed": "Code kann nicht erneut gesendet werden."
+      }
+    },
+    "forgot_password": {
+      "title": "Setzen Sie Ihr Passwort zurück",
+      "subtitle_request": "Fordern Sie einen Reset-Code für Ihr Konto an.",
+      "subtitle_confirm": "Geben Sie den Code ein und wählen Sie ein neues Passwort.",
+      "email": "E-Mail",
+      "reset_code": "Code zurücksetzen",
+      "new_password": "Neues Passwort",
+      "hide_password": "Passwort verbergen",
+      "show_password": "Passwort anzeigen",
+      "hide": "Verstecken",
+      "show": "Zeigen",
+      "sending": "Senden...",
+      "send_code": "Reset-Code senden",
+      "updating": "Aktualisierung...",
+      "update_password": "Passwort aktualisieren",
+      "back_login": "Zurück zum Login",
+      "messages": {
+        "sent": "Wir haben einen Reset-Code an Ihre E-Mail-Adresse gesendet.",
+        "updated": "Passwort aktualisiert. Sie können sich jetzt anmelden."
+      },
+      "errors": {
+        "send_failed": "Reset-Code kann nicht gesendet werden.",
+        "reset_failed": "Passwort kann nicht zurückgesetzt werden."
+      }
+    },
+    "start": {
+      "title": "Beginnen Sie mit dem Verkauf mit Quidme",
+      "subtitle": "Erstellen Sie Ihr Stripe Express-Konto mit minimalen Details. Wählen Sie Ihr Land aus der unterstützten Liste unten aus.",
+      "country": "Land",
+      "account_type": "Express-Konto",
+      "logout": "Abmelden",
+      "cancel": "Stornieren",
+      "starting": "Beginnt...",
+      "ok": "OK",
+      "countries": {
+        "gb": "Vereinigtes Königreich",
+        "de": "Deutschland",
+        "at": "Österreich",
+        "it": "Italien",
+        "gr": "Griechenland",
+        "bg": "Bulgarien",
+        "ro": "Rumänien",
+        "xk": "Kosovo",
+        "al": "Albanien"
+      },
+      "errors": {
+        "create_account_failed": "Ihr Konto kann nicht erstellt werden. Bitte versuchen Sie es erneut."
+      }
+    },
+    "dashboard": {
+      "title": "Armaturenbrett",
+      "subtitle": "Ein schneller Überblick über die Verkaufsaktivitäten Ihres Angebots.",
+      "total_earnings": "Gesamtertrag",
+      "pending_earnings": "Ausstehende Einnahmen",
+      "account_status": "Kontostatus",
+      "verified": "Verifiziert",
+      "pending": "Ausstehend",
+      "recent_transactions": "Letzte Transaktionen",
+      "recent_subtitle": "Ein Protokoll Ihrer letzten Verkäufe.",
+      "view_all": "Alle anzeigen",
+      "customer": "Kunde",
+      "status": "Status",
+      "date": "Datum",
+      "amount": "Menge",
+      "default_customer": "Kunde",
+      "just_now": "soeben",
+      "minutes_ago": "Vor {{count}} Minuten",
+      "minutes_ago_plural": "Vor {{count}} Minuten",
+      "hours_ago": "Vor {{count}} Stunde",
+      "hours_ago_plural": "Vor {{count}} Stunden",
+      "days_ago": "Vor {{count}} Tag",
+      "days_ago_plural": "Vor {{count}} Tagen",
+      "years_ago": "vor über {{count}} Jahr",
+      "years_ago_plural": "vor über {{count}} Jahren",
+      "status_refunded": "zurückerstattet",
+      "status_succeeded": "gelungen",
+      "status_failed": "fehlgeschlagen",
+      "status_unknown": "unbekannt",
+      "status_pending": "ausstehend",
+      "loading_transactions": "Transaktionen werden geladen...",
+      "no_transactions": "Noch keine Transaktionen.",
+      "transfer_to_account": "Auf Ihr Konto übertragen",
+      "transferring": "Übertragen...",
+      "transfer_failed": "Geld kann nicht überwiesen werden.",
+      "transfer_onboarding_required": "Sie müssen das Onboarding abschließen, um Geld überweisen zu können",
+      "okay": "Okay"
+    },
+    "products": {
+      "title": "Angebote",
+      "add_product": "Angebot hinzufügen",
+      "load_failed": "Links können nicht geladen werden.",
+      "disable_failed": "Link kann nicht deaktiviert werden.",
+      "loading": "Laden...",
+      "empty": "Noch keine Angebote. Fügen Sie Ihr erstes Angebot hinzu.",
+      "default_subscription_product": "Abonnementangebot",
+      "default_product": "Angebot"
+    },
+    "product_details": {
+      "open_from_list": "Öffnen Sie diese Seite über die Angebotsliste.",
+      "loading": "Angebot wird geladen...",
+      "back": "Zurück zu den Angeboten",
+      "not_found": "Angebot nicht gefunden.",
+      "default_title": "Angebot",
+      "amount": "Menge",
+      "earnings": "Ergebnis",
+      "expires": "Läuft ab",
+      "no_expiry": "Kein Ablauf",
+      "transactions": "Transaktionen",
+      "transactions_info": "Transaktionen werden automatisch erfasst, wenn Zahlungen erfolgreich sind. Sehen Sie sich alle Transaktionen auf der Seite „Transaktionen“ an."
+    },
+    "transactions": {
+      "title": "Transaktionen",
+      "subtitle": "Überprüfen Sie alle Kundenkäufe und Rückerstattungen.",
+      "from": "Aus",
+      "to": "Zu",
+      "apply": "Anwenden",
+      "reset": "Zurücksetzen",
+      "fetch_failed": "Transaktionen können nicht abgerufen werden.",
+      "refund_failed": "Rückerstattung fehlgeschlagen.",
+      "customer": "Kunde",
+      "status": "Status",
+      "date": "Datum",
+      "amount": "Menge",
+      "default_customer": "Kunde",
+      "just_now": "soeben",
+      "minutes_ago": "Vor {{count}} Minuten",
+      "hours_ago": "Vor {{count}} Stunden",
+      "days_ago": "Vor {{count}} Tagen",
+      "years_ago": "vor über {{count}} Jahren",
+      "status_refunded": "zurückerstattet",
+      "status_succeeded": "gelungen",
+      "status_failed": "fehlgeschlagen",
+      "status_unknown": "unbekannt",
+      "status_pending": "ausstehend",
+      "refund": "Erstattung",
+      "refunding": "Rückerstattung...",
+      "no_transactions": "Keine Transaktionen gefunden.",
+      "loading_transactions": "Transaktionen werden geladen...",
+      "confirm_refund_title": "Rückerstattung bestätigen",
+      "confirm_refund_text": "Sind Sie sicher, dass Sie diese Transaktion erstatten möchten?",
+      "cancel": "Stornieren",
+      "confirm_refund": "Rückerstattung bestätigen"
+    },
+    "customer_subscriptions": {
+      "title": "Abonnenten",
+      "subtitle": "Aus Ihren Angeboten erstellte Abonnements.",
+      "limit": "Limit",
+      "load_failed": "Kundenabonnements können nicht geladen werden.",
+      "load_more_failed": "Es können keine weiteren Abonnements geladen werden.",
+      "cancel_failed": "Abonnement kann nicht gekündigt werden.",
+      "loading": "Kundenabonnements werden geladen...",
+      "customer": "Kunde",
+      "name": "Name",
+      "email": "E-Mail",
+      "status": "Status",
+      "phone": "Telefon",
+      "payment_link_title": "Angebot",
+      "action": "Aktion",
+      "plan": "Planen",
+      "period": "Zeitraum",
+      "address": "Adresse",
+      "dash": "—",
+      "cancel_subscription": "Abo kündigen",
+      "confirm_cancel_title": "Abo kündigen",
+      "confirm_cancel_text": "Sind Sie sicher, dass Sie das Abonnement dieses Abonnenten kündigen möchten?",
+      "confirm_cancel_no": "Bleiben Sie aktiv",
+      "confirm_cancel_yes": "Ja, stornieren",
+      "canceling": "Stornierung...",
+      "canceled": "Abgesagt",
+      "empty": "Noch keine Kundenabonnements.",
+      "loading_more": "Laden...",
+      "load_more": "Mehr laden"
+    },
+    "account": {
+      "title": "Konto",
+      "subtitle": "Geschäftsdetails und Onboarding-Status.",
+      "loading_status": "Ladestatus...",
+      "status": "Status",
+      "connected_required": "Verbundenes Konto erforderlich",
+      "start_onboarding": "Beginnen Sie mit dem Onboarding",
+      "verified": "Verifiziert",
+      "verified_body": "Ihr Konto kann Zahlungen akzeptieren und Auszahlungen erhalten.",
+      "earnings": "Kontoeinnahmen",
+      "onboarding_body": "Schließen Sie das Onboarding ab, um Geld auf Ihr Konto zu überweisen.",
+      "opening": "Öffnung...",
+      "onboarding_failed": "Das Onboarding kann nicht gestartet werden. Bitte versuchen Sie es erneut.",
+      "payout_schedule_title": "Planen Sie die Übertragung des Restbetrags",
+      "payout_schedule_body": "Planen Sie automatische Guthabenübertragungen auf Ihr Konto.",
+      "schedule_daily": "Täglich",
+      "schedule_weekly": "Wöchentlich",
+      "schedule_monthly": "Monatlich",
+      "schedule_manual": "Handbuch",
+      "weekly_anchor": "Wöchentlicher Auszahlungstag",
+      "monthly_anchor": "Monatlicher Auszahlungstag (1-31)",
+      "save_schedule": "Zeitplan speichern",
+      "saving_schedule": "Sparen...",
+      "payout_schedule_saved": "Auszahlungsplan gespeichert.",
+      "payout_schedule_failed": "Auszahlungsplan kann nicht gespeichert werden.",
+      "day_monday": "Montag",
+      "day_tuesday": "Dienstag",
+      "day_wednesday": "Mittwoch",
+      "day_thursday": "Donnerstag",
+      "day_friday": "Freitag",
+      "day_saturday": "Samstag",
+      "day_sunday": "Sonntag"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "subtitle": "Verwalten Sie Ihr Konto und Ihre Verkaufseinstellungen.",
+      "profile": "Profil",
+      "email": "E-Mail",
+      "account_management": "Kontoverwaltung",
+      "delete_account": "Konto löschen",
+      "delete_description": "Löschen Sie Ihr Konto und alle damit verbundenen Daten endgültig. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "delete_modal_title": "Konto löschen",
+      "delete_modal_intro": "Dadurch werden Ihr Konto und alle damit verbundenen Daten dauerhaft gelöscht:",
+      "delete_item_links": "Angebote und Abonnement-Checkouts",
+      "delete_item_transactions": "Transaktionsverlauf",
+      "delete_item_stripe": "Stripe Connect-Konto",
+      "delete_item_login": "Ihr Login-Konto (Sie werden abgemeldet)",
+      "delete_confirm": "Ich verstehe, dass alle meine Daten dauerhaft gelöscht werden",
+      "delete_failed": "Konto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+      "cancel": "Stornieren",
+      "deleting": "Löschen...",
+      "delete_my_account": "Mein Konto löschen"
+    }
+  },
+  "components": {
+    "require": {
+      "checking_session": "Sitzung wird überprüft..."
+    },
+    "create_link_dialog": {
+      "cta_one_time": "Angebot erstellen",
+      "cta_subscription": "Abonnementangebot erstellen",
+      "errors": {
+        "title_required": "Bitte fügen Sie einen Titel hinzu.",
+        "invalid_amount": "Geben Sie einen gültigen Betrag ein (bis zu 2 Dezimalstellen).",
+        "create_failed": "Angebot kann nicht erstellt werden."
+      },
+      "amount_placeholder": "10.00",
+      "one_time": "Einmalig",
+      "repeat": "Wiederholen",
+      "collapse": "Details ausblenden",
+      "expand": "Details erweitern",
+      "title_placeholder": "Titel eingeben",
+      "description_placeholder": "Beschreibung (optional)",
+      "currency": "Währung",
+      "interval": "Intervall",
+      "customer_fields": "Der Kunde muss bereitstellen",
+      "field_email": "E-Mail",
+      "field_name": "Name",
+      "field_phone": "Telefon",
+      "field_address": "Adresse",
+      "expiry_optional": "Ablaufdatum (optional)",
+      "creating": "Erstellen...",
+      "interval_options": {
+        "day": "Täglich",
+        "week": "Wöchentlich",
+        "month": "Monatlich",
+        "year": "Jährlich"
+      },
+      "currency_options": {
+        "gbp": "GBP – Britisches Pfund",
+        "eur": "EUR – Euro",
+        "usd": "USD – US-Dollar",
+        "bgn": "BGN – Bulgarischer Lew",
+        "ron": "RON – Rumänischer Leu",
+        "all": "ALL – Albanischer Lek"
+      },
+      "title_placeholders": {
+        "piano": "Klavierunterricht für Kinder",
+        "lunch": "Hausgemachtes Mittagessen mit indischer Küche",
+        "spanish": "Spanischunterricht",
+        "maths": "Online-Mathe-Nachhilfe"
+      }
+    },
+    "link_card": {
+      "default_title": "Angebot",
+      "recurring": "Wiederkehrend",
+      "disabled": "Deaktiviert",
+      "disable": "Deaktivieren",
+      "amount": "Menge",
+      "earnings": "Ergebnis",
+      "interval": "Intervall",
+      "expires": "Läuft ab",
+      "no_expiry": "Kein Ablauf"
+    },
+    "payment_link_share": {
+      "copied": "Kopiert",
+      "copy_link": "Link kopieren",
+      "show_qr": "QR-Code anzeigen",
+      "share_link": "Link teilen",
+      "qr_code": "QR-Code",
+      "qr_title": "QR anbieten",
+      "close": "Schließen",
+      "generating": "QR-Code wird generiert...",
+      "copy_qr": "QR-Bild kopieren",
+      "qr_alt": "QR-Code anbieten"
+    }
+  },
+  "layouts": {
+    "dashboard": {
+      "nav": {
+        "quick_payments": "Schnellzahlungen",
+        "dashboard": "Armaturenbrett",
+        "products": "Verkaufen",
+        "subscribers": "Abonnenten",
+        "transactions": "Transaktionen",
+        "account": "Konto",
+        "settings": "Einstellungen"
+      },
+      "menu": {
+        "title": "Speisekarte",
+        "close": "Menü schließen",
+        "logout": "Abmelden",
+        "open": "Speisekarte"
+      },
+      "logo_alt": "Quidme-Logo",
+      "language": {
+        "label": "Sprache",
+        "english": "English",
+        "turkish": "Türkçe",
+        "german": "Deutsch",
+        "italian": "Italiano",
+        "greek": "Ελληνικά",
+        "bulgarian": "Български",
+        "romanian": "Română",
+        "albanian": "Shqip"
+      }
+    }
+  }
+}

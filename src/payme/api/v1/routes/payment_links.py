@@ -25,6 +25,8 @@ from payme.models.payment import (
     DisableLinkResponse,
     PaymentLinkCreate,
     PaymentLinkResponse,
+    QuickPaymentCreate,
+    QuickPaymentResponse,
 )
 from payme.services.fees import amount_with_fee, subtract_service_fee
 from payme.services.payment_links import StripePaymentLinkService
@@ -46,7 +48,10 @@ def create_payment_link(
     Create a one-time payment link. Factory returns platform or connected service based on account status (VERIFIED -> connected).
     """
     link_id = str(uuid.uuid4())
-    total_amount, service_fee_percent, stripe_fee_percent, service_fee_cents = amount_with_fee(payload.amount)
+    total_amount, service_fee_percent, stripe_fee_percent, service_fee_cents = amount_with_fee(
+        payload.amount,
+        currency=payload.currency.value,
+    )
     links_repository.create_draft(
         link_id=link_id,
         user_id=principal.user_id,
@@ -107,6 +112,40 @@ def create_payment_link(
         earnings_amount=0,
         require_fields=payload.require_fields,
     )
+
+
+@router.post("/quick-payments", response_model=QuickPaymentResponse)
+def create_quick_payment_link(
+    payload: QuickPaymentCreate,
+    principal: Annotated[Principal, Depends(require_principal())],
+    link_service: Annotated[StripePaymentLinkService, Depends(get_stripe_link_service)],
+) -> QuickPaymentResponse:
+    """
+    Create a one-time Stripe payment link quickly without persisting to DynamoDB.
+    Returns only the generated checkout URL.
+    """
+    quick_link_id = str(uuid.uuid4())
+    total_amount, _, _, service_fee_cents = amount_with_fee(
+        payload.amount,
+        currency=payload.currency.value,
+    )
+
+    try:
+        stripe_link = link_service.create_payment_link_one_time(
+            link_id=quick_link_id,
+            title=payload.title or "Quick Payment",
+            description=None,
+            amount=total_amount,
+            base_amount=payload.amount,
+            currency=payload.currency.value,
+            require_fields=[],
+            service_fee=service_fee_cents,
+        )
+    except stripe.error.StripeError as exc:
+        logger.exception("Failed to create Stripe quick payment link", extra={"quick_link_id": quick_link_id})
+        raise HTTPException(status_code=400, detail=stripe_error_message(exc)) from exc
+
+    return QuickPaymentResponse(url=stripe_link["url"])
 
 
 @router.get("", response_model=list[PaymentLinkResponse])

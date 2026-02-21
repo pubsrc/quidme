@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
+import { CreditCard, HandCoins, Repeat, Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
-import { replaceLocaleInPathname } from "../lib/localeRouting";
+import { LOCALE_OPTIONS, replaceLocaleInPathname, resolveLocale, type AppLocale } from "../lib/localeRouting";
+import { useSeo } from "../lib/useSeo";
 import QuidmeLogo from "../components/QuidmeLogo";
 import LocaleLink from "../components/LocaleLink";
 
@@ -17,9 +19,40 @@ const LandingPage = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const currentLanguage = (i18n.resolvedLanguage || "en").startsWith("tr") ? "tr" : "en";
+  const currentLanguage = resolveLocale(i18n.resolvedLanguage) ?? "en";
 
-  const setLanguage = async (lang: "en" | "tr") => {
+  useSeo({
+    title: t("pages.landing.seo.title"),
+    description: t("pages.landing.seo.description"),
+    keywords: t("pages.landing.seo.keywords", { returnObjects: true }) as string[],
+    canonicalPath: `/${currentLanguage}`,
+    locale: currentLanguage === "tr" ? "tr_TR" : "en_GB",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          name: "Quidme",
+          url: window.location.origin,
+          logo: `${window.location.origin}/quidme-logo.svg`,
+        },
+        {
+          "@type": "SoftwareApplication",
+          name: "Quidme",
+          applicationCategory: "BusinessApplication",
+          operatingSystem: "Web",
+          description: t("pages.landing.seo.description"),
+          offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "GBP",
+          },
+        },
+      ],
+    },
+  });
+
+  const setLanguage = async (lang: AppLocale) => {
     await i18n.changeLanguage(lang);
     localStorage.setItem(LOCALE_STORAGE_KEY, lang);
     navigate(replaceLocaleInPathname(location.pathname, lang), { replace: true });
@@ -51,12 +84,15 @@ const LandingPage = () => {
           <select
             id="landing-language"
             value={currentLanguage}
-            onChange={(e) => setLanguage(e.target.value as "en" | "tr")}
+            onChange={(e) => setLanguage(e.target.value as AppLocale)}
             aria-label={t("layouts.dashboard.language.label")}
             className="h-10 rounded-full border border-[#d89c35] bg-white/80 px-4 text-sm font-semibold text-[#603400] backdrop-blur outline-none transition hover:bg-white"
           >
-            <option value="en">🇬🇧 English</option>
-            <option value="tr">🇹🇷 Türkçe</option>
+            {LOCALE_OPTIONS.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.flag} {t(option.labelKey)}
+              </option>
+            ))}
           </select>
         </div>
       </header>
@@ -134,6 +170,40 @@ const LandingPage = () => {
               <div className="mt-2 text-xl font-bold">{t("pages.landing.snapshot_footer_title")}</div>
             </motion.div>
           </motion.div>
+        </section>
+
+        <section className="mt-12 grid gap-4 md:mt-14 md:grid-cols-3">
+          <div className="rounded-2xl border border-[#e6bc74] bg-white/75 p-5">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ffe4b2] text-[#7b470d]">
+              <Wallet className="h-5 w-5" />
+            </div>
+            <h2 className="mt-3 text-lg font-semibold text-[#4f2b00]">{t("pages.landing.for_who.sole_traders_title")}</h2>
+            <p className="mt-1 text-sm text-[#7b4f1a]">{t("pages.landing.for_who.sole_traders_body")}</p>
+          </div>
+
+          <div className="rounded-2xl border border-[#e6bc74] bg-white/75 p-5">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ffe4b2] text-[#7b470d]">
+              <Repeat className="h-5 w-5" />
+            </div>
+            <h2 className="mt-3 text-lg font-semibold text-[#4f2b00]">{t("pages.landing.for_who.subscriptions_title")}</h2>
+            <p className="mt-1 text-sm text-[#7b4f1a]">{t("pages.landing.for_who.subscriptions_body")}</p>
+          </div>
+
+          <div className="rounded-2xl border border-[#e6bc74] bg-white/75 p-5">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ffe4b2] text-[#7b470d]">
+              <HandCoins className="h-5 w-5" />
+            </div>
+            <h2 className="mt-3 text-lg font-semibold text-[#4f2b00]">{t("pages.landing.for_who.refunds_title")}</h2>
+            <p className="mt-1 text-sm text-[#7b4f1a]">{t("pages.landing.for_who.refunds_body")}</p>
+          </div>
+        </section>
+
+        <section className="mt-8 rounded-3xl border border-[#e1b361] bg-[#fff4da]/90 p-6 md:p-8">
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#ffd28b] text-[#6e3d07]">
+            <CreditCard className="h-6 w-6" />
+          </div>
+          <h2 className="mt-3 text-2xl font-bold text-[#4f2b00]">{t("pages.landing.benefits.title")}</h2>
+          <p className="mt-2 max-w-3xl text-sm text-[#7b4f1a] md:text-base">{t("pages.landing.benefits.body")}</p>
         </section>
       </main>
     </div>
