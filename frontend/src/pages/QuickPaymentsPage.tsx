@@ -152,10 +152,10 @@ const QuickPaymentsPage = () => {
               className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.2]"
             />
             <div className="relative h-full">
-              <div className="flex h-full flex-col gap-4 p-3 md:p-4">
+              <div className="flex h-full flex-col gap-4 px-3 pb-3 pt-6 md:px-4 md:pb-4 md:pt-7">
                 <div>
                   <select
-                    className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-base text-slate-700 outline-none"
+                    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-700 outline-none"
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
                   >
