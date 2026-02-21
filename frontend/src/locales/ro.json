@@ -6,6 +6,11 @@
     "login": "Log in",
     "signup": "Înscrieți-vă"
   },
+  "quickPayments": {
+    "title": "Plată rapidă",
+    "generate_code": "Generează cod",
+    "link_ready": "Link gata de copiat"
+  },
   "pages": {
     "callback": {
       "signing_in": "Te conectez..."
@@ -410,6 +415,7 @@
   "layouts": {
     "dashboard": {
       "nav": {
+        "quick_payments": "Plăți rapide",
         "dashboard": "Bord",
         "products": "Vinde",
         "subscribers": "Abonați",

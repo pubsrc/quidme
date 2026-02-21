@@ -123,6 +123,16 @@ export type SubscriptionPayload = {
   require_phone?: boolean;
 };
 
+export type QuickPaymentPayload = {
+  title?: string | null;
+  amount: number;
+  currency: string;
+};
+
+export type QuickPaymentResponse = {
+  url: string;
+};
+
 /** Response shape for both payment and subscription links (list + create). */
 export type LinkResponse = {
   id: string;
@@ -213,6 +223,21 @@ export const api = {
       })
     );
     if (!res.ok) throw new Error(await errorMessageFromResponse(res, "Failed to create payment link"));
+    return res.json();
+  },
+  createQuickPayment: async (payload: QuickPaymentPayload): Promise<QuickPaymentResponse> => {
+    const res = await authFetch(
+      `${base}/payment-links/quick-payments`,
+      await withAuth({
+        method: "POST",
+        body: JSON.stringify({
+          title: payload.title ?? undefined,
+          amount: payload.amount,
+          currency: payload.currency,
+        }),
+      })
+    );
+    if (!res.ok) throw new Error(await errorMessageFromResponse(res, "Failed to create quick payment"));
     return res.json();
   },
   listPaymentLinks: async (): Promise<LinkResponse[]> => {

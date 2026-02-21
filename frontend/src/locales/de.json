@@ -6,6 +6,11 @@
     "login": "Einloggen",
     "signup": "Melden Sie sich an"
   },
+  "quickPayments": {
+    "title": "Schnellzahlung",
+    "generate_code": "Code generieren",
+    "link_ready": "Link ist zum Kopieren bereit"
+  },
   "pages": {
     "callback": {
       "signing_in": "Ich melde Sie an..."
@@ -410,6 +415,7 @@
   "layouts": {
     "dashboard": {
       "nav": {
+        "quick_payments": "Schnellzahlungen",
         "dashboard": "Armaturenbrett",
         "products": "Verkaufen",
         "subscribers": "Abonnenten",

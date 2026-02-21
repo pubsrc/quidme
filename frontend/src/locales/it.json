@@ -6,6 +6,11 @@
     "login": "Login",
     "signup": "Iscrizione"
   },
+  "quickPayments": {
+    "title": "Pagamento rapido",
+    "generate_code": "Genera codice",
+    "link_ready": "Link pronto da copiare"
+  },
   "pages": {
     "callback": {
       "signing_in": "Ti sto facendo accedere..."
@@ -410,6 +415,7 @@
   "layouts": {
     "dashboard": {
       "nav": {
+        "quick_payments": "Pagamenti rapidi",
         "dashboard": "Pannello di controllo",
         "products": "Vendere",
         "subscribers": "Abbonati",

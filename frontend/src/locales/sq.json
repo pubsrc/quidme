@@ -6,6 +6,11 @@
     "login": "Identifikohu",
     "signup": "Regjistrohu"
   },
+  "quickPayments": {
+    "title": "Pagesë e shpejtë",
+    "generate_code": "Gjenero kodin",
+    "link_ready": "Lidhja është gati për kopjim"
+  },
   "pages": {
     "callback": {
       "signing_in": "Po identifikohesh..."
@@ -410,6 +415,7 @@
   "layouts": {
     "dashboard": {
       "nav": {
+        "quick_payments": "Pagesa të shpejta",
         "dashboard": "Paneli",
         "products": "Shitet",
         "subscribers": "Abonentët",

@@ -6,6 +6,11 @@
     "login": "Συνδεθείτε",
     "signup": "Εγγραφείτε"
   },
+  "quickPayments": {
+    "title": "Γρήγορη πληρωμή",
+    "generate_code": "Δημιουργία κωδικού",
+    "link_ready": "Ο σύνδεσμος είναι έτοιμος για αντιγραφή"
+  },
   "pages": {
     "callback": {
       "signing_in": "Σύνδεσή σας..."
@@ -410,6 +415,7 @@
   "layouts": {
     "dashboard": {
       "nav": {
+        "quick_payments": "Γρήγορες πληρωμές",
         "dashboard": "Ταμπλό",
         "products": "Πωλώ",
         "subscribers": "Συνδρομητές",

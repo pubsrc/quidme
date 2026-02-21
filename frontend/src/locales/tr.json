@@ -6,6 +6,11 @@
     "login": "Giriş Yap",
     "signup": "Kayıt Ol"
   },
+  "quickPayments": {
+    "title": "Hızlı Ödeme",
+    "generate_code": "Kod oluştur",
+    "link_ready": "Bağlantı kopyalamaya hazır"
+  },
   "pages": {
     "callback": {
       "signing_in": "Girişiniz yapılıyor..."
@@ -336,9 +341,7 @@
   },
   "components": {
     "require": {
-      "checking_session": "Oturum kontrol ediliyor...",
-      "account_check_failed": "Hesap durumu doğrulanamadı.",
-      "retry": "Tekrar dene"
+      "checking_session": "Oturum kontrol ediliyor..."
     },
     "create_link_dialog": {
       "cta_one_time": "Teklif oluştur",
@@ -407,14 +410,12 @@
       "generating": "QR kod oluşturuluyor...",
       "copy_qr": "QR görselini kopyala",
       "qr_alt": "Teklif QR kodu"
-    },
-    "require": {
-      "checking_session": "Oturum kontrol ediliyor..."
     }
   },
   "layouts": {
     "dashboard": {
       "nav": {
+        "quick_payments": "Hızlı Ödeme",
         "dashboard": "Panel",
         "products": "Sat",
         "subscribers": "Aboneler",

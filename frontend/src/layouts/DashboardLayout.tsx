@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { BarChart3, DollarSign, Home, LogOut, Menu, Settings, User, Users, X } from "lucide-react";
+import { BarChart3, DollarSign, Home, LogOut, Menu, QrCode, Settings, User, Users, X } from "lucide-react";
 import { signOutWithCognito } from "../lib/auth";
 import { LOCALE_STORAGE_KEY } from "../app/i18n";
 import { LOCALE_OPTIONS, replaceLocaleInPathname, resolveLocale, type AppLocale } from "../lib/localeRouting";
@@ -9,6 +9,11 @@ import { useLocaleNavigate } from "../lib/useLocaleNavigate";
 import QuidmeLogo from "../components/QuidmeLogo";
 
 const navItems = [
+  {
+    to: "quick-payments",
+    labelKey: "layouts.dashboard.nav.quick_payments",
+    icon: <QrCode className="h-8 w-8" />,
+  },
   {
     to: "dashboard",
     labelKey: "layouts.dashboard.nav.dashboard",

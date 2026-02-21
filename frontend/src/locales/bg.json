@@ -6,6 +6,11 @@
     "login": "Log In",
     "signup": "Sign Up"
   },
+  "quickPayments": {
+    "title": "Бързо плащане",
+    "generate_code": "Генерирай код",
+    "link_ready": "Връзката е готова за копиране"
+  },
   "pages": {
     "callback": {
       "signing_in": "Signing you in..."
@@ -410,6 +415,7 @@
   "layouts": {
     "dashboard": {
       "nav": {
+        "quick_payments": "Бързи плащания",
         "dashboard": "Dashboard",
         "products": "Sell",
         "subscribers": "Subscribers",

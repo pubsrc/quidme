@@ -6,6 +6,11 @@
     "login": "Log In",
     "signup": "Sign Up"
   },
+  "quickPayments": {
+    "title": "Quick Payment",
+    "generate_code": "Generate code",
+    "link_ready": "Link ready to copy"
+  },
   "pages": {
     "callback": {
       "signing_in": "Signing you in..."
@@ -336,9 +341,7 @@
   },
   "components": {
     "require": {
-      "checking_session": "Checking session...",
-      "account_check_failed": "Unable to verify account status.",
-      "retry": "Retry"
+      "checking_session": "Checking session..."
     },
     "create_link_dialog": {
       "cta_one_time": "Create offering",
@@ -407,14 +410,12 @@
       "generating": "Generating QR code...",
       "copy_qr": "Copy QR image",
       "qr_alt": "Offering QR code"
-    },
-    "require": {
-      "checking_session": "Checking session..."
     }
   },
   "layouts": {
     "dashboard": {
       "nav": {
+        "quick_payments": "Quick Payments",
         "dashboard": "Dashboard",
         "products": "Sell",
         "subscribers": "Subscribers",
