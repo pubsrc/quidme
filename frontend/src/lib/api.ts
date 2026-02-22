@@ -5,6 +5,7 @@ export type Account = {
   stripe_account_id: string;
   country: string;
   status: string; // NEW | RESTRICTED | VERIFIED
+  pending_earnings_status?: "settled" | "in_progress";
   created_at: string;
   pending_earnings?: Record<string, number>; // currency -> amount in minor units
   earnings?: Record<string, number>; // currency -> amount in minor units

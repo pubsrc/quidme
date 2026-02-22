@@ -74,6 +74,7 @@ const DashboardPage = () => {
   }, [account]);
 
   const recentRows = useMemo(() => transactions.slice(0, 4), [transactions]);
+  const pendingEarningsStatus = account?.pending_earnings_status ?? "settled";
 
   const handleTransfer = async () => {
     if (!status.payouts_enabled) {
@@ -112,10 +113,14 @@ const DashboardPage = () => {
           <button
             type="button"
             onClick={handleTransfer}
-            disabled={transferLoading || totals.pendingEarningsMinor <= 0}
+            disabled={transferLoading || pendingEarningsStatus === "in_progress" || totals.pendingEarningsMinor <= 0}
             className="mt-4 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 md:rounded-2xl md:px-5 md:py-2.5 md:text-base"
           >
-            {transferLoading ? t("pages.dashboard.transferring") : t("pages.dashboard.transfer_to_account")}
+            {pendingEarningsStatus === "in_progress"
+              ? "In progress"
+              : transferLoading
+              ? t("pages.dashboard.transferring")
+              : t("pages.dashboard.transfer_to_account")}
           </button>
           {transferError && <div className="mt-2 text-sm font-medium text-red-600">{transferError}</div>}
         </div>

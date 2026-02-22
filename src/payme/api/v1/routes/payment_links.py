@@ -48,7 +48,7 @@ def create_payment_link(
     Create a one-time payment link. Factory returns platform or connected service based on account status (VERIFIED -> connected).
     """
     link_id = str(uuid.uuid4())
-    total_amount, service_fee_percent, stripe_fee_percent, service_fee_cents = amount_with_fee(
+    total_amount, _, _, service_fee_cents = amount_with_fee(
         payload.amount,
         currency=payload.currency.value,
     )

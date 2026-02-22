@@ -70,6 +70,8 @@ async def _handle_stripe_webhook(request: Request, *, signing_secret: str, sourc
     account_id = getattr(event, "account", None) or (event.get("account") if isinstance(event, dict) else None)
     if data is not None:
         _dispatch_event(event_type, data, account_id)
+    else:
+        logger.error("%s webhook received event with missing data: %s", source, event_type)
 
     return Response(status_code=200)
 

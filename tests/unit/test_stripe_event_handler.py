@@ -137,7 +137,7 @@ def test_handle_payment_succeeded_connect_account_still_updates_earnings(
     assert call_args[2] == 5000
     earnings = call_args[1]
     assert earnings == 5000
-    mock_account_repo_cls.return_value.add_pending_earnings.assert_not_called()
+    mock_account_repo_cls.return_value.add_pending_earnings.assert_called_once_with("u2", earnings, "usd")
 
     mock_account_repo_cls.return_value.add_earnings.assert_called_once()
     acc_call = mock_account_repo_cls.return_value.add_earnings.call_args[0]
