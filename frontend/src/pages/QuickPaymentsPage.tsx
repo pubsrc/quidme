@@ -149,7 +149,7 @@ const QuickPaymentsPage = () => {
               src="/quidme-uk-qr.png"
               alt=""
               aria-hidden
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.2]"
+              className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.15]"
             />
             <div className="relative h-full">
               <div className="flex h-full flex-col gap-4 px-3 pb-3 pt-6 md:px-4 md:pb-4 md:pt-7">
