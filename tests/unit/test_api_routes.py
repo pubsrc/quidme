@@ -615,7 +615,7 @@ def test_create_quick_payment_link_success_without_dynamo(monkeypatch: Any) -> N
     assert r.json()["url"] == "https://example.com"
     assert len(link_fake.created_one_time) == 1
     assert link_fake.created_one_time[0]["title"] == "Quick Piano Payment"
-    assert link_fake.created_one_time[0]["amount"] == 180  # amount + tiered fixed fee (bgn)
+    assert link_fake.created_one_time[0]["amount"] == 140  # amount + tiered fixed fee
 
 
 def test_list_payment_links_sorted(monkeypatch: Any) -> None:
