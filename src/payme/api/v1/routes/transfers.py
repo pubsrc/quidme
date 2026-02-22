@@ -113,7 +113,7 @@ def create_payouts(
             "failed": {},
             "payout_ids": {},
             "status": "no_balance",
-            "message": "No available balance in the account to payout",
+            "message": "No available balance in connected Stripe account to payout",
         }
 
     stripe_accounts_repository.clear_pending_earnings(principal.user_id)

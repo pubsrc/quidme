@@ -35,19 +35,86 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/accounts", tags=["accounts"])
 
 
+def _has_positive_pending(pending: dict[str, int]) -> bool:
+    return any(int(amount) > 0 for amount in pending.values())
+
+
+def _transfer_pending_earnings(
+    *,
+    user_id: str,
+    stripe_account_id: str,
+    pending: dict[str, int],
+    stripe_accounts_repository: StripeAccountRepository,
+    stripe_platform_service: type[StripePlatformAccountService],
+) -> tuple[str, dict[str, int]]:
+    """
+    Attempt to move all positive pending earnings to the connected account.
+
+    Returns:
+        (pending_earnings_status, refreshed_pending)
+        pending_earnings_status: "settled" if all attempted transfers succeeded, else "in_progress"
+    """
+    transfer_failed = False
+    transferred_currencies: list[str] = []
+
+    for currency, amount in pending.items():
+        amount_minor = int(amount)
+        if amount_minor <= 0:
+            continue
+        try:
+            stripe_platform_service.create_transfer(
+                amount=amount_minor,
+                currency=currency,
+                destination=stripe_account_id,
+            )
+            transferred_currencies.append(currency)
+        except Exception as exc:
+            transfer_failed = True
+            logger.warning(
+                "Failed transfer from account status endpoint user_id=%s stripe_account_id=%s currency=%s amount=%s: %s",
+                user_id,
+                stripe_account_id,
+                currency,
+                amount_minor,
+                exc,
+            )
+
+    if transferred_currencies:
+        stripe_accounts_repository.clear_pending_earnings(
+            user_id, only_currencies=transferred_currencies
+        )
+
+    refreshed_pending = stripe_accounts_repository.get_pending_earnings(user_id)
+    pending_earnings_status = "in_progress" if transfer_failed else "settled"
+    return pending_earnings_status, refreshed_pending
+
+
 @router.get("/account")
 def get_account(
     principal: Annotated[Principal, Depends(require_principal())],
     stripe_accounts_repository: Annotated[StripeAccountRepository, Depends(get_stripe_accounts_repository)],
+    stripe_platform_service: Annotated[type[StripePlatformAccountService], Depends(get_stripe_platform_account_service)],
 ) -> dict:
     """Return current user's Stripe Connect account (status, pending_earnings, earnings). get_principal ensures account exists."""
     rec = principal.stripe_account
     pending = stripe_accounts_repository.get_pending_earnings(principal.user_id)
+    pending_earnings_status = "settled"
+
+    if _has_positive_pending(pending):
+        pending_earnings_status, pending = _transfer_pending_earnings(
+            user_id=principal.user_id,
+            stripe_account_id=rec.stripe_account_id,
+            pending=pending,
+            stripe_accounts_repository=stripe_accounts_repository,
+            stripe_platform_service=stripe_platform_service,
+        )
+
     earnings = stripe_accounts_repository.get_earnings(principal.user_id)
     return {
         "stripe_account_id": rec.stripe_account_id,
         "country": rec.country or "",
         "status": rec.status or "NEW",
+        "pending_earnings_status": pending_earnings_status,
         "created_at": rec.created_at or "",
         "pending_earnings": pending,
         "earnings": earnings,
