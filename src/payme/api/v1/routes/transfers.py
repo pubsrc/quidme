@@ -1,4 +1,4 @@
-"""Manual transfers routes: move pending earnings to the user's connected Stripe account."""
+"""Transfers routes."""
 
 from __future__ import annotations
 
@@ -68,86 +68,10 @@ class PayoutScheduleRequest(BaseModel):
         return self
 
 
-@router.post("/transfer")
-def transfer_pending_earnings(
-    principal: Annotated[Principal, Depends(require_principal())],
-    stripe_accounts_repository: Annotated[StripeAccountRepository, Depends(get_stripe_accounts_repository)],
-    stripe_platform_service: Annotated[
-        type[StripePlatformAccountService],
-        Depends(get_stripe_platform_account_service),
-    ],
-) -> dict:
-    """
-    Transfer current user's pending earnings to their connected Stripe account.
-    """
-    stripe_account_id = principal.stripe_account_id
-    if not stripe_account_id or not stripe_account_id.startswith("acct_"):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Connected Stripe account is required",
-        )
-
-    pending = stripe_accounts_repository.get_pending_earnings(principal.user_id)
-    if not pending:
-        return {
-            "stripe_account_id": stripe_account_id,
-            "transferred": {},
-            "failed": {},
-            "message": "No pending earnings to transfer",
-        }
-
-    transferred: dict[str, int] = {}
-    failed: dict[str, str] = {}
-    transferred_currencies: list[str] = []
-
-    for currency, amount in pending.items():
-        if amount <= 0:
-            continue
-        amount_minor = int(amount)
-        if amount_minor <= 0:
-            continue
-        try:
-            stripe_platform_service.create_transfer(
-                amount=amount_minor,
-                currency=currency,
-                destination=stripe_account_id,
-            )
-            transferred[currency] = amount_minor
-            transferred_currencies.append(currency)
-        except Exception as exc:
-            failed[currency] = str(exc)
-            logger.exception(
-                "Manual transfer failed for user_id=%s currency=%s amount=%s",
-                principal.user_id,
-                currency,
-                amount,
-            )
-
-    if transferred_currencies:
-        stripe_accounts_repository.clear_pending_earnings(
-            principal.user_id,
-            only_currencies=transferred_currencies,
-        )
-
-    if not transferred and failed:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail={
-                "message": "Transfer failed",
-                "failed": failed,
-            },
-        )
-
-    return {
-        "stripe_account_id": stripe_account_id,
-        "transferred": transferred,
-        "failed": failed,
-    }
-
-
 @router.post("/payouts")
 def create_payouts(
     principal: Annotated[Principal, Depends(require_principal(StripeAccountStatus.VERIFIED))],
+    stripe_accounts_repository: Annotated[StripeAccountRepository, Depends(get_stripe_accounts_repository)],
     stripe_platform_service: Annotated[
         type[StripePlatformAccountService],
         Depends(get_stripe_platform_account_service),
@@ -178,19 +102,28 @@ def create_payouts(
         )
 
     if not transferred and not failed:
+        logger.warning(
+            "Payout requested but no available balance: user_id=%s stripe_account_id=%s",
+            principal.user_id,
+            stripe_account_id,
+        )
         return {
             "stripe_account_id": stripe_account_id,
             "transferred": {},
             "failed": {},
             "payout_ids": {},
-            "message": "No available balance to payout",
+            "status": "no_balance",
+            "message": "No available balance in the account to payout",
         }
+
+    stripe_accounts_repository.clear_pending_earnings(principal.user_id)
 
     return {
         "stripe_account_id": stripe_account_id,
         "transferred": transferred,
         "failed": failed,
         "payout_ids": payout_ids,
+        "status": "success",
     }
 
 
