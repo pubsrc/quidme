@@ -354,8 +354,7 @@ def handle_payment_succeeded(
 
     Extracts metadata (user_id, link_id, amount, customer info), uses base_amount metadata as
     earnings, adds earnings to the payment link, and stores the transaction in the transactions
-    table. If account_id is None (platform-held payment), also adds to user's pending_earnings
-    for later transfer when the account is verified.
+    table and adds earnings to user's pending_earnings for later transfer.
 
     Returns True if handled and persisted, False if skipped or error.
     """
@@ -402,8 +401,6 @@ def handle_payment_succeeded(
                 extracted[key] = details[key]
 
     earnings = _earnings_from_base_amount(extracted)
-    account_type = extracted.get("account_type")
-
     date_sk = _date_transaction_id(extracted.get("created"), payment_intent_id)
     created_at = None
     if extracted.get("created"):
@@ -428,15 +425,15 @@ def handle_payment_succeeded(
         )
         links_repo = PaymentLinksRepository()
         links_repo.add_payment_result(link_id, earnings, amount)
-        if account_type == "platform" and earnings > 0:
-            StripeAccountRepository().add_pending_earnings(
-                user_id, earnings, extracted["currency"]
-            )
-            _transfer_to_connected_account(
-                user_id=user_id,
-                amount=earnings,
-                currency=extracted["currency"],
-            )
+        StripeAccountRepository().add_pending_earnings(
+            user_id, earnings, extracted["currency"]
+        )
+        # TODO: Enable this when we have enough balance in the platform account.
+        # _transfer_to_connected_account(
+        #     user_id=user_id,
+        #     amount=earnings,
+        #     currency=extracted["currency"],
+        # )
         if earnings > 0:
             StripeAccountRepository().add_earnings(
                 user_id, earnings, extracted["currency"]
@@ -453,7 +450,7 @@ def handle_payment_succeeded(
         link_id,
         amount,
         earnings,
-        account_type,
+        extracted.get("account_type"),
     )
     return True
 
@@ -710,8 +707,8 @@ def _extract_from_invoice(
 
 def handle_invoice_paid(data: dict[str, Any], account_id: str | None = None) -> bool:
     """
-    Handle invoice.paid for subscription payment links: store transaction and add earnings to subscription link.
-    If account_id is None (platform), add to user's pending_earnings for later transfer.
+    Handle invoice.paid for subscription payment links: store transaction and add
+    earnings to subscription link and user's pending_earnings for later transfer.
     Returns True if handled and persisted, False if skipped or error.
     """
     obj = data.get("object")
@@ -779,15 +776,15 @@ def handle_invoice_paid(data: dict[str, Any], account_id: str | None = None) -> 
         )
         subs_repo = SubscriptionsRepository()
         subs_repo.add_payment_result(link_id, earnings, amount)
-        if account_id is None and earnings > 0:
-            StripeAccountRepository().add_pending_earnings(
-                user_id, earnings, extracted["currency"]
-            )
-            _transfer_to_connected_account(
-                user_id=user_id,
-                amount=earnings,
-                currency=extracted["currency"],
-            )
+        StripeAccountRepository().add_pending_earnings(
+            user_id, earnings, extracted["currency"]
+        )
+        # TODO: Enable this when we have enough balance in the platform account.
+        # _transfer_to_connected_account(
+        #     user_id=user_id,
+        #     amount=earnings,
+        #     currency=extracted["currency"],
+        # )
         if earnings > 0:
             StripeAccountRepository().add_earnings(
                 user_id, earnings, extracted["currency"]
