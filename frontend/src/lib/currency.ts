@@ -2,12 +2,18 @@ export const getDefaultCurrencyForCountry = (country: string | null | undefined)
   const normalized = (country || "").toUpperCase();
 
   if (normalized === "GB") return "gbp";
-  if (normalized === "DE" || normalized === "AT" || normalized === "IT" || normalized === "GR" || normalized === "XK") {
+  if (
+    normalized === "DE" ||
+    normalized === "AT" ||
+    normalized === "IT" ||
+    normalized === "GR" ||
+    normalized === "XK" ||
+    normalized === "BG" ||
+    normalized === "AL"
+  ) {
     return "eur";
   }
-  if (normalized === "BG") return "bgn";
   if (normalized === "RO") return "ron";
-  if (normalized === "AL") return "all";
 
   return "gbp";
 };

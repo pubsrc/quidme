@@ -9,9 +9,7 @@ const currencies = [
   { code: "gbp", labelKey: "components.create_link_dialog.currency_options.gbp", flag: "🇬🇧" },
   { code: "eur", labelKey: "components.create_link_dialog.currency_options.eur", flag: "🇪🇺" },
   { code: "usd", labelKey: "components.create_link_dialog.currency_options.usd", flag: "🇺🇸" },
-  { code: "bgn", labelKey: "components.create_link_dialog.currency_options.bgn", flag: "🇧🇬" },
   { code: "ron", labelKey: "components.create_link_dialog.currency_options.ron", flag: "🇷🇴" },
-  { code: "all", labelKey: "components.create_link_dialog.currency_options.all", flag: "🇦🇱" },
 ];
 
 const intervals = [
@@ -33,9 +31,7 @@ const currencySymbol = (code: string) => {
   if (v === "gbp") return "£";
   if (v === "usd") return "$";
   if (v === "eur") return "€";
-  if (v === "bgn") return "лв";
   if (v === "ron") return "lei";
-  if (v === "all") return "L";
   return v.toUpperCase() + " ";
 };
 
