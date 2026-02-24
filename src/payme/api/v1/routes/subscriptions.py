@@ -21,6 +21,7 @@ from payme.core.auth import Principal
 from payme.db.repositories import SubscriptionsRepository
 from payme.models.payment import DisableLinkResponse, PaymentLinkResponse, SubscriptionCreate
 from payme.services.fees import amount_with_subscription_fee
+from payme.services.cloudwatch_metrics import increment_payment_links
 from payme.services.payment_links import StripePaymentLinkService
 from payme.services.stripe_platform_account_service import StripePlatformAccountService
 
@@ -92,6 +93,8 @@ def create_subscription_link(
         except stripe.error.StripeError:
             pass
         raise HTTPException(status_code=500, detail="Failed to save subscription link") from exc
+
+    increment_payment_links()
 
     return PaymentLinkResponse(
         id=subscription_id,

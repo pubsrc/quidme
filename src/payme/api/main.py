@@ -12,6 +12,7 @@ from payme.api.dependencies import STRIPE_ACCOUNT_REQUIRED_ERROR_CODE
 from payme.api.v1.routes import (
     accounts,
     health,
+    metrics,
     payment_links,
     platform,
     refunds,
@@ -42,6 +43,7 @@ app.add_middleware(
 # Routers under /api/v1 (health, accounts, payment-links, subscriptions)
 API_V1_PREFIX = "/api/v1"
 app.include_router(health.router, prefix=API_V1_PREFIX)
+app.include_router(metrics.router, prefix=API_V1_PREFIX)
 app.include_router(accounts.router, prefix=API_V1_PREFIX)
 app.include_router(platform.router, prefix=API_V1_PREFIX)
 app.include_router(payment_links.router, prefix=API_V1_PREFIX)

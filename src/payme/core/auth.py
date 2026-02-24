@@ -15,6 +15,7 @@ from payme.db.repositories import (
     UserIdentitiesRepository,
     UsersRepository,
 )
+from payme.services.cloudwatch_metrics import increment_users
 
 # 403 when Stripe account missing or not ready; frontend redirects to /start on this payload
 STRIPE_ACCOUNT_REQUIRED_ERROR_CODE = "STRIPE_ACCOUNT_REQUIRED"
@@ -127,6 +128,7 @@ def resolve_principal(
     else:
         user = users_repo.create(email=email)
         identities_repo.create(user.user_id, "cognito", external_sub, email)
+        increment_users()
         user_id, user_email = user.user_id, user.email
 
     account = stripe_accounts_repo.get_primary_for_user(user_id)

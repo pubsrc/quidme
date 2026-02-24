@@ -30,6 +30,7 @@ from payme.models.payment import (
 )
 from payme.services.fees import amount_with_fee, subtract_service_fee
 from payme.services.payment_links import StripePaymentLinkService
+from payme.services.cloudwatch_metrics import increment_payment_links
 from payme.services.stripe_event_handler import record_payment_succeeded_from_intent
 from payme.services.stripe_platform_account_service import StripePlatformAccountService
 
@@ -95,6 +96,8 @@ def create_payment_link(
         except stripe.error.StripeError:
             pass
         raise HTTPException(status_code=500, detail="Failed to save payment link") from exc
+
+    increment_payment_links()
 
     return PaymentLinkResponse(
         id=link_id,

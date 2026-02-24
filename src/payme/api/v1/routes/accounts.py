@@ -29,6 +29,7 @@ from payme.db.repositories import (
     UsersRepository,
 )
 from payme.models.user import OnboardingLinkResponse
+from payme.services.cloudwatch_metrics import record_transfer_results
 from payme.services.stripe_platform_account_service import StripePlatformAccountService
 
 logger = logging.getLogger(__name__)
@@ -54,7 +55,8 @@ def _transfer_pending_earnings(
         (pending_earnings_status, refreshed_pending)
         pending_earnings_status: "settled" if all attempted transfers succeeded, else "in_progress"
     """
-    transfer_failed = False
+    successful_transfers = 0
+    failed_transfers = 0
     transferred_currencies: list[str] = []
 
     for currency, amount in pending.items():
@@ -68,8 +70,9 @@ def _transfer_pending_earnings(
                 destination=stripe_account_id,
             )
             transferred_currencies.append(currency)
+            successful_transfers += 1
         except Exception as exc:
-            transfer_failed = True
+            failed_transfers += 1
             logger.warning(
                 "Failed transfer from account status endpoint user_id=%s stripe_account_id=%s currency=%s amount=%s: %s",
                 user_id,
@@ -84,8 +87,13 @@ def _transfer_pending_earnings(
             user_id, only_currencies=transferred_currencies
         )
 
+    record_transfer_results(
+        successful=successful_transfers,
+        failed=failed_transfers,
+    )
+
     refreshed_pending = stripe_accounts_repository.get_pending_earnings(user_id)
-    pending_earnings_status = "in_progress" if transfer_failed else "settled"
+    pending_earnings_status = "in_progress" if failed_transfers > 0 else "settled"
     return pending_earnings_status, refreshed_pending
 
 

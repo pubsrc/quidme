@@ -679,6 +679,7 @@ dependencies = [
     { name = "boto3" },
     { name = "fastapi" },
     { name = "mangum" },
+    { name = "prometheus-client" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
@@ -706,6 +707,7 @@ requires-dist = [
     { name = "localstack", marker = "extra == 'dev'", specifier = ">=3.0" },
     { name = "mangum", specifier = ">=0.17" },
     { name = "moto", extras = ["dynamodb"], marker = "extra == 'dev'", specifier = ">=5.0" },
+    { name = "prometheus-client", specifier = ">=0.21" },
     { name = "pydantic", specifier = ">=2.6" },
     { name = "pydantic-settings", specifier = ">=2.2" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
@@ -735,6 +737,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b5/6f/8502a12f12c49a5e2e7c5f9bbb23ec5a4b35cd4cbe9bce4382e5b2078fe3/plux-1.14.0.tar.gz", hash = "sha256:e335d0bb4b67e1cb18abce8b92370568394f75edfb8505398f51c577525467fe", size = 103137, upload-time = "2026-01-26T12:23:22.809Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e6/70/d6f645bed6e27ee46a670540360af3586d0708314d18e0e4a6fac08dfc5e/plux-1.14.0-py3-none-any.whl", hash = "sha256:f117345586b17e1878bf339b595141f5f476bddd61bcc070182839f1b0287f7a", size = 48770, upload-time = "2026-01-26T12:23:21.383Z" },
+]
+
+[[package]]
+name = "prometheus-client"
+version = "0.24.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f0/58/a794d23feb6b00fc0c72787d7e87d872a6730dd9ed7c7b3e954637d8f280/prometheus_client-0.24.1.tar.gz", hash = "sha256:7e0ced7fbbd40f7b84962d5d2ab6f17ef88a72504dcf7c0b40737b43b2a461f9", size = 85616, upload-time = "2026-01-14T15:26:26.965Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/74/c3/24a2f845e3917201628ecaba4f18bab4d18a337834c1df2a159ee9d22a42/prometheus_client-0.24.1-py3-none-any.whl", hash = "sha256:150db128af71a5c2482b36e588fc8a6b95e498750da4b17065947c16070f4055", size = 64057, upload-time = "2026-01-14T15:26:24.42Z" },
 ]
 
 [[package]]
