@@ -42,7 +42,7 @@ readonly AWS_REGION="eu-west-2"
 # Project/repo naming (must be explicitly set to avoid accidental deploys).
 # Set these via environment variables before running, for example:
 #   PROJECT_NAME=payme GITHUB_REPO=payme GITHUB_ORG=pubsrc ./scripts/setup-terraform-cicd-aws.sh
-readonly PROJECT_NAME="quidme"
+readonly PROJECT_NAME="payme"
 
 # GitHub repository (must be explicit)
 readonly GITHUB_ORG="pubsrc"
