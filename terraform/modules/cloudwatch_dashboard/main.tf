@@ -77,7 +77,7 @@ resource "aws_cloudwatch_dashboard" "this" {
           period  = 300
           region  = var.aws_region
           metrics = [
-            [".", "SuccessfulPayouts", { label = "Successful Payouts" }],
+            [var.metrics_namespace, "SuccessfulPayouts", { label = "Successful Payouts" }],
             [".", "FailedPayouts", { label = "Failed Payouts" }],
           ]
         }
