@@ -97,3 +97,7 @@ output "frontend_vite_oauth_redirect_sign_in" {
 output "frontend_vite_oauth_redirect_sign_out" {
   value = local.logout_urls_value[0]
 }
+
+output "cloudwatch_dashboard_name" {
+  value = module.cloudwatch_dashboard.dashboard_name
+}

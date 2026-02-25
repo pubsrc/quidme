@@ -248,3 +248,10 @@ module "frontend_hosting" {
   acm_certificate_arn = var.frontend_acm_certificate_arn
   tags                = local.tags
 }
+
+module "cloudwatch_dashboard" {
+  source       = "../../modules/cloudwatch_dashboard"
+  project_name = var.project_name
+  environment  = "dev"
+  aws_region   = var.aws_region
+}

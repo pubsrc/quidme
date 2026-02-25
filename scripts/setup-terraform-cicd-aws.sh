@@ -42,7 +42,7 @@ readonly AWS_REGION="eu-west-2"
 # Project/repo naming (must be explicitly set to avoid accidental deploys).
 # Set these via environment variables before running, for example:
 #   PROJECT_NAME=payme GITHUB_REPO=payme GITHUB_ORG=pubsrc ./scripts/setup-terraform-cicd-aws.sh
-readonly PROJECT_NAME="quidme"
+readonly PROJECT_NAME="payme"
 
 # GitHub repository (must be explicit)
 readonly GITHUB_ORG="pubsrc"
@@ -75,9 +75,9 @@ readonly TOOLS_STATE_BUCKET="${TOOLS_STATE_BUCKET:-${PROJECT_NAME}-terraform-sta
 readonly DEV_STATE_BUCKET="${DEV_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-dev-${DEV_ACCOUNT_ID}}"
 readonly PROD_STATE_BUCKET="${PROD_STATE_BUCKET:-${PROJECT_NAME}-terraform-state-prod-${PROD_ACCOUNT_ID}}"
 
-readonly TOOLS_LOCK_TABLE="${TOOLS_LOCK_TABLE:-${PROJECT_NAME}-terraform-state-lock-tools}"
-readonly DEV_LOCK_TABLE="${DEV_LOCK_TABLE:-${PROJECT_NAME}-terraform-state-lock-dev}"
-readonly PROD_LOCK_TABLE="${PROD_LOCK_TABLE:-${PROJECT_NAME}-terraform-state-lock-prod}"
+readonly TOOLS_LOCK_TABLE="${TOOLS_LOCK_TABLE:-${PROJECT_NAME}-terraform-lock-tools}"
+readonly DEV_LOCK_TABLE="${DEV_LOCK_TABLE:-${PROJECT_NAME}-terraform-lock-dev}"
+readonly PROD_LOCK_TABLE="${PROD_LOCK_TABLE:-${PROJECT_NAME}-terraform-lock-prod}"
 
 ################################################################################
 # HELPER FUNCTIONS
@@ -227,7 +227,10 @@ EOF
         "s3:GetBucketAcl",
         "s3:GetBucketLocation"
       ],
-      "Resource": "arn:aws:s3:::terraform-state-*"
+      "Resource": [
+        "arn:aws:s3:::terraform-state-*",
+        "arn:aws:s3:::${PROJECT_NAME}-terraform-state-*"
+      ]
     },
     {
       "Sid": "TerraformStateObjectAccess",
@@ -237,7 +240,10 @@ EOF
         "s3:PutObject",
         "s3:DeleteObject"
       ],
-      "Resource": "arn:aws:s3:::terraform-state-*/*"
+      "Resource": [
+        "arn:aws:s3:::terraform-state-*/*",
+        "arn:aws:s3:::${PROJECT_NAME}-terraform-state-*/*"
+      ]
     },
     {
       "Sid": "TerraformStateLock",
@@ -248,7 +254,10 @@ EOF
         "dynamodb:PutItem",
         "dynamodb:DeleteItem"
       ],
-      "Resource": "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/terraform-state-lock-*"
+      "Resource": [
+        "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/terraform-state-lock-*",
+        "arn:aws:dynamodb:${AWS_REGION}:${account_id}:table/${PROJECT_NAME}-terraform-lock-*"
+      ]
     },
     {
       "Sid": "S3BucketManagement",
@@ -332,6 +341,10 @@ EOF
         "rds:*",
         "lambda:*",
         "logs:*",
+        "cloudwatch:PutDashboard",
+        "cloudwatch:GetDashboard",
+        "cloudwatch:DeleteDashboards",
+        "cloudwatch:ListDashboards",
         "events:*",
         "s3:*",
         "elasticloadbalancing:*",

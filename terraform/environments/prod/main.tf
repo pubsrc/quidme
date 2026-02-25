@@ -249,6 +249,13 @@ module "frontend_hosting" {
   tags                = local.tags
 }
 
+module "cloudwatch_dashboard" {
+  source       = "../../modules/cloudwatch_dashboard"
+  project_name = var.project_name
+  environment  = "prod"
+  aws_region   = var.aws_region
+}
+
 resource "aws_acm_certificate" "api" {
   count             = local.api_manage_certificate ? 1 : 0
   domain_name       = var.api_domain_name

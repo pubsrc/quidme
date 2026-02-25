@@ -12,6 +12,7 @@ from boto3.dynamodb.conditions import Attr, Key
 from payme.core.constants import StripeAccountStatus
 from payme.core.settings import settings
 from payme.db.dynamodb import get_dynamodb_resource
+from payme.services.cloudwatch_metrics import increment_transactions
 
 
 @dataclass
@@ -454,6 +455,7 @@ class TransactionsRepository:
         if stripe_account_id is not None:
             item["stripe_account_id"] = stripe_account_id
         self._table.put_item(Item=item)
+        increment_transactions()
 
     def get_by_payment_intent_id(
         self, user_id: str, payment_intent_id: str

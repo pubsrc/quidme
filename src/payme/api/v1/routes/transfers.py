@@ -16,6 +16,7 @@ from payme.api.dependencies import (
 from payme.core.auth import Principal
 from payme.core.constants import StripeAccountStatus
 from payme.db.repositories import StripeAccountRepository
+from payme.services.cloudwatch_metrics import record_payout_results
 from payme.services.stripe_platform_account_service import StripePlatformAccountService
 
 router = APIRouter(prefix="/transfers", tags=["transfers"])
@@ -91,6 +92,10 @@ def create_payouts(
     transferred = result.get("transferred", {})
     failed = result.get("failed", {})
     payout_ids = result.get("payout_ids", {})
+    record_payout_results(
+        successful=len(transferred),
+        failed=len(failed),
+    )
 
     if not transferred and failed:
         raise HTTPException(

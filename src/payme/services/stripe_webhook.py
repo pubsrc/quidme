@@ -14,6 +14,10 @@ import stripe
 
 from payme.core.constants import StripeAccountStatus
 from payme.db.repositories import StripeAccountRepository
+from payme.services.cloudwatch_metrics import (
+    increment_verified_accounts,
+    record_transfer_results,
+)
 from payme.services.stripe_event_handler import (
     handle_checkout_session_completed,
     handle_invoice_paid,
@@ -81,8 +85,11 @@ def handle_account_updated(data: dict[str, Any]) -> bool:
             new_status,
         )
         if new_status == StripeAccountStatus.VERIFIED:
+            increment_verified_accounts()
             pending = accounts_repo.get_pending_earnings(record.user_id)
             transferred_currencies: list[str] = []
+            successful_transfers = 0
+            failed_transfers = 0
             for currency, amount in pending.items():
                 if amount <= 0:
                     continue
@@ -93,6 +100,7 @@ def handle_account_updated(data: dict[str, Any]) -> bool:
                         destination=stripe_account_id,
                     )
                     transferred_currencies.append(currency)
+                    successful_transfers += 1
                     logger.info(
                         "Webhook account.updated: transferred pending user_id=%s currency=%s amount=%s",
                         record.user_id,
@@ -100,12 +108,17 @@ def handle_account_updated(data: dict[str, Any]) -> bool:
                         amount,
                     )
                 except stripe.StripeError as e:
+                    failed_transfers += 1
                     logger.exception(
                         "Webhook account.updated: transfer failed user_id=%s currency=%s: %s",
                         record.user_id,
                         currency,
                         e,
                     )
+            record_transfer_results(
+                successful=successful_transfers,
+                failed=failed_transfers,
+            )
             if transferred_currencies:
                 accounts_repo.clear_pending_earnings(
                     record.user_id, only_currencies=transferred_currencies
