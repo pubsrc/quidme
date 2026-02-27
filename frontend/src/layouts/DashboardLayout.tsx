@@ -152,7 +152,7 @@ const DashboardLayout = () => {
               {languageMenuOpen && (
                 <div
                   role="menu"
-                  className="absolute left-[22px] top-[52px] z-30 w-[196px] rounded-xl border border-slate-200 bg-white p-1 shadow-lg"
+                  className="absolute bottom-[52px] left-[22px] z-30 max-h-64 w-[196px] overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg"
                 >
                   {LOCALE_OPTIONS.map((option) => {
                     const isCurrent = option.code === currentLanguage;
