@@ -418,7 +418,7 @@ def test_create_onboarding_link_success(monkeypatch: Any) -> None:
 
 
 def test_delete_account_deletes_user_data_and_cognito(monkeypatch: Any) -> None:
-    """DELETE /accounts/account deletes DynamoDB data (except user_identities), Stripe account, and Cognito user."""
+    """DELETE /accounts/account hard-deletes DynamoDB data, Stripe account, identities, and Cognito user."""
     from unittest.mock import MagicMock
 
     from payme.api import dependencies as deps
@@ -430,6 +430,7 @@ def test_delete_account_deletes_user_data_and_cognito(monkeypatch: Any) -> None:
         stripe_account=FakeStripeAccountRecord("user-del", "acct_xyz", status="VERIFIED"),
     )
     users_repo = MagicMock(spec=["delete"])
+    user_identities_repo = MagicMock(spec=["delete_all_for_user"])
     stripe_accounts_repo = MagicMock(spec=["delete"])
     payment_links_repo = MagicMock(spec=["delete_all_for_user"])
     subscriptions_repo = MagicMock(spec=["delete_all_for_user"])
@@ -440,6 +441,7 @@ def test_delete_account_deletes_user_data_and_cognito(monkeypatch: Any) -> None:
 
     app.dependency_overrides[deps.get_resolved_principal] = lambda: principal
     app.dependency_overrides[deps.get_users_repository] = lambda: users_repo
+    app.dependency_overrides[deps.get_user_identities_repository] = lambda: user_identities_repo
     app.dependency_overrides[deps.get_stripe_accounts_repository] = lambda: stripe_accounts_repo
     app.dependency_overrides[deps.get_payment_links_repository] = lambda: payment_links_repo
     app.dependency_overrides[deps.get_subscriptions_repository] = lambda: subscriptions_repo
@@ -462,6 +464,7 @@ def test_delete_account_deletes_user_data_and_cognito(monkeypatch: Any) -> None:
     subscriptions_repo.delete_all_for_user.assert_called_once_with("user-del")
     stripe_subscriptions_repo.delete_all_for_user.assert_called_once_with("user-del")
     stripe_accounts_repo.delete.assert_called_once_with("user-del")
+    user_identities_repo.delete_all_for_user.assert_called_once_with("user-del")
     users_repo.delete.assert_called_once_with("user-del")
     cognito_delete_user.assert_called_once_with("cognito-sub-123")
 
@@ -479,6 +482,7 @@ def test_delete_account_no_stripe_account_skips_stripe_delete(monkeypatch: Any) 
         stripe_account=None,
     )
     users_repo = MagicMock(spec=["delete"])
+    user_identities_repo = MagicMock(spec=["delete_all_for_user"])
     stripe_accounts_repo = MagicMock(spec=["delete"])
     payment_links_repo = MagicMock(spec=["delete_all_for_user"])
     subscriptions_repo = MagicMock(spec=["delete_all_for_user"])
@@ -489,6 +493,7 @@ def test_delete_account_no_stripe_account_skips_stripe_delete(monkeypatch: Any) 
 
     app.dependency_overrides[deps.get_resolved_principal] = lambda: principal
     app.dependency_overrides[deps.get_users_repository] = lambda: users_repo
+    app.dependency_overrides[deps.get_user_identities_repository] = lambda: user_identities_repo
     app.dependency_overrides[deps.get_stripe_accounts_repository] = lambda: stripe_accounts_repo
     app.dependency_overrides[deps.get_payment_links_repository] = lambda: payment_links_repo
     app.dependency_overrides[deps.get_subscriptions_repository] = lambda: subscriptions_repo
@@ -506,7 +511,56 @@ def test_delete_account_no_stripe_account_skips_stripe_delete(monkeypatch: Any) 
     app.dependency_overrides.clear()
     assert r.status_code == 204
     platform_service_class.delete_connected_account.assert_not_called()
+    user_identities_repo.delete_all_for_user.assert_called_once_with("user-no-acct")
     cognito_delete_user.assert_called_once_with("sub-456")
+
+
+def test_delete_account_stripe_delete_failure_continues(monkeypatch: Any) -> None:
+    """Stripe delete failures are logged but do not block hard deletion."""
+    from unittest.mock import MagicMock
+
+    from payme.api import dependencies as deps
+
+    principal = Principal(
+        user_id="user-del-fail",
+        email="del-fail@example.com",
+        external_sub="cognito-sub-fail",
+        stripe_account=FakeStripeAccountRecord("user-del-fail", "acct_fail", status="VERIFIED"),
+    )
+    users_repo = MagicMock(spec=["delete"])
+    user_identities_repo = MagicMock(spec=["delete_all_for_user"])
+    stripe_accounts_repo = MagicMock(spec=["delete"])
+    payment_links_repo = MagicMock(spec=["delete_all_for_user"])
+    subscriptions_repo = MagicMock(spec=["delete_all_for_user"])
+    stripe_subscriptions_repo = MagicMock(spec=["delete_all_for_user"])
+    transactions_repo = MagicMock(spec=["delete_all_for_user"])
+    platform_service_class = MagicMock()
+    platform_service_class.delete_connected_account.side_effect = RuntimeError("stripe down")
+    cognito_delete_user = MagicMock()
+
+    app.dependency_overrides[deps.get_resolved_principal] = lambda: principal
+    app.dependency_overrides[deps.get_users_repository] = lambda: users_repo
+    app.dependency_overrides[deps.get_user_identities_repository] = lambda: user_identities_repo
+    app.dependency_overrides[deps.get_stripe_accounts_repository] = lambda: stripe_accounts_repo
+    app.dependency_overrides[deps.get_payment_links_repository] = lambda: payment_links_repo
+    app.dependency_overrides[deps.get_subscriptions_repository] = lambda: subscriptions_repo
+    app.dependency_overrides[deps.get_stripe_subscriptions_repository] = lambda: stripe_subscriptions_repo
+    app.dependency_overrides[deps.get_transactions_repository] = lambda: transactions_repo
+    app.dependency_overrides[deps.get_stripe_platform_account_service] = lambda: platform_service_class
+    monkeypatch.setattr(
+        "payme.api.v1.routes.accounts.cognito_delete_user",
+        cognito_delete_user,
+    )
+
+    client = TestClient(app)
+    r = client.delete("/api/v1/accounts/account", headers={"Authorization": "Bearer x"})
+
+    app.dependency_overrides.clear()
+    assert r.status_code == 204
+    stripe_accounts_repo.delete.assert_called_once_with("user-del-fail")
+    user_identities_repo.delete_all_for_user.assert_called_once_with("user-del-fail")
+    users_repo.delete.assert_called_once_with("user-del-fail")
+    cognito_delete_user.assert_called_once_with("cognito-sub-fail")
 
 
 # ---------------------------------------------------------------------------
