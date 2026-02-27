@@ -15,6 +15,7 @@ from payme.api.dependencies import (
     get_stripe_subscriptions_repository,
     get_subscriptions_repository,
     get_transactions_repository,
+    get_user_identities_repository,
     get_users_repository,
     require_principal,
 )
@@ -26,6 +27,7 @@ from payme.db.repositories import (
     StripeAccountRepository,
     SubscriptionsRepository,
     TransactionsRepository,
+    UserIdentitiesRepository,
     UsersRepository,
 )
 from payme.models.user import OnboardingLinkResponse
@@ -146,6 +148,7 @@ def create_onboarding_link(
 def delete_account(
     principal: Annotated[Principal, Depends(require_principal(None))],
     users_repository: Annotated[UsersRepository, Depends(get_users_repository)],
+    user_identities_repository: Annotated[UserIdentitiesRepository, Depends(get_user_identities_repository)],
     stripe_accounts_repository: Annotated[StripeAccountRepository, Depends(get_stripe_accounts_repository)],
     payment_links_repository: Annotated[PaymentLinksRepository, Depends(get_payment_links_repository)],
     subscriptions_repository: Annotated[SubscriptionsRepository, Depends(get_subscriptions_repository)],
@@ -154,8 +157,9 @@ def delete_account(
     stripe_platform_service: Annotated[type[StripePlatformAccountService], Depends(get_stripe_platform_account_service)],
 ) -> None:
     """
-    Delete all data for the authenticated user: DynamoDB (except user_identities),
-    Stripe Connect account, and Cognito user. Only data for the current user is deleted.
+    Hard-delete all data for the authenticated user in FastAPI:
+    DynamoDB records, Stripe Connect account (best-effort), and Cognito user.
+    Only data for the current user is deleted.
     """
     user_id = principal.user_id
     external_sub = principal.external_sub
@@ -169,19 +173,32 @@ def delete_account(
             if "No such account" in str(e) or "deleted" in str(e).lower():
                 logger.info("Stripe account %s already deleted or not found, continuing", stripe_account_id)
             else:
-                raise HTTPException(
-                    status_code=status.HTTP_502_BAD_GATEWAY,
-                    detail="Failed to delete Stripe account",
-                ) from e
+                logger.exception(
+                    "Failed to delete Stripe account user_id=%s stripe_account_id=%s",
+                    user_id,
+                    stripe_account_id,
+                )
+        except stripe.StripeError:
+            logger.exception(
+                "Failed to delete Stripe account user_id=%s stripe_account_id=%s",
+                user_id,
+                stripe_account_id,
+            )
+        except Exception:
+            logger.exception(
+                "Unexpected error deleting Stripe account user_id=%s stripe_account_id=%s",
+                user_id,
+                stripe_account_id,
+            )
 
-    # 2. Delete DynamoDB data for this user only (order: child data first, then stripe_accounts, then users)
+    # 2. Hard-delete DynamoDB data for this user only.
     transactions_repository.delete_all_for_user(user_id)
     payment_links_repository.delete_all_for_user(user_id)
     subscriptions_repository.delete_all_for_user(user_id)
     stripe_subscriptions_repository.delete_all_for_user(user_id)
     stripe_accounts_repository.delete(user_id)
+    user_identities_repository.delete_all_for_user(user_id)
     users_repository.delete(user_id)
-    # user_identities intentionally not deleted per requirement
 
     # 3. Delete user from Cognito (so they can no longer sign in)
     try:

@@ -91,6 +91,27 @@ class UserIdentitiesRepository:
         )
         return resp.get("Items", [])
 
+    def delete_all_for_user(self, user_id: str) -> None:
+        """Hard-delete all identity mappings for this user."""
+        last_evaluated_key = None
+        while True:
+            query_kwargs: dict = {
+                "IndexName": "user_id_index",
+                "KeyConditionExpression": Key("user_id").eq(user_id),
+                "ProjectionExpression": "identity_id",
+            }
+            if last_evaluated_key:
+                query_kwargs["ExclusiveStartKey"] = last_evaluated_key
+            resp = self._table.query(**query_kwargs)
+            items = resp.get("Items", [])
+            if items:
+                with self._table.batch_writer() as batch:
+                    for item in items:
+                        batch.delete_item(Key={"identity_id": item["identity_id"]})
+            last_evaluated_key = resp.get("LastEvaluatedKey")
+            if not last_evaluated_key:
+                break
+
 @dataclass
 class StripeAccountRecord:
     user_id: str
