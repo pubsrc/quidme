@@ -15,3 +15,8 @@ variable "tags" {
   type    = map(string)
   default = {}
 }
+
+variable "cognito_user_pool_arn" {
+  type    = string
+  default = ""
+}

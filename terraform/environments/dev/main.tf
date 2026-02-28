@@ -143,8 +143,9 @@ module "ssm" {
 }
 
 module "iam_lambda" {
-  source       = "../../modules/iam_lambda"
-  project_name = var.project_name
+  source                = "../../modules/iam_lambda"
+  project_name          = var.project_name
+  cognito_user_pool_arn = module.cognito.user_pool_arn
   dynamodb_table_arns = [
     module.dynamodb.users_table_arn,
     module.dynamodb.user_identities_table_arn,

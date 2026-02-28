@@ -36,6 +36,16 @@ data "aws_iam_policy_document" "lambda" {
     ]
     resources = concat(var.dynamodb_table_arns, var.dynamodb_index_arns)
   }
+
+  dynamic "statement" {
+    for_each = trimspace(var.cognito_user_pool_arn) != "" ? [1] : []
+    content {
+      actions = [
+        "cognito-idp:AdminDeleteUser",
+      ]
+      resources = [var.cognito_user_pool_arn]
+    }
+  }
 }
 
 resource "aws_iam_policy" "lambda" {
